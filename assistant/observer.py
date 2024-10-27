@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from collections.abc import AsyncIterator
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Generic, Self, TypeVar
@@ -35,7 +35,7 @@ class Observer(Generic[S, E], ABC):
         pass
 
     @abstractmethod
-    async def observe(self) -> AsyncIterator[E]:
+    def observe(self) -> Iterator[E]:
         """Stream events from the source"""
         pass
 

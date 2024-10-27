@@ -10,7 +10,7 @@ export
 
 # Development port with a different default than production
 DEV_PORT ?= 8001
-HOST ?= 0.0.0.0
+HOST ?= localhost
 
 .PHONY: all
 all: setup run

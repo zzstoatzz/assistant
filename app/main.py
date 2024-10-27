@@ -9,27 +9,27 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.background import ObservationSummary, periodically_check_email, secretary
+from app.background import ObservationSummary, periodically_check_email, periodically_check_observations, secretary
 from app.settings import settings
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Start background observer processing"""
-    # Create necessary directories
-    settings.templates_dir.mkdir(exist_ok=True)
-    settings.static_dir.mkdir(exist_ok=True)
-    settings.summaries_dir.mkdir(exist_ok=True)
-
-    task = asyncio.create_task(periodically_check_email())
-
-    yield
-
-    task.cancel()
+    # Create the task but don't await it
+    check_email_task = asyncio.create_task(periodically_check_email())
+    check_observations_task = asyncio.create_task(periodically_check_observations())
     try:
-        await task
-    except asyncio.CancelledError:
-        pass
+        yield
+    finally:
+        # Proper cleanup
+        check_email_task.cancel()
+        check_observations_task.cancel()
+        try:
+            await check_email_task
+            await check_observations_task
+        except asyncio.CancelledError:
+            pass
 
 
 app = FastAPI(title='Information Observer Service', lifespan=lifespan)

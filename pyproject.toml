@@ -39,6 +39,7 @@ gmail = [
     "google-auth-oauthlib",
     "google-auth-httplib2",
 ]
+humanlayer = ["humanlayer"]
 
 
 [project.urls]

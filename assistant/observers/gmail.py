@@ -27,6 +27,23 @@ class EmailEvent(BaseEvent):
     labels: list[str] = field(default_factory=list)
 
 
+def get_gmail_service(creds_path: Path, token_path: Path) -> Resource:
+    """Initialize and return the Gmail service"""
+    creds: Credentials | None = None
+    if token_path.exists():
+        creds = Credentials.from_authorized_user_file(token_path, GmailObserver.SCOPES)
+
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(creds_path, GmailObserver.SCOPES)
+            creds = flow.run_local_server(port=0)
+        token_path.write_text(creds.to_json())
+
+    return build('gmail', 'v1', credentials=creds)
+
+
 class GmailObserver(BaseModel, Observer[dict[str, Any], EmailEvent]):
     """Gmail implementation of the Observer protocol"""
 
@@ -37,22 +54,6 @@ class GmailObserver(BaseModel, Observer[dict[str, Any], EmailEvent]):
     creds_path: Path
     token_path: Path
     service: Resource | None = None
-
-    def _get_gmail_service(self) -> Resource:
-        """Initialize and return the Gmail service"""
-        creds: Credentials | None = None
-        if self.token_path.exists():
-            creds = Credentials.from_authorized_user_file(self.token_path, self.SCOPES)
-
-        if not creds or not creds.valid:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                flow = InstalledAppFlow.from_client_secrets_file(self.creds_path, self.SCOPES)
-                creds = flow.run_local_server(port=0)
-            self.token_path.write_text(creds.to_json())
-
-        return build('gmail', 'v1', credentials=creds)
 
     def _get_email_details(self, message: dict[str, Any]) -> tuple[str, str]:
         """Extract subject and sender from message headers"""
@@ -68,7 +69,7 @@ class GmailObserver(BaseModel, Observer[dict[str, Any], EmailEvent]):
         return subject, sender
 
     def connect(self) -> None:
-        self.service = self._get_gmail_service()
+        self.service = get_gmail_service(self.creds_path, self.token_path)
 
     def observe(self) -> Iterator[EmailEvent]:
         """Stream unread emails as events"""
@@ -86,10 +87,14 @@ class GmailObserver(BaseModel, Observer[dict[str, Any], EmailEvent]):
         )
 
         if not (messages := results.get('messages')):
-            return
+            return iter([])
 
         for msg in messages:
             message = self.service.users().messages().get(userId='me', id=msg['id']).execute()
+
+            # Only process if message is actually unread
+            if 'UNREAD' not in message['labelIds']:
+                continue
 
             subject, sender = self._get_email_details(message)
             yield EmailEvent(
