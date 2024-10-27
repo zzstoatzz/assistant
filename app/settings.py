@@ -1,7 +1,8 @@
+import os
 from pathlib import Path
 from typing import Annotated
 
-from humanlayer import HumanLayer
+from humanlayer import ContactChannel, HumanLayer, SlackContactChannel
 from pydantic import BeforeValidator, Field, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -13,6 +14,33 @@ def ensure_dir(path: Path) -> Path:
 
 
 EnsuredPath = Annotated[Path, BeforeValidator(ensure_dir)]
+
+
+def get_default_contact_channel() -> ContactChannel | None:
+    if not (testing_user := os.getenv('TESTING_USER')):
+        return None
+
+    return ContactChannel(
+        slack=SlackContactChannel(
+            channel_or_user_id='',
+            context_about_channel_or_user=f'a dm with {testing_user.lower()}',
+            experimental_slack_blocks=True,
+        )
+    )
+
+
+class HumanLayerSettings(BaseSettings):
+    """Settings for the HumanLayer"""
+
+    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra='ignore')
+
+    slack: ContactChannel | None = Field(default_factory=get_default_contact_channel)
+
+    @computed_field
+    @property
+    def instance(self) -> HumanLayer:
+        """HumanLayer instance"""
+        return HumanLayer(contact_channel=self.slack)
 
 
 class Settings(BaseSettings):
@@ -27,7 +55,7 @@ class Settings(BaseSettings):
 
     app_dir: EnsuredPath = Field(default=Path(__file__).parent)
 
-    hl: HumanLayer = Field(default=HumanLayer())
+    hl: HumanLayerSettings = Field(default_factory=HumanLayerSettings)
 
     @computed_field
     @property
@@ -60,7 +88,13 @@ class Settings(BaseSettings):
 
     @model_validator(mode='after')
     def ensure_paths(self):
-        for path in [self.templates_dir, self.static_dir, self.summaries_dir, self.email_credentials_dir]:
+        for path in [
+            self.templates_dir,
+            self.static_dir,
+            self.summaries_dir,
+            self.email_credentials_dir,
+            self.processed_summaries_dir,
+        ]:
             ensure_dir(path)
         return self
 

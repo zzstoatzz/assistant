@@ -14,9 +14,6 @@ logger = get_logger()
 @flow
 def check_observations(agents: list[cf.Agent]) -> None:
     """Check observations on disk and process if necessary"""
-    # Create processed directory if it doesn't exist
-    processed_dir = settings.summaries_dir / 'processed'
-    processed_dir.mkdir(exist_ok=True)
 
     # Only get unprocessed summaries
     summary_files = list(settings.summaries_dir.glob('*.json'))
@@ -39,7 +36,7 @@ def check_observations(agents: list[cf.Agent]) -> None:
 
     # Move processed files to processed directory
     for file_path in unprocessed_summaries:
-        new_path = processed_dir / file_path.name
+        new_path = settings.processed_summaries_dir / file_path.name
         file_path.rename(new_path)
         logger.info(f'Moved processed summary: {file_path.name}')
 

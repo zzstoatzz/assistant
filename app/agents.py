@@ -16,5 +16,5 @@ secretary = cf.Agent(
     5. Reach out to the human if something is interesting or urgent
     6. Send messages on the human's behalf
     """,
-    tools=[settings.hl.human_as_tool(), send_email],
+    tools=[settings.hl.instance.human_as_tool(), send_email],
 )

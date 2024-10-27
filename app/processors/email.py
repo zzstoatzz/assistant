@@ -12,7 +12,7 @@ from assistant.observers.gmail import GmailObserver, get_gmail_service
 logger = get_logger()
 
 
-@settings.hl.require_approval()
+@settings.hl.instance.require_approval()
 def send_email(recipient: str, subject: str, body: str) -> None:
     """Send an email using the Gmail API."""
     service = get_gmail_service(
