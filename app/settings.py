@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Annotated
 
+from humanlayer import HumanLayer
 from pydantic import BeforeValidator, Field, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -25,6 +26,8 @@ class Settings(BaseSettings):
     observation_check_interval_seconds: int = Field(default=300, ge=10)
 
     app_dir: EnsuredPath = Field(default=Path(__file__).parent)
+
+    hl: HumanLayer = Field(default=HumanLayer())
 
     @computed_field
     @property

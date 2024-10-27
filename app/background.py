@@ -1,119 +1,18 @@
 import asyncio
-import base64
-from collections.abc import Callable
-from datetime import datetime
+from collections.abc import Callable, Sequence
 from typing import Any
 
 import controlflow as cf
-from humanlayer import HumanLayer
-from prefect import flow, get_run_logger, task
+from prefect import flow
 from prefect.logging.loggers import get_logger
-from pydantic import BaseModel
 
 from app.settings import settings
-from assistant.observers.gmail import GmailObserver, get_gmail_service
 
 logger = get_logger()
 
-hl = HumanLayer()
-
-
-@hl.require_approval()
-def send_email(recipient: str, subject: str, body: str) -> None:
-    """Send an email using the Gmail API."""
-    service = get_gmail_service(
-        creds_path=settings.email_credentials_dir / 'gmail_credentials.json',
-        token_path=settings.email_credentials_dir / 'gmail_token.json',
-    )
-
-    message = {'raw': base64.urlsafe_b64encode(f'To: {recipient}\nSubject: {subject}\n\n{body}'.encode()).decode()}
-
-    try:
-        service.users().messages().send(userId='me', body=message).execute()
-        return f'Email sent to {recipient}'
-    except Exception as e:
-        logger.error(f'Failed to send email: {e}')
-        raise
-
-
-class ObservationSummary(BaseModel):
-    """Summary of observations from a time period"""
-
-    timestamp: datetime
-    summary: str
-    events: list[dict[str, Any]]
-    source_types: list[str]
-
-
-# Create monitor agent for background processing
-secretary = cf.Agent(
-    name='Secretary',
-    instructions="""
-    You are an assistant that monitors various information streams like email and chat.
-    Your role is to:
-    1. Process incoming events
-    2. Group related items
-    3. Identify important or urgent matters
-    4. Create clear, concise summaries
-    5. Reach out to the human if something is interesting or urgent
-    6. Send messages on the human's behalf
-    """,
-    tools=[hl.human_as_tool(), send_email],
-)
-
-
-@task
-def process_gmail_observations() -> ObservationSummary | None:
-    """Process Gmail observations and create a summary"""
-    logger = get_run_logger()
-
-    events = []
-    with GmailObserver(
-        creds_path=settings.email_credentials_dir / 'gmail_credentials.json',
-        token_path=settings.email_credentials_dir / 'gmail_token.json',
-    ) as observer:
-        # Get all events at once and break if none
-        if not (events_list := list(observer.observe())):
-            return None  # Return None instead of empty summary
-
-        # Process events if we have them
-        for event in events_list:
-            events.append(
-                e := {
-                    'type': 'email',
-                    'timestamp': datetime.now().isoformat(),
-                    'subject': event.subject,
-                    'sender': event.sender,
-                    'snippet': event.snippet,
-                }
-            )
-            logger.info(f'{e["sender"]}: {e["subject"]}')
-
-    # Use the monitor agent to create a summary
-    summary = cf.run(
-        'Create summary of new messages',
-        agents=[secretary],
-        instructions="""
-        Review these events and create a concise summary.
-        Group related items and highlight anything urgent or important.
-        """,
-        context={'events': events},
-        result_type=str,
-    )
-
-    return ObservationSummary(timestamp=datetime.now(), summary=summary, events=events, source_types=['email'])
-
 
 @flow
-def check_email() -> None:
-    """Process observations and save summary to disk"""
-    if summary := process_gmail_observations():
-        summary_path = settings.summaries_dir / f'summary_{summary.timestamp:%Y%m%d_%H%M%S}.json'
-        summary_path.write_text(summary.model_dump_json(indent=2))
-
-
-@flow
-def check_observations() -> None:
+def check_observations(agents: list[cf.Agent]) -> None:
     """Check observations on disk and process if necessary"""
     # Create processed directory if it doesn't exist
     processed_dir = settings.summaries_dir / 'processed'
@@ -134,7 +33,7 @@ def check_observations() -> None:
 
     maybe_interesting_stuff = cf.run(
         'Check if any of the summaries are interesting, reach out to the human if they are',
-        agents=[secretary],
+        agents=agents,
         context={'summaries': summaries},
     )
 
@@ -147,40 +46,58 @@ def check_observations() -> None:
     return maybe_interesting_stuff
 
 
-async def run_periodic_task(
-    task_func: Callable[[], Any], interval_seconds: float, task_name: str = 'periodic task'
-) -> None:
-    """
-    Run a synchronous function periodically with proper cancellation handling.
+class BackgroundTask:
+    """Represents a periodic background task"""
 
-    Args:
-        task_func: The synchronous function to run periodically
-        interval_seconds: Number of seconds to wait between runs
-        task_name: Name of the task for logging purposes
-    """
-    logger.info(f'Starting {task_name} with {interval_seconds} second interval')
-    while True:
-        try:
-            # Run the task in the executor to prevent blocking
-            await asyncio.get_event_loop().run_in_executor(None, task_func)
-        except Exception as e:
-            logger.error(f'{task_name} failed: {e}')
-        await asyncio.sleep(interval_seconds)
+    def __init__(self, func: Callable[[], Any], interval_seconds: float, name: str = None):
+        self.func = func
+        self.interval_seconds = interval_seconds
+        self.name = name or func.__name__
+        self.task: asyncio.Task | None = None
 
-
-async def periodically_check_email():
-    """Periodically check email in the background"""
-    # Remove print statement and use logger instead
-    logger.info(f'Starting email checker with interval: {settings.email_check_interval_seconds} seconds')
-    await run_periodic_task(
-        task_func=check_email, interval_seconds=settings.email_check_interval_seconds, task_name='email check'
-    )
+    async def run(self) -> None:
+        """Run the task periodically"""
+        logger.info(f'Starting {self.name} with {self.interval_seconds} second interval')
+        while True:
+            try:
+                await asyncio.get_event_loop().run_in_executor(None, self.func)
+            except Exception as e:
+                logger.error(f'{self.name} failed: {e}')
+            await asyncio.sleep(self.interval_seconds)
 
 
-async def periodically_check_observations():
-    """Periodically check observations on disk"""
-    await run_periodic_task(
-        task_func=check_observations,
-        interval_seconds=settings.observation_check_interval_seconds,
-        task_name='observation check',
-    )
+class BackgroundTaskManager:
+    """Manages multiple background tasks"""
+
+    def __init__(self):
+        self.tasks: list[BackgroundTask] = []
+
+    @classmethod
+    def from_background_tasks(cls, tasks: Sequence[BackgroundTask]) -> 'BackgroundTaskManager':
+        """Create a task manager from a sequence of background tasks"""
+        manager = cls()
+        for task in tasks:
+            manager.tasks.append(task)
+        return manager
+
+    def add_task(self, func: Callable[[], Any], interval_seconds: float, name: str = None) -> None:
+        """Add a new background task"""
+        self.tasks.append(BackgroundTask(func, interval_seconds, name))
+
+    async def start_all(self) -> None:
+        """Start all registered tasks"""
+        for bg_task in self.tasks:
+            bg_task.task = asyncio.create_task(bg_task.run())
+
+    async def stop_all(self) -> None:
+        """Stop all running tasks"""
+        for bg_task in self.tasks:
+            if bg_task.task:
+                bg_task.task.cancel()
+                try:
+                    await bg_task.task
+                except asyncio.CancelledError:
+                    pass
+
+
+task_manager = BackgroundTaskManager()

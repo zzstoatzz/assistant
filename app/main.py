@@ -1,7 +1,7 @@
-import asyncio
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from datetime import datetime, timedelta
+from functools import partial
 
 import controlflow as cf
 from fastapi import FastAPI, Request
@@ -9,26 +9,36 @@ from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app.background import ObservationSummary, periodically_check_email, periodically_check_observations, secretary
+from app.agents import secretary
+from app.background import BackgroundTask, BackgroundTaskManager, check_observations
+from app.processors.email import check_email
 from app.settings import settings
+from app.types import ObservationSummary
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Start background observer processing"""
-    # Create the task but don't await it
-    check_email_task = asyncio.create_task(periodically_check_email())
-    check_observations_task = asyncio.create_task(periodically_check_observations())
+    """Start background task processing"""
+    # Start all tasks
+    task_manager = BackgroundTaskManager.from_background_tasks(
+        [
+            BackgroundTask(
+                func=partial(check_email, agents=[secretary]),
+                interval_seconds=settings.email_check_interval_seconds,
+                name='email check',
+            ),
+            BackgroundTask(
+                func=partial(check_observations, agents=[secretary]),
+                interval_seconds=settings.observation_check_interval_seconds,
+                name='observation check',
+            ),
+        ]
+    )
+    await task_manager.start_all()
     try:
         yield
     finally:
-        check_email_task.cancel()
-        check_observations_task.cancel()
-        try:
-            await check_email_task
-            await check_observations_task
-        except asyncio.CancelledError:
-            pass
+        await task_manager.stop_all()
 
 
 app = FastAPI(title='Information Observer Service', lifespan=lifespan)

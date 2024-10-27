@@ -1,0 +1,16 @@
+{
+  "timestamp": "2024-10-27T18:32:01.397624",
+  "summary": "Nathan Nowack has sent an email with an intriguing offer. The subject indicates urgency or an attempt to capture attention. The email snippet suggests a proposal to build LLM development tools in exchange for a substantial financial reward. This could be a significant opportunity worth considering.",
+  "events": [
+    {
+      "type": "email",
+      "timestamp": "2024-10-27T18:31:53.472537",
+      "subject": "STOP wait im a real person",
+      "sender": "Nathan Nowack <thrast36@gmail.com>",
+      "snippet": "I have an offer you just cant ignore you like LLM dev tools right? how about you build me them for millions of dollars? ill pay you"
+    }
+  ],
+  "source_types": [
+    "email"
+  ]
+}
