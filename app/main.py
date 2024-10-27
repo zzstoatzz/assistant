@@ -22,7 +22,6 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     try:
         yield
     finally:
-        # Proper cleanup
         check_email_task.cancel()
         check_observations_task.cancel()
         try:

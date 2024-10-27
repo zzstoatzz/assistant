@@ -6,7 +6,7 @@ A service that monitors and summarizes information from various sources.
 
 - Docker
 - Gmail API credentials
-- UV package manager (for local development)
+- `uv` package manager (for local development)
 
 ## Environment Variables
 
