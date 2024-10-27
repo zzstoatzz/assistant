@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Any
 
 import controlflow as cf
-from humanlayer import HumanLayer
+from humanlayer import HumanLayer, ContactChannel, SlackContactChannel
 from prefect import flow, get_run_logger, task
 from prefect.logging.loggers import get_logger
 from pydantic import BaseModel
@@ -15,7 +15,15 @@ from assistant.observers.gmail import GmailObserver, get_gmail_service
 
 logger = get_logger()
 
-hl = HumanLayer()
+hl = HumanLayer(
+    contact_channel=ContactChannel(
+        slack=SlackContactChannel(
+            channel_or_user_id='',  # default to dm from app
+            context_about_channel_or_user='a dm with nate',
+            experimental_slack_blocks=True,  # pretty print slack approvals
+        )
+    )
+)
 
 
 @hl.require_approval()
