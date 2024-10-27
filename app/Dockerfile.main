@@ -1,0 +1,28 @@
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
+
+WORKDIR /app
+
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+
+# First install dependencies only using cache mount
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    --mount=type=bind,source=README.md,target=README.md \
+    uv sync --frozen --no-install-project --extra gmail
+
+# Then copy source code and install project
+COPY assistant assistant/
+COPY app app/
+COPY pyproject.toml README.md ./
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    uv sync --frozen --extra gmail
+
+# Add venv to path
+ENV PATH="/app/.venv/bin:$PATH"
+
+# Run with fastapi run for production mode
+CMD ["uv", "run", "fastapi", "run", "--host", "0.0.0.0", "--port", "8000", "app/main.py"]

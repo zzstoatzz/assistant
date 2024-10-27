@@ -167,3 +167,7 @@ cython_debug/
 
 # VS Code
 .vscode/
+
+# extras
+scratch.py
+app/secrets

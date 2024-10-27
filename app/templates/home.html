@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Information Observer</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            line-height: 1.5;
+        }
+        .summary {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>Recent Observations</h1>
+    
+    {% if not has_data %}
+        <p>No observations found in the past {{ hours }} hours.</p>
+    {% else %}
+        {% for summary in summaries|sort(attribute='timestamp', reverse=true) %}
+            <div class="summary">
+                <div class="timestamp">{{ summary.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+                <p>{{ summary.summary }}</p>
+                <div>Sources: {{ summary.source_types|join(', ') }}</div>
+            </div>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

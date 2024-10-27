@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "assistant/version.py"
+
+[project]
+name = "assistant"
+description = "A personal assistant"
+authors = [{ name = "Nathan Nowack", email = "zzstoatzz@protonmail.com" }]
+license = "MIT"
+readme = "README.md"
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Operating System :: Unix",
+    "Operating System :: POSIX :: Linux",
+    "Environment :: Console",
+    "Environment :: MacOS X",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet",
+]
+requires-python = ">=3.10"
+dependencies = ["controlflow>=0.11.0", "fastapi[standard]"]
+dynamic = ["version"]
+
+[project.optional-dependencies]
+gmail = [
+    "google-api-python-client",
+    "google-auth-oauthlib",
+    "google-auth-httplib2",
+]
+
+
+[project.urls]
+Homepage = "https://github.com/zzstoatzz/assistant"
+Funding = "https://github.com/sponsors/zzstoatzz"
+Source = "https://github.com/zzstoatzz/assistant"
+Changelog = "https://github.com/zzstoatzz/assistant/releases"
+
+[tool.ruff]
+line-length = 120
+lint.extend-select = ["Q", "RUF100", "C90", "UP", "I"]
+lint.ignore = ["E721"]
+lint.flake8-quotes = { inline-quotes = "single", multiline-quotes = "double" }
+lint.mccabe = { max-complexity = 14 }
+lint.pydocstyle = { convention = "google" }
+format.quote-style = "single"
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+asyncio_mode = "auto"
+filterwarnings = []
+
+[tool.coverage.run]
+source = ["assistant"]
+branch = true
+
+[tool.coverage.report]
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "raise NotImplemented",
+    "if TYPE_CHECKING:",
+    "@overload",
+]
+
+[tool.mypy]
+strict = true
+warn_return_any = false
+show_error_codes = true
+
+[[tool.mypy.overrides]]
+module = ["devtools.*"]
+ignore_missing_imports = true

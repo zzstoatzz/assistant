@@ -25,18 +25,6 @@ make
 make clean
 ```
 
-## Project Structure
-
-```
-
-.
-├── Dockerfile
-├── Makefile
-├── instructions.md
-└── main.py
-
-```
-
 ## Environment Variables
 
 The following environment variables are required and will be prompted for during setup:
@@ -44,3 +32,7 @@ The following environment variables are required and will be prompted for during
 - `OPENAI_API_KEY`
 - `PREFECT_API_KEY`
 - `PREFECT_API_URL`
+
+```
+
+```

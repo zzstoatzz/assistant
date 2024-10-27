@@ -1,14 +1,27 @@
 # Makefile for running the assistant and setting up environment variables
 
-# Default target
+# Configuration
+DOCKER_IMAGE := assistant
+DOCKERFILE := app/Dockerfile.main
+
+# Load environment variables
+include .env
+export
+
+# Development port with a different default than production
+DEV_PORT ?= 8001
+HOST ?= 0.0.0.0
+
 .PHONY: all
 all: setup run
 
-# Setup environment variables
 .PHONY: setup
 setup:
 	@if [ ! -f .env ]; then \
 		touch .env; \
+	fi
+	@if ! grep -q ASSISTANT_PORT .env; then \
+		echo "ASSISTANT_PORT=8000" >> .env; \
 	fi
 	@if ! grep -q OPENAI_API_KEY .env; then \
 		read -p "Enter your OpenAI API key: " openai_key; \
@@ -24,24 +37,31 @@ setup:
 	fi
 	@echo "Setup complete. Required environment variables are present in .env file."
 
+# Development with hot reload
+.PHONY: dev
+dev:
+	UV_SYSTEM_PYTHON=1 uv run --with-editable . uvicorn app.main:app --reload --host $(HOST) --port $(DEV_PORT)
 
-# Run the assistant
+# Run in production mode
 .PHONY: run
 run:
-	docker build -t assistant . && docker run -it --rm --env-file .env assistant
+	docker build -t $(DOCKER_IMAGE) -f $(DOCKERFILE) . && \
+	docker run --rm \
+		-p $(ASSISTANT_PORT):$(ASSISTANT_PORT) \
+		--env-file .env \
+		--name $(DOCKER_IMAGE) \
+		-it \
+		$(DOCKER_IMAGE)
 
-
-# Clean up Docker images and artifacts
+# Clean up Docker resources
 .PHONY: clean
 clean:
-	@echo "Cleaning up Docker images and artifacts..."
-	-docker stop assistant 2>/dev/null || true
-	-docker rm assistant 2>/dev/null || true
-	-docker rmi assistant 2>/dev/null || true
-	@if [ $$? -eq 0 ]; then \
-		echo "Successfully cleaned up Docker images and artifacts."; \
-	elif [ $$? -eq 1 ]; then \
-		echo "No Docker images or containers found to clean up."; \
-	else \
-		echo "An error occurred during cleanup."; \
-	fi
+	@echo "Cleaning up Docker resources..."
+	-docker stop $(DOCKER_IMAGE) 2>/dev/null || true
+	-docker rm $(DOCKER_IMAGE) 2>/dev/null || true
+	-docker rmi $(DOCKER_IMAGE) 2>/dev/null || true
+
+# Install development dependencies
+.PHONY: dev-setup
+dev-setup:
+	UV_SYSTEM_PYTHON=1 uv pip install --editable ".[dev]"
