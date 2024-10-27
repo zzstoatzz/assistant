@@ -40,18 +40,27 @@ make clean
 
 ## Development Setup
 
-1. Install UV:
+1. Install `uv`:
 
    ```bash
-   curl -LsSf https://astral.sh/uv/install.sh | sh
+   pip install -U uv
    ```
 
 2. Install dependencies:
 
    ```bash
-   UV_SYSTEM_PYTHON=1 uv pip install --editable ".[dev]"
+   UV_SYSTEM_PYTHON=1 uv pip install --editable ".[gmail]"
    ```
 
-3. Place Gmail credentials in `email_credentials/`:
+3. Place Gmail credentials relative to the `app_dir`:
+
    - `gmail_credentials.json`
    - `gmail_token.json`
+
+   For example, I have them in `app/secrets/gmail_credentials.json` and `app/secrets/gmail_token.json`.
+
+4. Run the service:
+
+   ```bash
+   make dev
+   ```
