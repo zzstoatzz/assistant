@@ -57,6 +57,9 @@ class Settings(BaseSettings):
 
     hl: HumanLayerSettings = Field(default_factory=HumanLayerSettings)
 
+    github_token: str | None = Field(default=None, alias='GITHUB_TOKEN')
+    github_check_interval_seconds: int = Field(default=300, ge=10)
+
     @computed_field
     @property
     def templates_dir(self) -> Path:

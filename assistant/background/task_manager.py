@@ -18,7 +18,7 @@ class BackgroundTask:
 
     async def run(self) -> None:
         """Run the task periodically"""
-        logger.info(f'Starting {self.name!r} with {self.interval_seconds} second interval')
+        logger.debug(f'Starting {self.name!r} with {self.interval_seconds} second interval')
         while True:
             try:
                 await asyncio.get_event_loop().run_in_executor(None, self.func)

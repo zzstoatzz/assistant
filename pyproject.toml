@@ -30,7 +30,7 @@ classifiers = [
     "Topic :: Internet",
 ]
 requires-python = ">=3.10"
-dependencies = ["controlflow>=0.11.0", "fastapi[standard]"]
+dependencies = ["controlflow>=0.11.0", "fastapi[standard]", "chromadb"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
@@ -40,7 +40,6 @@ gmail = [
     "google-auth-httplib2",
 ]
 humanlayer = ["humanlayer"]
-
 
 [project.urls]
 Homepage = "https://github.com/zzstoatzz/assistant"
