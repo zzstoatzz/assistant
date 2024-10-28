@@ -1,0 +1,459 @@
+{
+  "timestamp": "2024-10-28T02:44:29.657006",
+  "summary": "Summary of GitHub Notifications:\n\nRepository: PrefectHQ/prefect\nBranch: try-fixing-static-analysis-ci\n\n1. **Cancelled Workflows:**\n   - Benchmarks\n   - CodSpeed Benchmarks\n   - Static Analysis\n   - CodeQL\n   - Markdown Tests\n   - Unit Tests\n\n2. **Failed Workflows:**\n   - Integrations Packages Tests\n   - Verify prefect-client build\n   \nThese notifications indicate multiple workflow cancellations and failures related to the 'try-fixing-static-analysis-ci' branch in the PrefectHQ/prefect repository. The repeated failures and cancellations suggest possible issues with the CI/CD pipeline or the changes in this branch. Immediate attention may be required to resolve these issues.",
+  "events": [
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408770",
+      "title": "Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408883",
+      "title": "CodSpeed Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408892",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408897",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408902",
+      "title": "Unit tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408907",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408911",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408921",
+      "title": "CodSpeed Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408933",
+      "title": "Unit tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408937",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408941",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408944",
+      "title": "Static analysis workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408952",
+      "title": "CodeQL workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408965",
+      "title": "Markdown tests workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408974",
+      "title": "Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408984",
+      "title": "CodSpeed Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.408995",
+      "title": "Unit tests workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409019",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409029",
+      "title": "Unit tests workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409040",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409053",
+      "title": "Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409063",
+      "title": "CodSpeed Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409071",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409094",
+      "title": "Unit tests workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409120",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409132",
+      "title": "Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409142",
+      "title": "CodSpeed Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409152",
+      "title": "CodeQL workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409167",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409177",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409200",
+      "title": "CodSpeed Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409210",
+      "title": "Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409220",
+      "title": "Unit tests workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409230",
+      "title": "CodeQL workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409243",
+      "title": "Unit tests workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409255",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409291",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409302",
+      "title": "CodSpeed Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409312",
+      "title": "Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409322",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409332",
+      "title": "Unit tests workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409342",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409352",
+      "title": "CodSpeed Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409362",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409372",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409381",
+      "title": "CodSpeed Benchmarks workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409392",
+      "title": "Unit tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409401",
+      "title": "Verify prefect-client build workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409411",
+      "title": "Unit tests workflow run cancelled for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:44:26.409420",
+      "title": "Integrations Packages Tests workflow run failed for try-fixing-static-analysis-ci branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    }
+  ],
+  "source_types": [
+    "github"
+  ]
+}
