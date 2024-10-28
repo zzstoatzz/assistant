@@ -10,10 +10,11 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.agents import secretary
-from app.background import BackgroundTask, BackgroundTaskManager, check_observations
+from app.background import check_observations
 from app.processors.email import check_email
 from app.settings import settings
 from app.types import ObservationSummary
+from assistant.background.task_manager import BackgroundTask, BackgroundTaskManager
 
 
 @asynccontextmanager
@@ -25,12 +26,12 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
             BackgroundTask(
                 func=partial(check_email, agents=[secretary]),
                 interval_seconds=settings.email_check_interval_seconds,
-                name='email check',
+                name='check email',
             ),
             BackgroundTask(
                 func=partial(check_observations, agents=[secretary]),
                 interval_seconds=settings.observation_check_interval_seconds,
-                name='observation check',
+                name='review observations',
             ),
         ]
     )
