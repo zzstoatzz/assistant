@@ -1,22 +1,17 @@
 # Assistant
 
-> [!NOTE]
->
-> **Why both `assistant` and `app`?**
->
-> `app` is the actual app where im inlining everything until it proves its worth, `assistant` is the library that contains the core functionality.
+> [!NOTE] > `app` is the working app, `assistant` is the core library.
 
-A service that monitors and summarizes information from various sources.
+Service that watches information streams (email, GitHub, etc.) and maintains a compressed historical record.
 
 ## Prerequisites
 
 - Docker
 - Gmail API credentials
-- `uv` package manager (for local development)
+- GitHub token with `repo` scope
+- `uv` package manager
 
-## Environment Variables
-
-Required environment variables in `.env`:
+## Environment
 
 ```env
 # API Keys
@@ -24,56 +19,64 @@ OPENAI_API_KEY=your_openai_key
 PREFECT_API_KEY=your_prefect_key
 PREFECT_API_URL=your_prefect_workspace_url
 HUMANLAYER_API_KEY=your_humanlayer_key
+GITHUB_TOKEN=your_github_token  # needs repo scope
 
-# Service Configuration
+# Service Config
 ASSISTANT_PORT=8000
-EMAIL_CHECK_INTERVAL_SECONDS=10
-OBSERVATION_CHECK_INTERVAL_SECONDS=10
+EMAIL_CHECK_INTERVAL_SECONDS=300
+GITHUB_CHECK_INTERVAL_SECONDS=300
+OBSERVATION_CHECK_INTERVAL_SECONDS=300
 ```
 
 ## Quick Start
 
 ```bash
-# Setup environment and run service
-make
-
-# Development with hot reload
-make dev
-
-# Clean up Docker resources
-make clean
+make        # setup and run
+make dev    # hot reload
+make clean  # cleanup
 ```
 
-## Development Setup
+## Development
 
-1. Install `uv`:
+```bash
+pip install -U uv
+uv venv --python 3.12
+source .venv/bin/activate
+UV_SYSTEM_PYTHON=1 uv pip install --editable ".[gmail,github]"
+```
 
-   ```bash
-   pip install -U uv
-   ```
+Add credentials:
 
-2. Virtual environment:
+```
+app/
+  └── secrets/
+      ├── gmail_credentials.json  # from Google Cloud Console
+      └── gmail_token.json       # generated on first run
+```
 
-   ```bash
-   uv venv --python 3.12
-   source .venv/bin/activate
-   ```
+## How It Works
 
-3. Install dependencies:
+Events flow through three stages:
 
-   ```bash
-   UV_SYSTEM_PYTHON=1 uv pip install --editable ".[gmail]"
-   ```
+```python
+# 1. Raw observations in summaries/
+ObservationSummary(
+    timestamp=now,
+    summary="PR #123 needs review",
+    source_types=["github"]
+)
 
-4. Place Gmail credentials relative to the `app_dir`:
+# 2. Compacted into summaries/compact/
+CompactedSummary(
+    start_time=window_start,
+    end_time=window_end,
+    summary="Core API redesign in [RFC-123](url)",
+    key_points=["Database migration planned"],
+    importance_score=0.9
+)
 
-   - `gmail_credentials.json`
-   - `gmail_token.json`
+# 3. Archived in summaries/processed/
+# (raw observations preserved but moved)
+```
 
-   For example, I have them in `app/secrets/gmail_credentials.json` and `app/secrets/gmail_token.json`.
-
-5. Run the service:
-
-   ```bash
-   make dev
-   ```
+The system maintains only critical information over time, preserving context through markdown links to source materials. See `app/background.py` for compression logic and `app/agents.py` for the intelligence layer.
