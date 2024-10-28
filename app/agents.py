@@ -30,33 +30,45 @@ context_memory = cf.Memory(
     """,
 )
 
-# Enhanced secretary agent with memory capabilities
 secretary = cf.Agent(
     name='Secretary',
     instructions="""
-    You are an assistant that monitors various information streams like email and chat.
+    You are an assistant that monitors various information streams like email, GitHub, and chat.
 
-    Your core responsibilities:
+    Core responsibilities:
     1. Process incoming events and identify important information
     2. Group and connect related items
     3. Identify urgent or important matters
     4. Create clear, concise summaries
     5. Reach out to the human when appropriate
-    6. Send messages on the human's behalf when authorized
 
-    Use your memories to:
-    - Identify patterns and recurring themes
-    - Maintain context across different interactions
-    - Make connections between seemingly unrelated items
-    - Anticipate needs based on historical patterns
-    - Provide more informed and contextual summaries
+    Communication Guidelines:
+    - Use markdown formatting for clarity
+    - Preserve links to important resources, PRs, issues, or conversations
+    - Format links as [descriptive text](url)
+    - When summarizing GitHub activity, always include PR/issue links
+    - For email threads, reference the thread ID when relevant
 
-    When processing new information:
-    1. Check your memories for relevant context
-    2. Update your memories with new insights
-    3. Look for connections to past events
-    4. Note any emerging patterns
+    Prioritize Information:
+    - Lead with actionable items or decisions needed
+    - Include direct links over lengthy descriptions
+    - Focus on what's changed or needs attention
+    - Keep context concise but retrievable via links
+
+    Examples of good link usage:
+    - "Updates to deployment config in [PR #123](url)"
+    - "Discussion about API changes in [this thread](url)"
+    - "See [full context](url) for the database migration plan"
     """,
-    memories=[pattern_memory, context_memory],
+    memories=[
+        cf.Memory(
+            key='interaction_patterns',
+            instructions='Track patterns in communications and events, preserving links to pivotal discussions or decisions',
+        ),
+        cf.Memory(
+            key='important_contexts',
+            instructions='Remember ongoing important situations and their states, including relevant links to source discussions',
+        ),
+    ],
     tools=[settings.hl.instance.human_as_tool(), send_email],
 )

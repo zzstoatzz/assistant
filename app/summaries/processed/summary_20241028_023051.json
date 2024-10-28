@@ -1,0 +1,459 @@
+{
+  "timestamp": "2024-10-28T02:30:51.711776",
+  "summary": "### GitHub Notifications Summary\n\n#### Repository: PrefectHQ/prefect\n- **Workflow Cancellations and Failures:**\n  - Multiple workflow runs were cancelled or failed for various branches including `jean/oss-5686-do-not-provide-worker-setup-instructions-in-deployment-to`, `temporarily-disable-markdown-tests`, and `fix-custom-name-rendering`.\n  - Specific failures include unit tests, integration tests, static analysis, and benchmarks.\n\n- **Pull Requests:**\n  - **Review Requested:** Add settings models for services, events, tasks, and the flow run graph ([PR #15776](https://api.github.com/repos/PrefectHQ/prefect/pulls/15776)).\n  - **Bump Versions:** Updates for Tailwindcss to 3.4.14 ([PR #15767](https://api.github.com/repos/PrefectHQ/prefect/pulls/15767)) and Vite to 5.4.9 ([PR #15766](https://api.github.com/repos/PrefectHQ/prefect/pulls/15766)).\n  - **Update:** @prefecthq/prefect-design to version 2.13.5 ([PR #15785](https://api.github.com/repos/PrefectHQ/prefect/pulls/15785)).\n\n- **Issues:**\n  - Mention Windows Subsystem for Linux in Windows install documentation ([Issue #15769](https://api.github.com/repos/PrefectHQ/prefect/issues/15769)).\n\n- **Release:**\n  - 3.0.11.dev7: Nightly Development Release ([Release](https://api.github.com/repos/PrefectHQ/prefect/releases/181387423)).\n\n#### Repository: PrefectHQ/prefect-collection-registry\n- **Pull Request:**\n  - **Review Requested:** Update metadata for collection releases ([PR #429](https://api.github.com/repos/PrefectHQ/prefect-collection-registry/pulls/429)).\n\n### Urgent/Immediate Attention Items\n- Multiple workflow failures, particularly on the `fix-custom-name-rendering` branch, may require immediate investigation to ensure CI stability.\n- Reviews requested for PRs #15776 and #429.",
+  "events": [
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263092",
+      "title": "CodSpeed Benchmarks workflow run cancelled for jean/oss-5686-do-not-provide-worker-setup-instructions-in-deployment-to branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263159",
+      "title": "Benchmarks workflow run cancelled for jean/oss-5686-do-not-provide-worker-setup-instructions-in-deployment-to branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263177",
+      "title": "Integrations Packages Tests workflow run failed for jean/oss-5686-do-not-provide-worker-setup-instructions-in-deployment-to branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263190",
+      "title": "Add settings models for services, events, tasks, and the flow run graph",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15776"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263203",
+      "title": "Bump tailwindcss from 3.4.13 to 3.4.14 in /ui",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15767"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263215",
+      "title": "Bump vite from 5.4.8 to 5.4.9 in /ui",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15766"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263224",
+      "title": "Update @prefecthq/prefect-design to version 2.13.5",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15785"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263234",
+      "title": "Add mention of Windows Subsystem for Linux to Windows install documentation",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15769"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263245",
+      "title": "Static analysis workflow run cancelled for temporarily-disable-markdown-tests branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263254",
+      "title": "Markdown tests workflow run failed for temporarily-disable-markdown-tests branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263264",
+      "title": "Unit tests workflow run, Attempt #2 failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263273",
+      "title": "Issue bot workflow run failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263284",
+      "title": "Update metadata for collection releases",
+      "repository": "PrefectHQ/prefect-collection-registry",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect-collection-registry/pulls/429"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263294",
+      "title": "Integrations Packages Tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263305",
+      "title": "Unit tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263315",
+      "title": "Integrations Packages Tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263324",
+      "title": "3.0.11.dev7: Nightly Development Release",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/releases/181387423"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263335",
+      "title": "Integration tests workflow run, Attempt #2 succeeded for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263345",
+      "title": "Integrations Packages Tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263354",
+      "title": "Unit tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263363",
+      "title": "Integrations Packages Tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263379",
+      "title": "Unit tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263388",
+      "title": "Integrations Packages Tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263398",
+      "title": "Unit tests workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263422",
+      "title": "CodSpeed Benchmarks workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263432",
+      "title": "CodeQL workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263442",
+      "title": "Static analysis workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263452",
+      "title": "Benchmarks workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263461",
+      "title": "Integration tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263471",
+      "title": "Verify prefect-client build workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263482",
+      "title": "Unit tests workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263491",
+      "title": "Integrations Packages Tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263501",
+      "title": "Benchmarks workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263511",
+      "title": "CodSpeed Benchmarks workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263519",
+      "title": "CodeQL workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263529",
+      "title": "Static analysis workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263538",
+      "title": "Integrations Packages Tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263546",
+      "title": "Unit tests workflow run, Attempt #2 failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263555",
+      "title": "Unit tests workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263574",
+      "title": "Integrations Packages Tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263583",
+      "title": "CodSpeed Benchmarks workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263592",
+      "title": "Benchmarks workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263601",
+      "title": "Integration tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263610",
+      "title": "Integration tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263619",
+      "title": "Verify prefect-client build workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263627",
+      "title": "Integrations Packages Tests workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263636",
+      "title": "Verify prefect-client build workflow run failed for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263645",
+      "title": "Unit tests workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263654",
+      "title": "CodeQL workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:30:36.263669",
+      "title": "Static analysis workflow run cancelled for fix-custom-name-rendering branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    }
+  ],
+  "source_types": [
+    "github"
+  ]
+}

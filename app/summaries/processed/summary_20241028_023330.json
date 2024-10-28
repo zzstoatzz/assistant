@@ -1,0 +1,459 @@
+{
+  "timestamp": "2024-10-28T02:33:30.096028",
+  "summary": "# GitHub Notifications Summary\n\n## PrefectHQ/marvin\n- **Run Tests workflow run failed for main branch**: The main branch had two failed test runs, indicating potential issues with the continuous integration (CI) pipeline.\n\n## PrefectHQ/prefect\n- **Pull Requests**:\n  - Update @prefecthq/prefect-ui-library to version 3.11.7 ([link](https://api.github.com/repos/PrefectHQ/prefect/pulls/15756)).\n  - Remove `setuptools` and update `pip` pin in Docker build ([link](https://api.github.com/repos/PrefectHQ/prefect/pulls/15759)).\n  - Expose JIT server setting ([link](https://api.github.com/repos/PrefectHQ/prefect/pulls/15446)).\n  - Fix handling of Dask DataFrame and other Awaitables ([link](https://api.github.com/repos/PrefectHQ/prefect/pulls/15687)).\n  - Pass lowercase log level to uvicorn server ([link](https://api.github.com/repos/PrefectHQ/prefect/pulls/15680)).\n  - Add code coverage generation and upload for Python tests ([link](https://api.github.com/repos/PrefectHQ/prefect/pulls/15690)).\n- **Issues**:\n  - Prefect 3.0.10 fails to serialize context when using task_fun.delay() ([link](https://api.github.com/repos/PrefectHQ/prefect/issues/15753)).\n  - Import of module `__prefect_loader__` failed with `multiprocessing.Pool.apply_async` ([link](https://api.github.com/repos/PrefectHQ/prefect/issues/9329)).\n  - State Changing Issue in the UI for Prefect 3 ([link](https://api.github.com/repos/PrefectHQ/prefect/issues/15751)).\n  - Behavioural Issues in Retry Logic for Failed Tasks ([link](https://api.github.com/repos/PrefectHQ/prefect/issues/15658)).\n  - EcsTaskRunner issues ([link](https://api.github.com/repos/PrefectHQ/prefect/issues/14345)).\n  - Unable to serve Prefect UI behind reverse proxy ([link](https://api.github.com/repos/PrefectHQ/prefect/issues/11472)).\n  - Fails to deploy webserver in runner ([link](https://api.github.com/repos/PrefectHQ/prefect/issues/15707)).\n- **Workflow Runs**:\n  - Multiple failed workflow runs for `fix-worker-env-deep-merge`, `fix-map-typing`, `adam/oss-5758-remove-max-active-runs-and-catchup`, `thread-pool-max-worker-config`, and `clean-break-serve` branches, indicating CI issues.\n\n## PrefectHQ/nebula\n- **Release**: New release version 2024.1018.172141 ([link](https://api.github.com/repos/PrefectHQ/nebula/releases/180732755)).\n\n## PrefectHQ/prefect-collection-registry\n- **Pull Request**: Update metadata for collection releases ([link](https://api.github.com/repos/PrefectHQ/prefect-collection-registry/pulls/426)).\n\n## PrefectHQ/prefect-recipes\n- **Pull Requests**:\n  - Bump tj-actions/changed-files from 44 to 45 ([link](https://api.github.com/repos/PrefectHQ/prefect-recipes/pulls/275)).\n  - Bump JamesIves/github-pages-deploy-action from 4.6.1 to 4.6.8 ([link](https://api.github.com/repos/PrefectHQ/prefect-recipes/pulls/276)).\n\n## PrefectHQ/platform\n- **Pull Request**: `nebula-2024.1017.211308` ([link](https://api.github.com/repos/PrefectHQ/platform/pulls/7633)).\n\n---\n\n### Urgent/Important Matters\n- The main branch of PrefectHQ/marvin and several branches of PrefectHQ/prefect have failed CI tests, which could impact deployments and need immediate attention.\n- Various issues in PrefectHQ/prefect related to task serialization, UI, and deployment failures might require prompt investigation. \n\nThe above summary highlights the key updates and issues from the recent GitHub notifications, providing a concise overview for quick assessment and action. ",
+  "events": [
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131029",
+      "title": "Run Tests workflow run failed for main branch",
+      "repository": "PrefectHQ/marvin",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131085",
+      "title": "Run Tests workflow run, Attempt #2 failed for main branch",
+      "repository": "PrefectHQ/marvin",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131102",
+      "title": "Update @prefecthq/prefect-ui-library to version 3.11.7",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15756"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131113",
+      "title": "Remove `setuptools` and update `pip` pin in Docker build",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15759"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131123",
+      "title": "Unit tests workflow run, Attempt #2 failed for fix-worker-env-deep-merge branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131161",
+      "title": "Prefect 3.0.10 fails to serialize context when using task_fun.delay()",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15753"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131186",
+      "title": "import of module '__prefect_loader__' failed when 'multiprocessing.Pool.apply_async' is used within the flow via remote deployments",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/9329"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131195",
+      "title": "Unit tests workflow run, Attempt #2 cancelled for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131204",
+      "title": "Integrations Packages Tests workflow run failed for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131214",
+      "title": "Integration tests workflow run, Attempt #2 failed for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131223",
+      "title": "#10903 expose jit server setting",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15446"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131234",
+      "title": "Integrations Packages Tests workflow run failed for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131244",
+      "title": "Unit tests workflow run failed for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131252",
+      "title": "Integrations Packages Tests workflow run failed for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131261",
+      "title": "2024.1018.172141",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/releases/180732755"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131273",
+      "title": "Unit tests workflow run cancelled for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131282",
+      "title": "Integrations Packages Tests workflow run failed for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131291",
+      "title": "Benchmarks workflow run cancelled for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131299",
+      "title": "CodSpeed Benchmarks workflow run cancelled for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131309",
+      "title": "CodeQL workflow run cancelled for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131320",
+      "title": "Integrations Packages Tests workflow run failed for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131329",
+      "title": "Integrations Packages Tests workflow run failed for fix-map-typing branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131337",
+      "title": "Update metadata for collection releases",
+      "repository": "PrefectHQ/prefect-collection-registry",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect-collection-registry/pulls/426"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131346",
+      "title": "Bump tj-actions/changed-files from 44 to 45",
+      "repository": "PrefectHQ/prefect-recipes",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect-recipes/pulls/275"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131359",
+      "title": "Bump JamesIves/github-pages-deploy-action from 4.6.1 to 4.6.8",
+      "repository": "PrefectHQ/prefect-recipes",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect-recipes/pulls/276"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131369",
+      "title": "State Changing Issue in the UI for Prefect 3",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15751"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131379",
+      "title": "Behavioural Issues in Retry Logic for Failed Tasks",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15658"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131388",
+      "title": "3.0.11.dev3: Nightly Development Release",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/releases/180614410"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131407",
+      "title": "EcsTaskRunner",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/14345"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131416",
+      "title": "Unable to serve Prefect UI behind reverse proxy when using URL prefix",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/11472"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131425",
+      "title": "Fails to deploy webserver in runner",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15707"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131433",
+      "title": "CodSpeed Benchmarks workflow run failed for adam/oss-5758-remove-max-active-runs-and-catchup branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131442",
+      "title": "Unit tests workflow run failed for adam/oss-5758-remove-max-active-runs-and-catchup branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131451",
+      "title": "Benchmarks workflow run failed for adam/oss-5758-remove-max-active-runs-and-catchup branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131459",
+      "title": "Integration tests workflow run failed for adam/oss-5758-remove-max-active-runs-and-catchup branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131468",
+      "title": "Integrations Packages Tests workflow run failed for adam/oss-5758-remove-max-active-runs-and-catchup branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131477",
+      "title": "Unit tests workflow run failed for adam/oss-5758-remove-max-active-runs-and-catchup branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131485",
+      "title": "Integration tests workflow run failed for adam/oss-5758-remove-max-active-runs-and-catchup branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131493",
+      "title": "Integrations Packages Tests workflow run failed for adam/oss-5758-remove-max-active-runs-and-catchup branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131502",
+      "title": "nebula-2024.1017.211308",
+      "repository": "PrefectHQ/platform",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/platform/pulls/7633"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131511",
+      "title": "DaskDataframe is an `Awaitable` but not a `Couroutine`, breaking `prefect.utilities.asyncutils.run_coro_as_sync`",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15665"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131520",
+      "title": "2024.1017.211308",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/releases/180542082"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131530",
+      "title": "Fix handling of Dask DataFrame and other Awaitables passed to `run_coro_as_sync`",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15687"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131546",
+      "title": "Integrations Packages Tests workflow run failed for thread-pool-max-worker-config branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131555",
+      "title": "fix(runner.server): Pass lowercase log level to uvicorn server",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15680"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131563",
+      "title": "Add code coverage generation and upload for Python tests",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15690"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131572",
+      "title": "Integrations Packages Tests workflow run failed for clean-break-serve branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131580",
+      "title": "Integration tests workflow run failed for clean-break-serve branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131590",
+      "title": "Integration tests workflow run failed for clean-break-serve branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T02:33:13.131598",
+      "title": "Integrations Packages Tests workflow run failed for clean-break-serve branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    }
+  ],
+  "source_types": [
+    "github"
+  ]
+}
