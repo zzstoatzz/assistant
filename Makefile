@@ -40,7 +40,7 @@ setup:
 # Development with hot reload
 .PHONY: dev
 dev:
-	UV_SYSTEM_PYTHON=1 uv run --with-editable . uvicorn app.main:app --reload --host $(HOST) --port $(DEV_PORT)
+	uv run fastapi dev app/main.py --host $(HOST) --port $(DEV_PORT)
 
 # Run in production mode
 .PHONY: run

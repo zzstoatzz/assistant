@@ -26,10 +26,10 @@ app/
 ## Features
 
 - Web UI at `http://localhost:8000`
-- JSON API at `/observations/recent`
+- View the API docs at `http://localhost:8000/docs`
 - Markdown support in summaries
 - Link preservation for context
-- LSM tree-like compression (recent detailed, history condensed)
+- LSM-inspired compression (recent detailed, history condensed)
 
 ## Running Locally
 
