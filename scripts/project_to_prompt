@@ -1,0 +1,19 @@
+#!/usr/bin/env python3
+import subprocess
+import sys
+from pathlib import Path
+
+root = Path('.').resolve()
+patterns = sys.argv[1:] or ['*.md', '*.py', '*.txt', 'Dockerfile', 'Dockerfile.*']
+
+git_files = set(subprocess.check_output(['git', 'ls-files'], text=True, cwd=root).splitlines())
+
+file_paths = [p for pattern in patterns for p in root.rglob(pattern) if str(p.relative_to(root)) in git_files]
+
+if not file_paths:
+    print('No files matched the given pattern(s).')
+else:
+    for p in file_paths:
+        rel_path = p.relative_to(root)
+        content = p.read_text().strip()
+        print(f'<{rel_path}>\n{content}\n</{rel_path}>\n')

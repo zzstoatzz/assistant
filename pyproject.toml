@@ -12,7 +12,7 @@ authors = [{ name = "Nathan Nowack", email = "zzstoatzz@protonmail.com" }]
 license = "MIT"
 readme = "README.md"
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 1 - Planning",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",

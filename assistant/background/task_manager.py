@@ -10,7 +10,7 @@ logger = get_logger(__name__)
 class BackgroundTask:
     """Represents a periodic background task"""
 
-    def __init__(self, func: Callable[[], Any], interval_seconds: float, name: str = None):
+    def __init__(self, func: Callable[[], Any], interval_seconds: float, name: str | None = None):
         self.func = func
         self.interval_seconds = interval_seconds
         self.name = name or func.__name__
@@ -41,7 +41,7 @@ class BackgroundTaskManager:
             manager.tasks.append(task)
         return manager
 
-    def add_task(self, func: Callable[[], Any], interval_seconds: float, name: str = None) -> None:
+    def add_task(self, func: Callable[[], Any], interval_seconds: float, name: str | None = None) -> None:
         """Add a new background task"""
         self.tasks.append(BackgroundTask(func, interval_seconds, name))
 
