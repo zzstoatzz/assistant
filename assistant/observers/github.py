@@ -19,6 +19,43 @@ class GitHubEvent(BaseEvent):
     url: str = field(default='')
 
 
+@dataclass
+class GitHubEventFilter:
+    """Configuration for filtering GitHub notifications"""
+
+    repositories: list[str] = field(default_factory=list)
+    event_types: list[str] = field(default_factory=list)
+    reasons: list[str] = field(default_factory=list)
+    branch: str | None = None
+
+    def matches(self, notification: dict[str, Any]) -> bool:
+        """Return True if notification matches filter criteria"""
+        # Repository matching (exact matches)
+        if self.repositories:
+            repo_name = notification['repository']['full_name']
+            if repo_name not in self.repositories:
+                return False
+
+        # Event type matching
+        if self.event_types and notification['subject']['type'] not in self.event_types:
+            return False
+
+        # Reason matching
+        if self.reasons and notification['reason'] not in self.reasons:
+            return False
+
+        # Branch matching (only for CheckSuite events)
+        if (
+            self.branch
+            and notification['subject']['type'] == 'CheckSuite'
+            and 'head' in notification['subject']  # Ensure we have the data
+            and self.branch != notification['subject']['head']['ref']  # Actual branch reference
+        ):
+            return False
+
+        return True
+
+
 class GitHubObserver(BaseModel, Observer[dict[str, Any], GitHubEvent]):
     """GitHub implementation of the Observer protocol"""
 
@@ -26,6 +63,7 @@ class GitHubObserver(BaseModel, Observer[dict[str, Any], GitHubEvent]):
 
     token: str
     client: httpx.Client | None = None
+    filters: list[GitHubEventFilter] = []
 
     def connect(self) -> None:
         self.client = httpx.Client(
@@ -38,7 +76,7 @@ class GitHubObserver(BaseModel, Observer[dict[str, Any], GitHubEvent]):
         )
 
     def observe(self) -> Iterator[GitHubEvent]:
-        """Stream unread GitHub notifications as events"""
+        """Stream filtered GitHub notifications as events"""
         if not self.client:
             raise RuntimeError('Observer not connected')
 
@@ -47,6 +85,10 @@ class GitHubObserver(BaseModel, Observer[dict[str, Any], GitHubEvent]):
         notifications = response.json()
 
         for notification in notifications:
+            # Skip if no filters match
+            if self.filters and not any(f.matches(notification) for f in self.filters):
+                continue
+
             yield GitHubEvent(
                 id=notification['id'],
                 source_type='github',

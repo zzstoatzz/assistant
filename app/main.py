@@ -38,7 +38,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                 name='check email',
             ),
             BackgroundTask(
-                func=partial(check_github, agents=[secretary]),
+                func=partial(check_github, agents=[secretary], instructions=settings.github_event_instructions),
                 interval_seconds=settings.github_check_interval_seconds,
                 name='check github',
             ),
@@ -170,7 +170,7 @@ async def get_recent_observations(hours: int = 24) -> JSONResponse:
             Create an extremely condensed historical record.
             Include only the most significant developments and enduring patterns.
             This should read like a brief historical record - just the key milestones.
-            Use markdown for critical emphasis only.
+            Use markdown for critical emphasis only. Good links can replace long descriptions.
             """,
             context={'summaries': [s.model_dump() for s in compact_summaries]},
             result_type=str,

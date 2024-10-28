@@ -1,0 +1,459 @@
+{
+  "timestamp": "2024-10-28T04:07:58.656840",
+  "summary": "### Summary of GitHub Notifications\n\n#### PrefectHQ/prefect\n- **CI Issues:**\n  - Multiple workflow runs failed for various branches such as `fix-lookup-type-failure`, `pydantic-bound-2.x`, `pagerduty-extras`, and `profile-loader`. These include static analysis, unit tests, integrations packages tests, and issue bot workflows.\n  - [PR: Update `S3Bucket._resolve_path` logic](https://api.github.com/repos/PrefectHQ/prefect/pulls/15287) requires attention from the author.\n  - **Issues:**\n    - [Error with xarray to_zarr - 'prefect.isnan'](https://api.github.com/repos/PrefectHQ/prefect/issues/15567)\n    - [SSL certificate verification issue](https://api.github.com/repos/PrefectHQ/prefect/issues/15551)\n    - [Workers hang with prefect-ray 0.4.0 on Python 3.12](https://api.github.com/repos/PrefectHQ/prefect/issues/15587)\n    - [OSError in prefect-ray local deployment](https://api.github.com/repos/PrefectHQ/prefect/issues/15384)\n- **Release:** [3.0.5.dev3: Nightly Development Release](https://api.github.com/repos/PrefectHQ/prefect/releases/178512044)\n\n#### PrefectHQ/platform\n- **Pull Requests:**\n  - [nebula-2024.1007.181837](https://api.github.com/repos/PrefectHQ/platform/pulls/7598) and [nebula-2024.1007.153357](https://api.github.com/repos/PrefectHQ/platform/pulls/7596) require review.\n\n#### PrefectHQ/nebula\n- **Releases:**\n  - [2024.1007.181837](https://api.github.com/repos/PrefectHQ/nebula/releases/178749493)\n  - [2024.1007.153357](https://api.github.com/repos/PrefectHQ/nebula/releases/178719090)\n\n#### PrefectHQ/cloud2-cluster-deployment\n- **Pull Requests:**\n  - [Lower `istio_requests_per_second` target to 94 for auth](https://api.github.com/repos/PrefectHQ/cloud2-cluster-deployment/pulls/1278) requires review.\n  - [Increase `auth` replica range to 40-50 from 10-35](https://api.github.com/repos/PrefectHQ/cloud2-cluster-deployment/pulls/1277) also requires review.\n\n#### PrefectHQ/ControlFlow\n- **Pull Requests:**\n  - [Add version badge for LLM rules](https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/351)\n  - [Add LLM rules for custom or unrecognized models](https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/350)\n\n#### zzstoatzz/gh\n- **Pull Request:**\n  - [Update pre-commit requirement](https://api.github.com/repos/zzstoatzz/gh/pulls/38)\n\n### Urgent Matters:\n- Multiple CI failures in `PrefectHQ/prefect` need immediate attention to resolve failing tests across various branches.\n- Review requested for several pull requests across different repositories.\n\nPlease refer to the provided links for further details on each notification.",
+  "events": [
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.165988",
+      "title": "Static analysis workflow run cancelled for encourage-prefect-version-output branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166073",
+      "title": "Issue bot workflow run failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166088",
+      "title": "nebula-2024.1007.181837",
+      "repository": "PrefectHQ/platform",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/platform/pulls/7598"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166102",
+      "title": "2024.1007.181837",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/releases/178749493"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166114",
+      "title": "Lower `istio_requests_per_second` target to 94 for auth",
+      "repository": "PrefectHQ/cloud2-cluster-deployment",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/cloud2-cluster-deployment/pulls/1278"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166127",
+      "title": "update `S3Bucket._resolve_path` logic",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "author",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15287"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166140",
+      "title": "Integrations Packages Tests workflow run failed for fix-lookup-type-failure branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166152",
+      "title": "Integrations Packages Tests workflow run failed for fix-lookup-type-failure branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166165",
+      "title": "Increase `auth` replica range to 40-50 from 10-35",
+      "repository": "PrefectHQ/cloud2-cluster-deployment",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/cloud2-cluster-deployment/pulls/1277"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166179",
+      "title": "Unit tests workflow run failed for pydantic-bound-2.x branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166189",
+      "title": "Windows tests (Pull Request) workflow run cancelled for pydantic-bound-2.x branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166200",
+      "title": "Windows tests (Pull Request) workflow run cancelled for pydantic-bound-2.x branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166211",
+      "title": "nebula-2024.1007.153357",
+      "repository": "PrefectHQ/platform",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/platform/pulls/7596"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166222",
+      "title": "2024.1007.153357",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/releases/178719090"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166235",
+      "title": "Unit tests workflow run failed for pagerduty-extras branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166247",
+      "title": "Integrations Packages Tests workflow run failed for pagerduty-extras branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166259",
+      "title": "Per-schedule parameters for worker-based deployment schedules",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/14524"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166272",
+      "title": "Update pre-commit requirement from <4.0,>=2.21 to >=2.21,<5.0",
+      "repository": "zzstoatzz/gh",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/zzstoatzz/gh/pulls/38"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166285",
+      "title": "Error raise when using xarray to_zarr on a dash array in Prefect. Raise No module named 'prefect.isnan'",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "comment",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15567"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166298",
+      "title": "SSL certificate verify failed even if PREFECT_API_TLS_INSECURE_SKIP_VERIFY=true",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15551"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166310",
+      "title": "Add version badge for LLM rules",
+      "repository": "PrefectHQ/ControlFlow",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/351"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166322",
+      "title": "Add LLM rules for custom or unrecognized models",
+      "repository": "PrefectHQ/ControlFlow",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/350"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166335",
+      "title": "3.0.5.dev3: Nightly Development Release",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/releases/178512044"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166347",
+      "title": "Unit tests workflow run, Attempt #2 failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166359",
+      "title": "Static analysis workflow run cancelled for biancaines-patch-global-concurrency-docs branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166372",
+      "title": "Markdown tests workflow run cancelled for biancaines-patch-global-concurrency-docs branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166384",
+      "title": "Issue bot workflow run failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166395",
+      "title": "Chore/canary overlays for intervals and alert severity",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/pulls/8583"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166407",
+      "title": "All workers hang if using prefect-ray 0.4.0 with Python 3.12 on Mac, exclude or surface error",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15587"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166420",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166433",
+      "title": "prefect-ray  Local Deployment  Error  OSError('source code not available')",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15384"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166446",
+      "title": "Changed `TaskSource` key computation to handle `OSError(\"source not available\")`",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15583"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166460",
+      "title": "nebula-2024.1004.204351",
+      "repository": "PrefectHQ/platform",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/platform/pulls/7594"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166473",
+      "title": "2024.1004.204351",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/releases/178480226"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166486",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166497",
+      "title": "CodSpeed Benchmarks workflow run cancelled for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166509",
+      "title": "Unit tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166521",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166533",
+      "title": "Unit tests workflow run, Attempt #2 failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166545",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166557",
+      "title": "Unit tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166569",
+      "title": "Issue bot workflow run failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166582",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166593",
+      "title": "Unit tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166605",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166616",
+      "title": "Unit tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166627",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166638",
+      "title": "Unit tests workflow run, Attempt #3 failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166650",
+      "title": "Integrations Packages Tests workflow run failed for aws-client-params branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:07:38.166662",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    }
+  ],
+  "source_types": [
+    "github"
+  ]
+}

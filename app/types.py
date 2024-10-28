@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 from prefect.logging.loggers import get_logger
@@ -10,8 +10,8 @@ logger = get_logger()
 class ObservationSummary(BaseModel):
     """Summary of observations from a time period"""
 
-    timestamp: datetime
     summary: str
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     events: list[dict[str, Any]]
     source_types: list[str]
 
@@ -25,11 +25,14 @@ class CompactionResult(BaseModel):
 
 
 class CompactedSummary(BaseModel):
-    """A condensed summary of a time period"""
+    """A condensed summary of observations over a time period"""
 
-    start_time: datetime
-    end_time: datetime
-    summary: str
-    key_points: list[str]
-    source_types: list[str]
-    importance_score: float
+    summary: str = Field(description='Consolidated summary of critical events and changes')
+    start_time: datetime = Field(description='Timestamp of earliest observation in this summary')
+    end_time: datetime = Field(description='Timestamp of latest observation in this summary')
+    importance_score: float = Field(
+        description='Score from 0-1 indicating historical significance',
+        ge=0,
+        le=1,
+    )
+    source_types: list[str] = Field(description='Types of sources that contributed to this summary')

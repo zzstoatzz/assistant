@@ -6,6 +6,7 @@ from typing import Any, ClassVar
 from pydantic import BaseModel, ConfigDict
 
 try:
+    import google.auth.external_account_authorized_user
     from google.auth.transport.requests import Request
     from google.oauth2.credentials import Credentials
     from google_auth_oauthlib.flow import InstalledAppFlow
@@ -29,7 +30,7 @@ class EmailEvent(BaseEvent):
 
 def get_gmail_service(creds_path: Path, token_path: Path) -> Resource:
     """Initialize and return the Gmail service"""
-    creds: Credentials | None = None
+    creds: Credentials | google.auth.external_account_authorized_user.Credentials | None = None
     if token_path.exists():
         creds = Credentials.from_authorized_user_file(token_path, GmailObserver.SCOPES)
 
@@ -77,7 +78,7 @@ class GmailObserver(BaseModel, Observer[dict[str, Any], EmailEvent]):
             raise RuntimeError('Observer not connected')
 
         results = (
-            self.service.users()
+            self.service.users()  # type: ignore
             .messages()
             .list(
                 userId='me',
@@ -90,7 +91,7 @@ class GmailObserver(BaseModel, Observer[dict[str, Any], EmailEvent]):
             return iter([])
 
         for msg in messages:
-            message = self.service.users().messages().get(userId='me', id=msg['id']).execute()
+            message = self.service.users().messages().get(userId='me', id=msg['id']).execute()  # type: ignore
 
             # Only process if message is actually unread
             if 'UNREAD' not in message['labelIds']:
@@ -109,7 +110,7 @@ class GmailObserver(BaseModel, Observer[dict[str, Any], EmailEvent]):
             )
 
             # Mark as read after processing
-            self.service.users().messages().modify(
+            self.service.users().messages().modify(  # type: ignore
                 userId='me', id=message['id'], body={'removeLabelIds': ['UNREAD']}
             ).execute()
 

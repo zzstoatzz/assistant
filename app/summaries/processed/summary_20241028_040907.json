@@ -1,0 +1,459 @@
+{
+  "timestamp": "2024-10-28T04:09:07.581421",
+  "summary": "### Summary of GitHub Notifications\n\n#### Repository: PrefectHQ/prefect\n- Numerous workflow runs have been cancelled or failed for the `profile-loader` branch, including:\n  - Unit tests\n  - CodSpeed Benchmarks\n  - Static analysis\n  - Markdown tests\n  - Integrations Packages Tests\n  - Verify prefect-client build\n  - Integration tests\n- Issues raised:\n  - [Consider adding DB cleanup scripts to save space in Postgres](https://api.github.com/repos/PrefectHQ/prefect/issues/5813)\n  - [Lazy templating for deployments in prefect.yaml](https://api.github.com/repos/PrefectHQ/prefect/issues/15489)\n- Release:\n  - [3.0.5.dev2: Nightly Development Release](https://api.github.com/repos/PrefectHQ/prefect/releases/178355211)\n- Pull Request:\n  - [Update @prefecthq/prefect-design to version 2.13.2](https://api.github.com/repos/PrefectHQ/prefect/pulls/15579)\n\n#### Repository: PrefectHQ/platform\n- Pull Requests:\n  - [nebula-2024.1004.150849](https://api.github.com/repos/PrefectHQ/platform/pulls/7592)\n  - [nebula-2024.1003.190258](https://api.github.com/repos/PrefectHQ/platform/pulls/7590)\n\n#### Repository: PrefectHQ/nebula\n- Release:\n  - [2024.1004.150849](https://api.github.com/repos/PrefectHQ/nebula/releases/178430866)\n\n#### Repository: PrefectHQ/ControlFlow\n- Pull Request:\n  - [Allow model_kwargs to be passed to llm API](https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/347)\n\n### Urgent Issues\n- Multiple workflow failures in the `profile-loader` branch of the PrefectHQ/prefect repository may require immediate attention.",
+  "events": [
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583502",
+      "title": "Unit tests workflow run cancelled for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583537",
+      "title": "CodSpeed Benchmarks workflow run cancelled for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583544",
+      "title": "Static analysis workflow run cancelled for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583550",
+      "title": "Markdown tests workflow run cancelled for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583555",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583560",
+      "title": "nebula-2024.1004.150849",
+      "repository": "PrefectHQ/platform",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/platform/pulls/7592"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583566",
+      "title": "2024.1004.150849",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/releases/178430866"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583570",
+      "title": "Consider adding DB cleanup scripts to save space in Postgres",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/5813"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583575",
+      "title": "3.0.5.dev2: Nightly Development Release",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/releases/178355211"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583580",
+      "title": "Lazy templating for deployments in prefect.yaml",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15489"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583585",
+      "title": "CodSpeed Benchmarks workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583589",
+      "title": "Unit tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583594",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583599",
+      "title": "CodSpeed Benchmarks workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583604",
+      "title": "Unit tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583608",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583612",
+      "title": "CodSpeed Benchmarks workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583617",
+      "title": "Allow model_kwargs to be passed to llm API",
+      "repository": "PrefectHQ/ControlFlow",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/347"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583622",
+      "title": "Unit tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583626",
+      "title": "Benchmarks workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583631",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583635",
+      "title": "Unit tests workflow run, Attempt #2 failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583640",
+      "title": "CodSpeed Benchmarks workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583645",
+      "title": "Benchmarks workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583649",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583653",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583658",
+      "title": "Static analysis workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583662",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583666",
+      "title": "Unit tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583671",
+      "title": "Static analysis workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583675",
+      "title": "Benchmarks workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583680",
+      "title": "Verify prefect-client build workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583684",
+      "title": "Integration tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583688",
+      "title": "CodSpeed Benchmarks workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583693",
+      "title": "Integrations Packages Tests workflow run failed for profile-loader branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583697",
+      "title": "nebula-2024.1003.190258",
+      "repository": "PrefectHQ/platform",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/platform/pulls/7590"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583702",
+      "title": "CodSpeed Benchmarks workflow run cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583707",
+      "title": "Integrations Packages Tests workflow run failed for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583711",
+      "title": "Unit tests workflow run cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583716",
+      "title": "Benchmarks workflow run cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583720",
+      "title": "CodeQL workflow run cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583725",
+      "title": "Static analysis workflow run cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583729",
+      "title": "Update @prefecthq/prefect-design to version 2.13.2",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15579"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583733",
+      "title": "Unit tests workflow run cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583738",
+      "title": "Integrations Packages Tests workflow run failed for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583742",
+      "title": "Benchmarks workflow run cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583745",
+      "title": "CodSpeed Benchmarks workflow run cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583750",
+      "title": "CodeQL workflow run cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583757",
+      "title": "Integrations Packages Tests workflow run failed for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:08:51.583761",
+      "title": "Unit tests workflow run, Attempt #2 cancelled for fuzzy-match branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    }
+  ],
+  "source_types": [
+    "github"
+  ]
+}
