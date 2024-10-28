@@ -53,4 +53,4 @@ jobs:
         with:
           extra_args: --all-files
         env:
-          SKIP: ${{ github.ref == 'refs/heads/main' && 'no-commit-to-branch' || '' }}
+          SKIP: no-commit-to-branch
