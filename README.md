@@ -1,6 +1,8 @@
 # Assistant
 
-> ![IMPORTANT] Why both `assistant` and `app`?
+> [!NOTE]
+>
+> **Why both `assistant` and `app`?**
 >
 > `app` is the actual app where im inlining everything until it proves its worth, `assistant` is the library that contains the core functionality.
 
