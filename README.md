@@ -1,4 +1,8 @@
-# Information Observer Service
+# Assistant
+
+> ![IMPORTANT] Why both `assistant` and `app`?
+>
+> `app` is the actual app where im inlining everything until it proves its worth, `assistant` is the library that contains the core functionality.
 
 A service that monitors and summarizes information from various sources.
 
