@@ -1,6 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from functools import partial
 
 import controlflow as cf
@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from app.agents import secretary
-from app.background import check_observations
+from app.background import compress_observations
 from app.processors.email import check_email
 from app.processors.github import check_github
 from app.settings import settings
@@ -43,7 +43,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                 name='check github',
             ),
             BackgroundTask(
-                func=partial(check_observations, agents=[secretary]),
+                func=partial(compress_observations, agents=[secretary]),
                 interval_seconds=settings.observation_check_interval_seconds,
                 name='review observations',
             ),
@@ -71,7 +71,7 @@ templates.env.filters['markdown'] = render_markdown
 @app.get('/')
 async def home(request: Request, hours: int = 24):
     """Home page showing both recent and compacted observations"""
-    cutoff = datetime.now() - timedelta(hours=hours)
+    cutoff = datetime.now(UTC) - timedelta(hours=hours)
 
     # Get recent (unprocessed) summaries
     recent_summaries = []

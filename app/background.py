@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -107,7 +107,10 @@ def store_compacted_summary(summary: CompactedSummary) -> None:
     compact_dir = settings.summaries_dir / 'compact'
     compact_dir.mkdir(exist_ok=True)
 
-    filename = f'compact_{summary.start_time:%Y%m%d_%H%M}_{summary.end_time:%Y%m%d_%H%M}.json'
+    # Use UTC timestamps in filenames
+    filename = (
+        f'compact_{summary.start_time.astimezone(UTC):%Y%m%d_%H%M}_{summary.end_time.astimezone(UTC):%Y%m%d_%H%M}.json'
+    )
     (compact_dir / filename).write_text(summary.model_dump_json(indent=2))
 
 
@@ -118,13 +121,12 @@ def archive_processed_summaries(paths: list[Path]) -> None:
 
     for path in paths:
         try:
-            # Ensure unique filename in case of collisions
             new_path = processed_dir / path.name
             if new_path.exists():
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                # Use UTC timestamp for uniqueness
+                timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
                 new_path = processed_dir / f'{path.stem}_{timestamp}{path.suffix}'
 
-            # Move the file
             path.rename(new_path)
             logger.info(f'Archived summary: {path.name} -> {new_path.name}')
 
@@ -140,7 +142,7 @@ def load_compact_summaries(hours: int | None = None) -> list[CompactedSummary]:
         return []
 
     summaries = []
-    cutoff = datetime.now() - timedelta(hours=hours) if hours else None
+    cutoff = datetime.now(UTC) - timedelta(hours=hours) if hours else None
 
     for path in compact_dir.glob('compact_*.json'):
         try:
@@ -155,7 +157,7 @@ def load_compact_summaries(hours: int | None = None) -> list[CompactedSummary]:
 
 
 @flow
-def check_observations(agents: list[cf.Agent]) -> None:
+def compress_observations(agents: list[cf.Agent]) -> None:
     if not (loaded_summaries := load_unprocessed_summaries()):
         return None
 

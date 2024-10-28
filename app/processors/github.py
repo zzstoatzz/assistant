@@ -87,4 +87,4 @@ def check_github(agents: list[cf.Agent], instructions: str | None = None) -> Non
     """Process GitHub notifications and save summary to disk"""
     if summary := process_github_observations(agents, instructions):
         summary_path = settings.summaries_dir / f'summary_{summary.timestamp:%Y%m%d_%H%M%S}.json'
-        summary_path.write_text(summary.model_dump_json(indent=2))
+        task(summary_path.write_text)(summary.model_dump_json(indent=2))
