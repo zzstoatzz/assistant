@@ -16,6 +16,12 @@ def ensure_dir(path: Path) -> Path:
 EnsuredPath = Annotated[Path, BeforeValidator(ensure_dir)]
 
 
+def ensure_github_token(value: str | None) -> str:
+    if not (token := value or os.getenv('GITHUB_TOKEN') or os.getenv('GH_TOKEN')):
+        raise ValueError('GITHUB_TOKEN or GH_TOKEN environment variable is not set')
+    return token
+
+
 def get_default_contact_channel() -> ContactChannel | None:
     if not (testing_user := os.getenv('TESTING_USER')):
         return None
@@ -57,8 +63,15 @@ class Settings(BaseSettings):
 
     hl: HumanLayerSettings = Field(default_factory=HumanLayerSettings)
 
-    github_token: str | None = Field(default=None, alias='GITHUB_TOKEN')
+    github_token: Annotated[str, BeforeValidator(ensure_github_token)]
     github_check_interval_seconds: int = Field(default=300, ge=10)
+
+    github_event_instructions: str = Field(
+        default="""
+        Review these GitHub notifications and create a concise summary.
+        Group related items by repository and highlight anything urgent or requiring immediate attention.
+        """
+    )
 
     @computed_field
     @property
@@ -102,4 +115,4 @@ class Settings(BaseSettings):
         return self
 
 
-settings = Settings()
+settings = Settings()  # type: ignore

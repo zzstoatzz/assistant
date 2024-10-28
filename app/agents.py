@@ -30,6 +30,32 @@ context_memory = cf.Memory(
     """,
 )
 
+github_issues_memory = cf.Memory(
+    key='github_issues',
+    instructions="""
+    Track individual GitHub issues and PRs by their unique ID. For each issue/PR, remember:
+
+    Core Details:
+    - Current status and timeline
+    - Key participants and their roles
+    - Core problem or proposed change
+
+    Context:
+    - Related issues or PRs (referenced by #number)
+    - Important discussion points or decisions
+    - Previous similar issues
+
+    Updates:
+    - Recent activity or changes
+    - Review status and feedback
+    - CI failure patterns specific to this PR
+
+    Store memories with the issue/PR number as the key, like:
+    prefect#1234: "PR to add new deployment features. Blocked on DB migration discussion..."
+    prefect#5678: "Recurring CI failures related to async tests. Similar to #5432..."
+    """,
+)
+
 secretary = cf.Agent(
     name='Secretary',
     instructions="""
@@ -69,6 +95,7 @@ secretary = cf.Agent(
             key='important_contexts',
             instructions='Remember ongoing important situations and their states, including relevant links to source discussions',
         ),
+        github_issues_memory,
     ],
     tools=[settings.hl.instance.human_as_tool(), send_email],
 )

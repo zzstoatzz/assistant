@@ -6,7 +6,7 @@ import controlflow as cf
 from prefect import flow, task
 
 from app.settings import settings
-from app.types import CompactedSummary, CompactionResult, ObservationSummary
+from app.types import CompactedSummary, ObservationSummary
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger()
@@ -55,52 +55,49 @@ def analyze_summaries(summaries: list[ObservationSummary], agents: list[cf.Agent
 def compact_summaries(
     summary_data: list[tuple[Path, ObservationSummary]], agents: list[cf.Agent]
 ) -> CompactedSummary | None:
-    """Compact multiple summaries into a single, critical insights summary"""
+    """Compact multiple summaries using LSM-tree inspired approach"""
     if not summary_data:
         return None
 
     existing_summaries = load_compact_summaries()
     summaries = sorted([s for _, s in summary_data], key=lambda s: s.timestamp)
 
-    compact_result = cf.run(
+    return cf.run(
         'Condense observations to only critical information',
         agents=agents,
         instructions="""
-        Create an extremely condensed summary that preserves only the most critical information.
+        Create a historically significant summary that will persist in long-term memory.
 
-        Think like a historian: what absolutely must be remembered? Most day-to-day
-        events should be discarded unless they represent a significant milestone or change.
+        Think like a database with multiple tiers of storage:
+
+        Tier 1 (Hot/Recent) - Last 24 hours:
+        - CI failures on main/2.x branches
+        - Critical security issues
+        - Major feature releases
+
+        Tier 2 (Warm/Weekly) - Last 7 days:
+        - Significant architectural changes
+        - Breaking changes
+        - Important deprecations
+
+        Tier 3 (Cold/Historical) - Long-term:
+        - Major version releases
+        - Critical security patches
+        - Fundamental architectural shifts
 
         Guidelines:
-        - Keep the summary very brief (1-2 sentences)
-        - Include only information that will remain relevant for weeks/months
-        - Preserve links to crucial resources, PRs, or discussions using markdown
-        - Format as [concise description](url)
-        - Key points should only include major developments
-        - Score importance based on long-term significance
-
-        Examples of good preservation:
-        - "Core API redesign discussed in [RFC-123](url)"
-        - "Database migration plan in [engineering doc](url)"
-        - "Security policy updates in [PR #456](url)"
-
-        Most information should be discarded, but important links should survive
-        as they provide efficient access to crucial context.
+        - Use precise timestamps for historically significant events
+        - Link to permanent references (commits, tags, releases)
+        - Consolidate repeated information
+        - Drop transient issues that were quickly resolved
         """,
         context={
-            'new_summaries': [s.model_dump() for s in summaries],
+            'summaries': [s.model_dump() for s in summaries],
             'existing_summaries': [s.model_dump() for s in existing_summaries],
+            'start_time': min(s.timestamp for s in summaries),
+            'end_time': max(s.timestamp for s in summaries),
         },
-        result_type=CompactionResult,
-    )
-
-    return CompactedSummary(
-        start_time=summaries[0].timestamp,
-        end_time=summaries[-1].timestamp,
-        summary=compact_result.summary,
-        key_points=compact_result.key_points,
-        source_types=list(set(st for s in summaries for st in s.source_types)),
-        importance_score=compact_result.importance_score,
+        result_type=CompactedSummary,
     )
 
 

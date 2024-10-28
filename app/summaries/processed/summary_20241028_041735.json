@@ -1,0 +1,144 @@
+{
+  "timestamp": "2024-10-28T04:17:35.148900",
+  "summary": "Summary of GitHub notifications for the PrefectHQ/prefect repository created, highlighting new pull requests and workflow issues. Important matters include multiple workflow failures and cancellations that may require immediate attention.",
+  "events": [
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388402",
+      "title": "Fix dev nightly release errors",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15548"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388477",
+      "title": "Fix bug in nightly release workflow",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15547"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388488",
+      "title": "Integrations Packages Tests workflow run failed for pydantic-settings-v2 branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388496",
+      "title": "Unit tests workflow run cancelled for pydantic-settings-v2 branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388503",
+      "title": "Integrations Packages Tests workflow run failed for pydantic-settings-v2 branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388510",
+      "title": "Update tasks to inherit the lock manager from a parent transaction if present",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15505"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388516",
+      "title": "Update cache isolation example to show different behavior between isolation levels",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15516"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388521",
+      "title": "Update `transaction` context manager to default `write_on_commit` to `True`",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15515"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388527",
+      "title": "[WIP] Decrement active limit when deleting a flow from a deployment with a concurrency limit",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15543"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388534",
+      "title": "Integrations Packages Tests workflow run failed for get-current-workspace branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388539",
+      "title": "Integrations Packages Tests workflow run failed for get-current-workspace branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388546",
+      "title": "Integrations Packages Tests workflow run failed for get-current-workspace branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388551",
+      "title": "Unit tests workflow run, Attempt #2 cancelled for pydantic-settings-v2 branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388565",
+      "title": "Integrations Packages Tests workflow run failed for pydantic-settings-v2 branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:17:17.388571",
+      "title": "Benchmarks workflow run cancelled for pydantic-settings-v2 branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    }
+  ],
+  "source_types": [
+    "github"
+  ]
+}

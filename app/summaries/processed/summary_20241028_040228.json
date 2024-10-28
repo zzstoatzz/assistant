@@ -1,0 +1,459 @@
+{
+  "timestamp": "2024-10-28T04:02:28.887633",
+  "summary": "### GitHub Notifications Summary\n\n#### PrefectHQ/prefect\n- **Issue**: [Display Field descriptions in deployment run UI when used as flow parameter type](https://api.github.com/repos/PrefectHQ/prefect/issues/13912)\n- **Pull Requests**:\n  - [Unpin pydantic and fix tests](https://api.github.com/repos/PrefectHQ/prefect/pulls/15321) (Author)\n  - [Add some UI scaffolding for flows](https://api.github.com/repos/PrefectHQ/prefect/pulls/15612) (Review Requested)\n  - [Fix issue where transaction parent look up fails in rollback hooks](https://api.github.com/repos/PrefectHQ/prefect/pulls/15599) (Review Requested)\n  - [Publish openAPI yaml in ci/cd](https://api.github.com/repos/PrefectHQ/prefect/pulls/15549) (Review Requested)\n  - [Update the store flow code docs](https://api.github.com/repos/PrefectHQ/prefect/pulls/15604) (Review Requested)\n  - [Flow code storage docs improvements](https://api.github.com/repos/PrefectHQ/prefect/pulls/15519) (Review Requested)\n- **Issues**:\n  - [Flow object doesn't work with Python's inspect.getfile](https://api.github.com/repos/PrefectHQ/prefect/issues/10979)\n  - [Task Runs Concurrency slots not released when flow runs in Kubernetes are cancelled](https://api.github.com/repos/PrefectHQ/prefect/issues/8566)\n  - [/flows/paginate returns optional flow_ids](https://api.github.com/repos/PrefectHQ/prefect/issues/15609)\n  - [Error while executing 'Access data within transactions' example code](https://api.github.com/repos/PrefectHQ/prefect/issues/15593)\n  - [All store flow code examples should be consolidated into the same page](https://api.github.com/repos/PrefectHQ/prefect/issues/14387)\n  - [Prefect3.0 not running subflows in parallel](https://api.github.com/repos/PrefectHQ/prefect/issues/15415)\n- **Releases**:\n  - [3.0.5.dev4: Nightly Development Release](https://api.github.com/repos/PrefectHQ/prefect/releases/178840064)\n- **CI Activity**: Multiple workflow runs failed or were canceled across various branches, including main and settings-docs-update.\n\n#### PrefectHQ/ControlFlow\n- **Pull Requests**:\n  - [Make flow context explicit](https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/354)\n  - [Introduce ways to control agentic loop termination](https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/348)\n- **Issues**:\n  - [Confusion and Conflation between Prefect Flow / Task and Controlflow Flow / Task](https://api.github.com/repos/PrefectHQ/ControlFlow/issues/353)\n\n#### PrefectHQ/flows\n- **Pull Requests**:\n  - [Run 2.X workers in 1/3 of load-testing clusters](https://api.github.com/repos/PrefectHQ/flows/pulls/2061) (Review Requested)\n  - [Dependency-version-minor-bump-2024-10-07](https://api.github.com/repos/PrefectHQ/flows/pulls/2058) (Review Requested)\n\n#### PrefectHQ/platform\n- **Pull Requests**:\n  - [nebula-2024.1008.161852](https://api.github.com/repos/PrefectHQ/platform/pulls/7602) (Review Requested)\n  - [Chore/Add secret for flux webhook url for alerts-cloud2 channels](https://api.github.com/repos/PrefectHQ/platform/pulls/7599) (Review Requested)\n  - [nebula-2024.1007.200559](https://api.github.com/repos/PrefectHQ/platform/pulls/7600) (Review Requested)\n\n#### PrefectHQ/nebula\n- **Releases**:\n  - [2024.1008.161852](https://api.github.com/repos/PrefectHQ/nebula/releases/178942539)\n  - [Bump Auth HPA min/max to 40/50](https://api.github.com/repos/PrefectHQ/nebula/pulls/8592) (Review Requested)",
+  "events": [
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797638",
+      "title": "Display Field descriptions in deployment run UI when used as flow parameter type.",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/13912"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797662",
+      "title": "Make flow context explicit",
+      "repository": "PrefectHQ/ControlFlow",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/354"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797665",
+      "title": "Introduce ways to control agentic loop termination",
+      "repository": "PrefectHQ/ControlFlow",
+      "notification_type": "PullRequest",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/ControlFlow/pulls/348"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797668",
+      "title": "desertaxle requested your review to deploy to an environment",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "WorkflowRun",
+      "reason": "approval_requested",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797677",
+      "title": "desertaxle requested your review to deploy to an environment",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "WorkflowRun",
+      "reason": "approval_requested",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797680",
+      "title": "desertaxle requested your review to deploy to an environment",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "WorkflowRun",
+      "reason": "approval_requested",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797682",
+      "title": "Integrations Packages Tests workflow run failed for settings-docs-update branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797684",
+      "title": "Benchmarks workflow run cancelled for settings-docs-update branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797702",
+      "title": "CodeQL workflow run cancelled for settings-docs-update branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797704",
+      "title": "Unit tests workflow run cancelled for settings-docs-update branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797705",
+      "title": "Static analysis workflow run cancelled for settings-docs-update branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797707",
+      "title": "CodSpeed Benchmarks workflow run cancelled for settings-docs-update branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797709",
+      "title": "Markdown tests workflow run cancelled for settings-docs-update branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797711",
+      "title": "Integrations Packages Tests workflow run failed for settings-docs-update branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797712",
+      "title": "unpin pydantic and fix tests",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "author",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15321"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797715",
+      "title": "Issue bot workflow run failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797717",
+      "title": "Integrations Packages Tests workflow run failed for rebuild-state-create-model branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797719",
+      "title": "Integrations Packages Tests workflow run failed for rebuild-state-create-model branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797720",
+      "title": "Unit tests workflow run failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797722",
+      "title": "Issue bot workflow run failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797724",
+      "title": "Run 2.X workers in 1/3 of load-testing clusters",
+      "repository": "PrefectHQ/flows",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/flows/pulls/2061"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797726",
+      "title": "Integrations Packages Tests workflow run failed for unset-settings-set-in-after-validator branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797728",
+      "title": "Integrations Packages Tests workflow run failed for unset-settings-set-in-after-validator branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797730",
+      "title": "Add some UI scaffolding for flows",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15612"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797732",
+      "title": "Flow object doesn't work with Python's inspect.getfile",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "mention",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/10979"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797734",
+      "title": "nebula-2024.1008.161852",
+      "repository": "PrefectHQ/platform",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/platform/pulls/7602"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797736",
+      "title": "2024.1008.161852",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/releases/178942539"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797738",
+      "title": "Issue bot workflow run failed for main branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797740",
+      "title": "Integrations Packages Tests workflow run failed for keys-pydantic branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797742",
+      "title": "Unit tests workflow run failed for 2.x branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797744",
+      "title": "Confusion and Conflation between Prefect Flow / Task and Controlflow Flow / Task",
+      "repository": "PrefectHQ/ControlFlow",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/ControlFlow/issues/353"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797745",
+      "title": "dependency-version-minor-bump-2024-10-07",
+      "repository": "PrefectHQ/flows",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/flows/pulls/2058"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797747",
+      "title": "Unit tests workflow run failed for keys-pydantic branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797749",
+      "title": "Integrations Packages Tests workflow run failed for keys-pydantic branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797751",
+      "title": "Integrations Packages Tests workflow run failed for keys-pydantic branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797753",
+      "title": "3.0.5.dev4: Nightly Development Release",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/releases/178840064"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797755",
+      "title": "Fix issue where transaction parent look up fails in rollback hooks",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15599"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797757",
+      "title": "Task Runs Concurrency slots not released when flow runs in Kubernetes are cancelled",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/8566"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797758",
+      "title": "Publish openAPI yaml in ci/cd",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15549"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797760",
+      "title": "/flows/paginate returns optional flow_ids ",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15609"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797762",
+      "title": "Error while executing 'Access data within transactions' exemple code",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15593"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797763",
+      "title": "Unit tests workflow run failed for v1-SecretStr branch",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "CheckSuite",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797765",
+      "title": "All store flow code examples should be consolidated into the same page",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/14387"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797767",
+      "title": "Update the store flow code docs ",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15604"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797769",
+      "title": "prefect3.0 not running subflows in parallel",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "Issue",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15415"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797771",
+      "title": "chore/Add secret for flux webhook url for alerts-cloud2 channels",
+      "repository": "PrefectHQ/platform",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/platform/pulls/7599"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797773",
+      "title": "nebula-2024.1007.200559",
+      "repository": "PrefectHQ/platform",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/platform/pulls/7600"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797775",
+      "title": "2024.1007.200559",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "Release",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/releases/178766526"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797778",
+      "title": "Flow code storage docs improvements",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15519"
+    },
+    {
+      "type": "github",
+      "timestamp": "2024-10-28T04:02:03.797780",
+      "title": "Bump Auth HPA min/max to 40/50",
+      "repository": "PrefectHQ/nebula",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/nebula/pulls/8592"
+    }
+  ],
+  "source_types": [
+    "github"
+  ]
+}

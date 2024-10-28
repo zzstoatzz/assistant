@@ -13,7 +13,7 @@ logger = get_logger()
 
 
 @settings.hl.instance.require_approval()
-def send_email(recipient: str, subject: str, body: str) -> None:
+def send_email(recipient: str, subject: str, body: str) -> str | None:
     """Send an email using the Gmail API."""
     service = get_gmail_service(
         creds_path=settings.email_credentials_dir / 'gmail_credentials.json',
@@ -23,7 +23,7 @@ def send_email(recipient: str, subject: str, body: str) -> None:
     message = {'raw': base64.urlsafe_b64encode(f'To: {recipient}\nSubject: {subject}\n\n{body}'.encode()).decode()}
 
     try:
-        service.users().messages().send(userId='me', body=message).execute()
+        service.users().messages().send(userId='me', body=message).execute()  # type: ignore
         return f'Email sent to {recipient}'
     except Exception as e:
         logger.error(f'Failed to send email: {e}')
