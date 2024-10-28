@@ -60,7 +60,16 @@ def compact_summaries(
         return None
 
     existing_summaries = load_compact_summaries()
-    summaries = sorted([s for _, s in summary_data], key=lambda s: s.timestamp)
+
+    # Ensure all timestamps are timezone-aware before sorting
+    summaries = []
+    for _, summary in summary_data:
+        if summary.timestamp.tzinfo is None:
+            # If timestamp is naive, assume UTC
+            summary.timestamp = summary.timestamp.replace(tzinfo=UTC)
+        summaries.append(summary)
+
+    summaries.sort(key=lambda s: s.timestamp)
 
     return cf.run(
         'Condense observations to only critical information',
@@ -147,6 +156,9 @@ def load_compact_summaries(hours: int | None = None) -> list[CompactedSummary]:
     for path in compact_dir.glob('compact_*.json'):
         try:
             summary = CompactedSummary.model_validate_json(path.read_text())
+            # Ensure end_time is timezone-aware
+            if summary.end_time.tzinfo is None:
+                summary.end_time = summary.end_time.replace(tzinfo=UTC)
             if not cutoff or summary.end_time > cutoff:
                 summaries.append(summary)
         except Exception as e:
