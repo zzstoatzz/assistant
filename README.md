@@ -8,9 +8,9 @@ Service that watches information streams (email, GitHub, etc.) and maintains a c
 
 ## Prerequisites
 
-- Docker
-- Gmail API credentials
-- GitHub token with `repo` scope
+- Python 3.10+
+- Gmail API credentials (OAuth2 `credentials.json` and `token.json`)
+- `GITHUB_TOKEN` with `repo` scope
 - `uv` package manager
 
 ## Environment

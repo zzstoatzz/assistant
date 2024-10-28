@@ -1,69 +1,108 @@
-# Information Observer System
+# Information Observer
 
-## Overview
-A system that lets an AI assistant process information streams like a human would - checking sources, understanding content, and reporting back meaningfully.
+AI assistant that processes information streams and maintains a compressed historical record.
 
-## Core Structure
+## Sources
 
-### Observer Protocol
-```python
-class Observer[S, E](ABC):
-    def connect(self) -> None: ...
-    def observe(self) -> Iterator[E]: ...
-    def disconnect(self) -> None: ...
+- **GitHub**: PRs, issues, and workflow runs
+- **Gmail**: Unread messages
+- _More coming soon_
+
+## Structure
+
+```
+app/
+├── summaries/           # Event storage
+│   ├── *.json          # New observations
+│   ├── compact/        # Compressed historical record
+│   └── processed/      # Archived raw observations
+├── secrets/            # Credentials
+│   ├── gmail_*.json
+│   └── .env           # Environment variables
+├── templates/          # Web UI
+└── static/            # Assets
 ```
 
-- Generic over source type `S` and event type `E`
-- Simple sync interface (no fake async)
-- Standardized event structure via `BaseEvent`
+## Features
 
-### Event Model
-```python
-@dataclass
-class BaseEvent:
-    id: str
-    source_type: str
-    timestamp: datetime = field(default_factory=...)
-    raw_source: str | None = None
-```
+- Web UI at `http://localhost:8000`
+- JSON API at `/observations/recent`
+- Markdown support in summaries
+- Link preservation for context
+- LSM tree-like compression (recent detailed, history condensed)
 
-### Gmail Implementation
-- Concrete observer watching email
-- Handles OAuth flow and credentials
-- Processes unread messages
-- Marks messages as read after processing
+## Running Locally
 
-## FastAPI Service
-
-### Background Processing
-- Prefect deployment runs observation flows
-- Serializes summaries to disk as JSON
-- Each summary includes:
-  - Timestamp
-  - Event details
-  - Agent-generated overview
-  - Source metadata
-
-### API Endpoints
-`GET /observations/recent`
-- Aggregates stored summaries
-- Uses ControlFlow agent to generate insights
-- Configurable time window
-
-## Key Design Choices
-1. **Simple Storage**: JSON files instead of a database
-2. **Sync Protocol**: Clear, honest interfaces
-3. **Standard Events**: Common structure across sources
-4. **Agent Processing**: Uses ControlFlow
-
-## Usage
 ```bash
-# From the root directory
-uv run app/main.py
+# 1. Install dependencies
+UV_SYSTEM_PYTHON=1 uv pip install --editable ".[gmail,github]"
 
-# Get recent observations (default 24h)
-curl "http://localhost:8000/observations/recent"
+# 2. Set up environment variables
+cat > app/secrets/.env << EOL
+OPENAI_API_KEY=sk-...
+GITHUB_TOKEN=ghp_...  # needs repo scope
+PREFECT_API_KEY=pnu_...
+PREFECT_API_URL=https://api.prefect.cloud/...
+HUMANLAYER_API_KEY=hl_...
+EMAIL_CHECK_INTERVAL_SECONDS=300
+GITHUB_CHECK_INTERVAL_SECONDS=300
+OBSERVATION_CHECK_INTERVAL_SECONDS=300
+EOL
 
-# Get custom timespan
-curl "http://localhost:8000/observations/recent?hours=12"
+# 3. Add Gmail credentials
+# Get these from Google Cloud Console
+cp gmail_credentials.json app/secrets/
+# Token will be generated on first run
+touch app/secrets/gmail_token.json
+
+# 4. Run
+make dev  # hot reload
+# or
+make      # production mode
+```
+
+## API Examples
+
+```bash
+# Get recent and historical summaries
+curl "localhost:8000/observations/recent"
+
+# Past 12 hours only
+curl "localhost:8000/observations/recent?hours=12"
+```
+
+Response format:
+
+```json
+{
+  "timespan_hours": 24,
+  "recent_summary": "Recent GitHub activity: [PR #123](url) needs review...",
+  "historical_summary": "Core API redesign ([RFC-123](url)) in progress...",
+  "num_recent_summaries": 5,
+  "num_historical_summaries": 1,
+  "source_types": ["github", "email"]
+}
+```
+
+## Common Issues
+
+1. Gmail authentication:
+
+```bash
+# If token expires
+rm app/secrets/gmail_token.json
+# Restart app and follow OAuth prompt
+```
+
+2. GitHub rate limits:
+
+```python
+# Adjust in settings.py
+GITHUB_CHECK_INTERVAL_SECONDS = 300  # 5 minutes minimum
+```
+
+3. Missing summaries directory:
+
+```bash
+mkdir -p app/summaries/{compact,processed}
 ```
