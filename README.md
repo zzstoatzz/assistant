@@ -46,20 +46,27 @@ make clean
    pip install -U uv
    ```
 
-2. Install dependencies:
+2. Virtual environment:
+
+   ```bash
+   uv venv --python 3.12
+   source .venv/bin/activate
+   ```
+
+3. Install dependencies:
 
    ```bash
    UV_SYSTEM_PYTHON=1 uv pip install --editable ".[gmail]"
    ```
 
-3. Place Gmail credentials relative to the `app_dir`:
+4. Place Gmail credentials relative to the `app_dir`:
 
    - `gmail_credentials.json`
    - `gmail_token.json`
 
    For example, I have them in `app/secrets/gmail_credentials.json` and `app/secrets/gmail_token.json`.
 
-4. Run the service:
+5. Run the service:
 
    ```bash
    make dev
