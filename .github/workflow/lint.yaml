@@ -49,6 +49,8 @@ jobs:
           python -m pip install -U uv pre-commit
           uv pip install --upgrade .
 
-      - name: Run pre-commit
-        run: |
-          pre-commit run --show-diff-on-failure --color=always --all-files
+      - uses: pre-commit/action@v3.0.0
+        with:
+          extra_args: --all-files
+        env:
+          SKIP: ${{ github.ref == 'refs/heads/main' && 'no-commit-to-branch' || '' }}
