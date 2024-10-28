@@ -1,6 +1,8 @@
 # Assistant
 
-> [!NOTE] > `app` is the working app, `assistant` is the core library.
+> [!NOTE]
+>
+> `app` is the working app (wip), `assistant` is the core library (more-solidified but still wip).
 
 Service that watches information streams (email, GitHub, etc.) and maintains a compressed historical record.
 
