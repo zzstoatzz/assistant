@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 import controlflow as cf
+import httpx
 from jinja2 import Template
 from prefect import flow, task
 from pydantic import TypeAdapter
@@ -100,3 +101,26 @@ def check_github(
         event_filters = []
 
     process_github_observations(storage, event_filters, agents, instructions)
+
+
+@settings.hl.instance.require_approval()
+def create_github_issue(repository_name: str, title: str, body: str) -> str | None:
+    """Create a GitHub issue using the GitHub API."""
+    url = f'https://api.github.com/repos/{repository_name}/issues'
+    headers = {
+        'Authorization': f'token {settings.github_token}',
+        'Accept': 'application/vnd.github.v3+json',
+    }
+    data = {'title': title, 'body': body}
+
+    try:
+        response = httpx.post(url, headers=headers, json=data)
+        response.raise_for_status()
+        issue_url = response.json().get('html_url')
+        return f'Issue created: {issue_url}'
+    except httpx.HTTPStatusError as e:
+        logger.error(f'Failed to create GitHub issue: {e.response.text}')
+        raise
+    except Exception as e:
+        logger.error(f'Unexpected error: {e}')
+        raise

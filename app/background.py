@@ -125,8 +125,9 @@ def archive_processed_summaries(storage: DiskStorage, paths: list[Path]) -> None
             if new_path.exists():
                 timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
                 new_path = storage.processed_dir / f'{path.stem}_{timestamp}{path.suffix}'
+
             path.rename(new_path)
-            logger.info(f'Archived summary: {path.name} -> {new_path.name}')
+            logger.info(f'Successfully archived {path.name} to {new_path}')
         except Exception as e:
             logger.error(f'Failed to archive {path.name}: {e}')
 
@@ -159,7 +160,9 @@ def load_compact_summaries(hours: int | None = None) -> list[CompactedSummary]:
 @flow
 def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> None:
     """Main flow for compressing observations"""
+    logger.info('Compressing observations')
     if not (loaded_summaries := load_unprocessed_summaries(storage)):
+        logger.info('No unprocessed summaries found')
         return None
 
     paths = [p for p, _ in loaded_summaries]

@@ -19,6 +19,9 @@ async def home(request: Request, hours: int = 24):
     """Home page showing both recent and compacted observations"""
     recent_summaries, compact_summaries = load_summaries(hours)
 
+    recent_summaries = sorted(recent_summaries, key=lambda s: s.timestamp)
+    compact_summaries = sorted(compact_summaries, key=lambda s: s.start_time)
+
     duck_data = None
     if not (recent_summaries or compact_summaries):
         duck_data = await get_random_duck()

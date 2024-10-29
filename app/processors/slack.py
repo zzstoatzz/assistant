@@ -3,6 +3,8 @@ from datetime import UTC, datetime
 import controlflow as cf
 from prefect import flow, task
 from pydantic import BaseModel
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 from app.settings import settings
 from app.storage import DiskStorage
@@ -54,8 +56,7 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 
     events = []
     with SlackObserver(token=token) as observer:
-        events_list = list(observer.observe())
-        if not events_list:
+        if not (events_list := list(observer.observe())):
             logger.info('Successfully checked Slack - no new messages found')
             return None
 
@@ -95,3 +96,19 @@ def check_slack(storage: DiskStorage, agents: list[cf.Agent]) -> None:
     """Process Slack messages and store using storage abstraction"""
     logger.info_style('Checking Slack for 💬')
     process_slack_observations(storage, agents)
+
+
+@settings.hl.instance.require_approval()
+def send_slack_message(channel: str, text: str) -> str | None:
+    """Send a message to a Slack channel."""
+    client = WebClient(token=settings.slack_bot_token)
+
+    try:
+        response = client.chat_postMessage(channel=channel, text=text)
+        return f'Message sent to {channel}: {response["ts"]}'
+    except SlackApiError as e:
+        logger.error(f'Failed to send Slack message: {e.response["error"]}')
+        raise
+    except Exception as e:
+        logger.error(f'Unexpected error: {e}')
+        raise
