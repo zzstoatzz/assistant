@@ -6,6 +6,7 @@ AI assistant that processes information streams and maintains a compressed histo
 
 - **GitHub**: PRs, issues, and workflow runs
 - **Gmail**: Unread messages
+- **Slack**: Channel messages and threads
 - _More coming soon_
 
 ## Structure
@@ -35,17 +36,19 @@ app/
 
 ```bash
 # 1. Install dependencies
-UV_SYSTEM_PYTHON=1 uv pip install --editable ".[gmail,github]"
+UV_SYSTEM_PYTHON=1 uv pip install --editable ".[gmail,github,slack]"
 
 # 2. Set up environment variables
 cat > app/secrets/.env << EOL
 OPENAI_API_KEY=sk-...
 GITHUB_TOKEN=ghp_...  # needs repo scope
+SLACK_BOT_TOKEN=xoxb-...  # needs channels:history, channels:read
 PREFECT_API_KEY=pnu_...
 PREFECT_API_URL=https://api.prefect.cloud/...
 HUMANLAYER_API_KEY=hl_...
 EMAIL_CHECK_INTERVAL_SECONDS=300
 GITHUB_CHECK_INTERVAL_SECONDS=300
+SLACK_CHECK_INTERVAL_SECONDS=300
 OBSERVATION_CHECK_INTERVAL_SECONDS=300
 EOL
 
@@ -105,4 +108,11 @@ GITHUB_CHECK_INTERVAL_SECONDS = 300  # 5 minutes minimum
 
 ```bash
 mkdir -p app/summaries/{compact,processed}
+```
+
+4. Slack authentication:
+
+```bash
+# Ensure bot is invited to channels
+# Bot needs channels:history and channels:read scopes
 ```

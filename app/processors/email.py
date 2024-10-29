@@ -34,7 +34,6 @@ def send_email(recipient: str, subject: str, body: str) -> str | None:
 @task
 def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
     """Process Gmail observations and create a summary"""
-    logger = get_logger()
 
     # Collect raw events
     events = []

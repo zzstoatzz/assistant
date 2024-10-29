@@ -22,11 +22,13 @@ PREFECT_API_KEY=your_prefect_key
 PREFECT_API_URL=your_prefect_workspace_url
 HUMANLAYER_API_KEY=your_humanlayer_key
 GITHUB_TOKEN=your_github_token  # needs repo scope
+SLACK_BOT_TOKEN=xoxb-your-slack-bot-token  # needs channels:history, channels:read
 
 # Service Config
 ASSISTANT_PORT=8000
 EMAIL_CHECK_INTERVAL_SECONDS=300
 GITHUB_CHECK_INTERVAL_SECONDS=300
+SLACK_CHECK_INTERVAL_SECONDS=300
 OBSERVATION_CHECK_INTERVAL_SECONDS=300
 GITHUB_EVENT_INSTRUCTIONS="Review these GitHub notifications and create a concise summary. Group related items by repository and highlight anything urgent or requiring immediate attention. Mark each item as either [PRIORITY] or [NON-PRIORITY]. I only have the capacity to care urgently about: - PrefectHQ/prefect (failures on main and 2.x branches, serious PRs, security issues etc) - PrefectHQ/prefect-* (collections, releases, failed actions on main etc) Failures on feature branches are normal, are not urgent, and are not important. Group items by priority status to make urgent items immediately visible"
 ```
@@ -66,7 +68,7 @@ Events flow through three stages:
 ObservationSummary(
     timestamp=now,
     summary="PR #123 needs review",
-    source_types=["github"]
+    source_types=["github", "slack"]
 )
 
 # 2. Compacted into summaries/compact/
