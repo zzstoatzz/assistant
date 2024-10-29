@@ -133,5 +133,16 @@ class Settings(BaseSettings):
             self.log_level = 'DEBUG'
         return self
 
+    # Add new Slack settings
+    slack_bot_token: str | None = Field(None, alias='SLACK_BOT_TOKEN')
+    slack_check_interval_seconds: int = Field(default=300, ge=10, alias='SLACK_CHECK_INTERVAL_SECONDS')
+    slack_event_instructions: str = Field(
+        default="""
+        Review these Slack messages and create a concise summary.
+        Group related items by channel and highlight anything urgent or requiring immediate attention.
+        """,
+        alias='SLACK_EVENT_INSTRUCTIONS',
+    )
+
 
 settings = Settings()  # type: ignore

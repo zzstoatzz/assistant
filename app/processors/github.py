@@ -24,7 +24,6 @@ def process_github_observations(
     storage: DiskStorage, filters: list[GitHubEventFilter], agents: list[cf.Agent], instructions: str | None = None
 ) -> ObservationSummary | None:
     """Process GitHub notifications and create a summary"""
-    logger = get_logger()
 
     events = []
     with GitHubObserver(token=settings.github_token, filters=filters) as observer:

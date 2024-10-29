@@ -12,6 +12,7 @@ from app.api.endpoints import home, observations
 from app.background import compress_observations
 from app.processors.email import check_email
 from app.processors.github import check_github
+from app.processors.slack import check_slack
 from app.settings import settings
 from app.storage import DiskStorage
 from assistant.background.task_manager import BackgroundTaskManager
@@ -29,6 +30,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                     check_github, storage=storage, agents=[secretary], instructions=settings.github_event_instructions
                 ),
                 settings.github_check_interval_seconds,
+            ),
+            (
+                partial(check_slack, storage=storage, agents=[secretary]),
+                settings.slack_check_interval_seconds,
             ),
             (
                 partial(compress_observations, storage=storage, agents=[secretary]),
@@ -67,6 +72,7 @@ def custom_openapi():
         ### Intervals
         * Email checks: Every {settings.email_check_interval_seconds} seconds
         * GitHub checks: Every {settings.github_check_interval_seconds} seconds
+        * Slack checks: Every {settings.slack_check_interval_seconds} seconds
         * Observation compression: Every {settings.observation_check_interval_seconds} seconds
         """,
         routes=app.routes,
