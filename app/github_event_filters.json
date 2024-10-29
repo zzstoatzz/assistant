@@ -1,0 +1,42 @@
+[
+    {
+        "repositories": [
+            "PrefectHQ/prefect"
+        ],
+        "event_types": [
+            "CheckSuite"
+        ],
+        "reasons": [
+            "ci_activity"
+        ],
+        "branch": "main"
+    },
+    {
+        "repositories": [
+            "PrefectHQ/prefect"
+        ],
+        "event_types": [
+            "PullRequest"
+        ],
+        "reasons": [
+            "review_requested",
+            "mention",
+            "comment",
+            "state_change"
+        ]
+    },
+    {
+        "repositories": [
+            "PrefectHQ/prefect"
+        ],
+        "event_types": [
+            "Issue"
+        ],
+        "reasons": [
+            "mention",
+            "comment",
+            "assigned",
+            "labeled"
+        ]
+    }
+]

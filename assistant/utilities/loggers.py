@@ -127,7 +127,15 @@ def setup_logging(level: str | None = None) -> None:
 
     logger.handlers.clear()
 
-    handler = RichHandler(rich_tracebacks=True, markup=False)
+    handler = RichHandler(
+        rich_tracebacks=True,
+        markup=True,
+        show_time=False,
+        show_level=True,
+        enable_link_path=True,
+        omit_repeated_times=True,
+    )
+
     formatter = logging.Formatter('%(name)s: %(message)s')
     handler.setFormatter(formatter)
 
@@ -137,6 +145,17 @@ def setup_logging(level: str | None = None) -> None:
 
 def add_logging_methods(logger: logging.Logger) -> None:
     def log_style(level: int, message: str, style: str | None = None):
+        if level == logging.INFO:
+            if message.startswith('›') or message.startswith('⋮'):
+                # Keep existing hierarchy markers
+                pass
+            elif '│' in message:
+                # Indent nested items
+                message = f'  {message}'
+            else:
+                # Add hierarchy marker for top-level items
+                message = f'⋮ {message}'
+
         if not style:
             style = 'default on default'
         message = f'[{style}]{escape(str(message))}[/]'
