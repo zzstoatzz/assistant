@@ -36,6 +36,7 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
     """Process Gmail observations and create a summary"""
     logger = get_logger()
 
+    # Collect raw events
     events = []
     with GmailObserver(
         creds_path=settings.email_credentials_dir / 'gmail_credentials.json',
@@ -45,6 +46,11 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             logger.info('Successfully checked Gmail - no new messages found')
             return None
 
+        # Store raw events immediately
+        raw_events = {'timestamp': datetime.now(UTC), 'source': 'gmail', 'events': events_list}
+        storage.store_raw(raw_events)  # Store raw data first
+
+        # Continue processing...
         for event in events_list:
             events.append(
                 {
@@ -57,24 +63,29 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             )
             logger.info_kv(event.sender, event.subject)
 
-    summary = cf.run(
-        'Create summary of new messages',
-        agents=agents,
-        instructions="""
-        Review these events and create a concise summary.
-        Group related items and highlight anything urgent or important.
-        """,
-        context={'events': events},
-        result_type=str,
+    # Create and store processed summary
+    summary = ObservationSummary(
+        timestamp=datetime.now(UTC),
+        summary=cf.run(
+            'Create summary of new messages',
+            agents=agents,
+            instructions="""
+            Review these events and create a concise summary.
+            Group related items and highlight anything urgent or important.
+            """,
+            context={'events': events},
+            result_type=str,
+        ),
+        events=events,
+        source_types=['email'],
     )
 
-    return ObservationSummary(timestamp=datetime.now(UTC), summary=summary, events=events, source_types=['email'])
+    storage.store_processed(summary)
+    return summary
 
 
 @flow
 def check_email(storage: DiskStorage, agents: list[cf.Agent]) -> None:
     """Process observations and store using storage abstraction"""
     logger.info_style('Checking Gmail for 📧')
-    if summary := process_gmail_observations(storage, agents):
-        storage.store_raw(summary)
-        storage.store_processed(summary)
+    process_gmail_observations(storage, agents)
