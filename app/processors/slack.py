@@ -23,6 +23,10 @@ class RawEvents(BaseModel):
 def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
     """Process Slack messages and create a summary"""
 
+    if not (token := settings.slack_bot_token):
+        logger.error('Slack bot token is not set')
+        return None
+
     # Load BOTH raw and processed messages to check for duplicates
     processed_messages = set()
 
@@ -49,7 +53,7 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             logger.error(f'Error loading raw summary {path}: {e}')
 
     events = []
-    with SlackObserver(token=settings.slack_bot_token) as observer:
+    with SlackObserver(token=token) as observer:
         events_list = list(observer.observe())
         if not events_list:
             logger.info('Successfully checked Slack - no new messages found')
