@@ -171,3 +171,5 @@ cython_debug/
 # extras
 scratch.py
 app/secrets
+
+.cursorrules
