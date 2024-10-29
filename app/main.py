@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
 
-from app.agents import secretary
+from app.agents import email_agent, github_agent, secretary, slack_agent
 from app.api.endpoints import home, observations
 from app.background import compress_observations
 from app.processors.email import check_email
@@ -24,17 +24,9 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     storage = DiskStorage(settings.summaries_dir)
     task_manager = BackgroundTaskManager(
         [
-            (partial(check_email, storage=storage, agents=[secretary]), settings.email_check_interval_seconds),
-            (
-                partial(
-                    check_github, storage=storage, agents=[secretary], instructions=settings.github_event_instructions
-                ),
-                settings.github_check_interval_seconds,
-            ),
-            (
-                partial(check_slack, storage=storage, agents=[secretary]),
-                settings.slack_check_interval_seconds,
-            ),
+            (partial(check_email, storage=storage, agents=[email_agent]), settings.email_check_interval_seconds),
+            (partial(check_github, storage=storage, agents=[github_agent]), settings.github_check_interval_seconds),
+            (partial(check_slack, storage=storage, agents=[slack_agent]), settings.slack_check_interval_seconds),
             (
                 partial(compress_observations, storage=storage, agents=[secretary]),
                 settings.observation_check_interval_seconds,
