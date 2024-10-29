@@ -5,6 +5,7 @@ from functools import partial
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
+from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.agents import email_agent, github_agent, secretary, slack_agent
@@ -109,6 +110,12 @@ app.add_middleware(
 app.openapi = custom_openapi
 
 app.mount('/static', StaticFiles(directory=str(settings.static_dir)), name='static')
+
+
+@app.get('/favicon.ico', include_in_schema=False)
+async def favicon():
+    return FileResponse(str(settings.static_dir / 'favicon.ico'))
+
 
 app.include_router(home.router)
 app.include_router(observations.router)
