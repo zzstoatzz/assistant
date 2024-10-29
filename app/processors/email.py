@@ -1,15 +1,16 @@
 import base64
-from datetime import datetime
+from datetime import UTC, datetime
 
 import controlflow as cf
 from prefect import flow, task
-from prefect.logging import get_logger
 
 from app.settings import settings
+from app.storage import DiskStorage
 from app.types import ObservationSummary
 from assistant.observers.gmail import GmailObserver, get_gmail_service
+from assistant.utilities.loggers import get_logger
 
-logger = get_logger()
+logger = get_logger('assistant.email')
 
 
 @settings.hl.instance.require_approval()
@@ -31,7 +32,7 @@ def send_email(recipient: str, subject: str, body: str) -> str | None:
 
 
 @task
-def process_gmail_observations(agents: list[cf.Agent]) -> ObservationSummary | None:
+def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
     """Process Gmail observations and create a summary"""
     logger = get_logger()
 
@@ -40,24 +41,22 @@ def process_gmail_observations(agents: list[cf.Agent]) -> ObservationSummary | N
         creds_path=settings.email_credentials_dir / 'gmail_credentials.json',
         token_path=settings.email_credentials_dir / 'gmail_token.json',
     ) as observer:
-        # Get all events at once and break if none
         if not (events_list := list(observer.observe())):
-            return None  # Return None instead of empty summary
+            logger.info('Successfully checked Gmail - no new messages found')
+            return None
 
-        # Process events if we have them
         for event in events_list:
             events.append(
-                e := {
+                {
                     'type': 'email',
-                    'timestamp': datetime.now().isoformat(),
+                    'timestamp': datetime.now(UTC).isoformat(),
                     'subject': event.subject,
                     'sender': event.sender,
                     'snippet': event.snippet,
                 }
             )
-            logger.info(f'{e["sender"]}: {e["subject"]}')
+            logger.info_kv(event.sender, event.subject)
 
-    # Use the monitor agent to create a summary
     summary = cf.run(
         'Create summary of new messages',
         agents=agents,
@@ -69,12 +68,13 @@ def process_gmail_observations(agents: list[cf.Agent]) -> ObservationSummary | N
         result_type=str,
     )
 
-    return ObservationSummary(timestamp=datetime.now(), summary=summary, events=events, source_types=['email'])
+    return ObservationSummary(timestamp=datetime.now(UTC), summary=summary, events=events, source_types=['email'])
 
 
 @flow
-def check_email(agents: list[cf.Agent]) -> None:
-    """Process observations and save summary to disk"""
-    if summary := process_gmail_observations(agents):
-        summary_path = settings.summaries_dir / f'summary_{summary.timestamp:%Y%m%d_%H%M%S}.json'
-        summary_path.write_text(summary.model_dump_json(indent=2))
+def check_email(storage: DiskStorage, agents: list[cf.Agent]) -> None:
+    """Process observations and store using storage abstraction"""
+    logger.info_style('Checking Gmail for 📧')
+    if summary := process_gmail_observations(storage, agents):
+        storage.store_raw(summary)
+        storage.store_processed(summary)

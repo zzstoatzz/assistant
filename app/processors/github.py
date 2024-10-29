@@ -2,14 +2,17 @@ from datetime import datetime
 from typing import Any
 
 import controlflow as cf
+from jinja2 import Template
 from prefect import flow, task
-from prefect.logging import get_logger
+from pydantic import TypeAdapter
 
 from app.settings import settings
+from app.storage import DiskStorage
 from app.types import ObservationSummary
 from assistant.observers.github import GitHubEventFilter, GitHubObserver
+from assistant.utilities.loggers import get_logger
 
-logger = get_logger()
+logger = get_logger('assistant.github')
 
 
 def _get_agent_names(parameters: dict[str, Any]) -> str:
@@ -17,39 +20,17 @@ def _get_agent_names(parameters: dict[str, Any]) -> str:
 
 
 @task(task_run_name=_get_agent_names)
-def process_github_observations(agents: list[cf.Agent], instructions: str | None = None) -> ObservationSummary | None:
+def process_github_observations(
+    storage: DiskStorage, filters: list[GitHubEventFilter], agents: list[cf.Agent], instructions: str | None = None
+) -> ObservationSummary | None:
     """Process GitHub notifications and create a summary"""
-    logger = get_logger()
-
-    filters = [
-        # Main branch CI activity
-        GitHubEventFilter(
-            repositories=['PrefectHQ/prefect'],
-            event_types=['CheckSuite'],
-            reasons=['ci_activity'],
-            branch='main',
-        ),
-        # Core repo PR activity
-        GitHubEventFilter(
-            repositories=['PrefectHQ/prefect'],
-            event_types=['PullRequest'],
-            reasons=['review_requested', 'mention', 'comment', 'state_change'],
-        ),
-        # Core repo Issue activity
-        GitHubEventFilter(
-            repositories=['PrefectHQ/prefect'],
-            event_types=['Issue'],
-            reasons=['mention', 'comment', 'assigned', 'labeled'],
-        ),
-    ]
 
     events = []
     with GitHubObserver(token=settings.github_token, filters=filters) as observer:
-        # Get all events at once and break if none
         if not (events_list := list(observer.observe())):
+            logger.info('Successfully checked GitHub - no new notifications found')
             return None
 
-        # Process events if we have them
         for event in events_list:
             events.append(
                 e := {
@@ -62,7 +43,7 @@ def process_github_observations(agents: list[cf.Agent], instructions: str | None
                     'url': event.url,
                 }
             )
-            logger.info(f'{e["repository"]}: {e["title"]}')
+            logger.info_kv(e['repository'], e['title'])
 
     # Use the monitor agent to create a summary
     summary = cf.run(
@@ -79,12 +60,40 @@ def process_github_observations(agents: list[cf.Agent], instructions: str | None
         result_type=str,
     )
 
-    return ObservationSummary(summary=summary, events=events, source_types=['github'])
+    return ObservationSummary(timestamp=datetime.now(), summary=summary, events=events, source_types=['github'])
 
 
 @flow
-def check_github(agents: list[cf.Agent], instructions: str | None = None) -> None:
-    """Process GitHub notifications and save summary to disk"""
-    if summary := process_github_observations(agents, instructions):
-        summary_path = settings.summaries_dir / f'summary_{summary.timestamp:%Y%m%d_%H%M%S}.json'
-        task(summary_path.write_text)(summary.model_dump_json(indent=2))
+def check_github(
+    storage: DiskStorage,
+    agents: list[cf.Agent],
+    instructions: str | None = None,
+    github_filters: list[GitHubEventFilter] | None = None,
+) -> None:
+    """Process GitHub notifications and store using storage abstraction"""
+    filter_template = Template("""{{ repo }}
+    {%- if event_types %} │ {{ event_types|join(', ') }}{% endif -%}
+    {%- if reasons %} │ {{ reasons|join(', ') }}{% endif -%}
+    {%- if branch %} │ {{ branch }}{% endif %}""")
+
+    if event_filters := TypeAdapter(list[GitHubEventFilter]).validate_python(
+        github_filters or settings.github_event_filters
+    ):
+        logger.info_style('Checking GitHub for 🛎️')
+        for github_filter in event_filters:
+            filter_desc = filter_template.render(
+                repo=f"Repository: {', '.join(github_filter.repositories)}",
+                event_types=github_filter.event_types,
+                reasons=github_filter.reasons,
+                branch=github_filter.branch,
+            )
+            logger.info_style(filter_desc)
+    else:
+        logger.warning_style('No GitHub event filters found. You may get too many notifications.')
+        event_filters = []
+
+    if summary := process_github_observations(storage, event_filters, agents, instructions):
+        storage.store_raw(summary)
+        storage.store_processed(summary)
+    else:
+        logger.info('GitHub check complete - no updates to process')

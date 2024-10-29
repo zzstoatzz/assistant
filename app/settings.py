@@ -1,9 +1,10 @@
 import os
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Any
 
 from humanlayer import ContactChannel, HumanLayer, SlackContactChannel
 from pydantic import BeforeValidator, Field, computed_field, model_validator
+from pydantic_core import from_json
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -56,22 +57,33 @@ class Settings(BaseSettings):
     host: str = Field(default='0.0.0.0', alias='HOST')
     port: int = Field(default=8000, ge=1024, le=65535, alias='PORT')
 
-    email_check_interval_seconds: int = Field(default=300, ge=10)
-    observation_check_interval_seconds: int = Field(default=300, ge=10)
+    email_check_interval_seconds: int = Field(default=300, ge=10, alias='EMAIL_CHECK_INTERVAL_SECONDS')
+    observation_check_interval_seconds: int = Field(default=300, ge=10, alias='OBSERVATION_CHECK_INTERVAL_SECONDS')
 
     app_dir: EnsuredPath = Field(default=Path(__file__).parent)
 
     hl: HumanLayerSettings = Field(default_factory=HumanLayerSettings)
 
     github_token: Annotated[str, BeforeValidator(ensure_github_token)]
-    github_check_interval_seconds: int = Field(default=300, ge=10)
+    github_check_interval_seconds: int = Field(default=300, ge=10, alias='GITHUB_CHECK_INTERVAL_SECONDS')
 
     github_event_instructions: str = Field(
         default="""
         Review these GitHub notifications and create a concise summary.
         Group related items by repository and highlight anything urgent or requiring immediate attention.
-        """
+        """,
+        alias='GITHUB_EVENT_INSTRUCTIONS',
     )
+
+    github_event_filters_path: Path = Field(default=f'{Path(__file__).parent}/github_event_filters.json')
+
+    @computed_field
+    @property
+    def github_event_filters(self) -> list[dict[str, Any]]:
+        """GitHub event filters"""
+        if not self.github_event_filters_path.exists():
+            return []
+        return from_json(self.github_event_filters_path.read_bytes())
 
     @computed_field
     @property
@@ -97,6 +109,7 @@ class Settings(BaseSettings):
         """Email credentials directory is inside the app directory"""
         return self.app_dir / 'secrets'
 
+    @computed_field
     @property
     def processed_summaries_dir(self) -> Path:
         """Directory for processed summary files"""
@@ -112,6 +125,12 @@ class Settings(BaseSettings):
             self.processed_summaries_dir,
         ]:
             ensure_dir(path)
+        return self
+
+    @model_validator(mode='after')
+    def debug(self):
+        if f'{self.host}:{self.port}' == 'localhost:8001':
+            self.log_level = 'DEBUG'
         return self
 
 

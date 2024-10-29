@@ -1,54 +1,42 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from datetime import UTC, datetime, timedelta
 from functools import partial
 
-import controlflow as cf
-import markdown
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.openapi.utils import get_openapi
 from fastapi.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
 
 from app.agents import secretary
+from app.api.endpoints import home, observations
 from app.background import compress_observations
 from app.processors.email import check_email
 from app.processors.github import check_github
 from app.settings import settings
-from app.types import CompactedSummary, ObservationSummary
-from assistant.background.task_manager import BackgroundTask, BackgroundTaskManager
-from assistant.utilities.loggers import get_logger
-
-logger = get_logger()
-
-
-def render_markdown(text: str) -> str:
-    return markdown.markdown(text, extensions=['nl2br', 'fenced_code', 'tables'])
+from app.storage import DiskStorage
+from assistant.background.task_manager import BackgroundTaskManager
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Start background task processing"""
-    # Start all tasks
-    task_manager = BackgroundTaskManager.from_background_tasks(
+    storage = DiskStorage(settings.summaries_dir)
+    task_manager = BackgroundTaskManager(
         [
-            BackgroundTask(
-                func=partial(check_email, agents=[secretary]),
-                interval_seconds=settings.email_check_interval_seconds,
-                name='check email',
+            (partial(check_email, storage=storage, agents=[secretary]), settings.email_check_interval_seconds),
+            (
+                partial(
+                    check_github, storage=storage, agents=[secretary], instructions=settings.github_event_instructions
+                ),
+                settings.github_check_interval_seconds,
             ),
-            BackgroundTask(
-                func=partial(check_github, agents=[secretary], instructions=settings.github_event_instructions),
-                interval_seconds=settings.github_check_interval_seconds,
-                name='check github',
-            ),
-            BackgroundTask(
-                func=partial(compress_observations, agents=[secretary]),
-                interval_seconds=settings.observation_check_interval_seconds,
-                name='review observations',
+            (
+                partial(compress_observations, storage=storage, agents=[secretary]),
+                settings.observation_check_interval_seconds,
             ),
         ]
     )
+
     await task_manager.start_all()
     try:
         yield
@@ -56,139 +44,73 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await task_manager.stop_all()
 
 
-app = FastAPI(title='Information Observer Service', lifespan=lifespan)
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
 
-# Mount static files using settings
+    openapi_schema = get_openapi(
+        title='Information Observer Service',
+        version='1.0.0',
+        description=f"""
+        An intelligent service that observes and summarizes information from multiple sources:
+
+        * 📧 **Email**: Processes Gmail messages
+        * 🐙 **GitHub**: Tracks PRs, issues, and workflow runs
+        * 📚 **Historical**: Maintains compressed historical records
+
+        ### Features
+
+        * LSM-tree inspired storage for efficient historical data
+        * Intelligent summarization using AI
+        * Real-time updates with configurable intervals
+
+        ### Intervals
+        * Email checks: Every {settings.email_check_interval_seconds} seconds
+        * GitHub checks: Every {settings.github_check_interval_seconds} seconds
+        * Observation compression: Every {settings.observation_check_interval_seconds} seconds
+        """,
+        routes=app.routes,
+    )
+
+    openapi_schema['info']['x-logo'] = {'url': 'https://fastapi.tiangolo.com/img/logo-margin/logo-teal.png'}
+
+    openapi_schema['servers'] = [{'url': '', 'description': 'Current server'}]
+
+    if hasattr(settings, 'github_token'):
+        openapi_schema['components']['securitySchemes'] = {
+            'GitHubToken': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+                'description': 'GitHub Personal Access Token',
+            }
+        }
+
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+
+app = FastAPI(
+    title='Information Observer Service',
+    lifespan=lifespan,
+    docs_url='/docs',
+    redoc_url='/redoc',
+    openapi_url='/openapi.json',
+    swagger_ui_parameters={'defaultModelsExpandDepth': -1},
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],  # Allows all origins in development
+    allow_credentials=True,
+    allow_methods=['*'],  # Allows all methods
+    allow_headers=['*'],  # Allows all headers
+)
+
+app.openapi = custom_openapi
+
 app.mount('/static', StaticFiles(directory=str(settings.static_dir)), name='static')
 
-# Initialize templates with absolute path
-templates = Jinja2Templates(directory=str(settings.templates_dir))
-
-
-templates.env.filters['markdown'] = render_markdown
-
-
-@app.get('/')
-async def home(request: Request, hours: int = 24):
-    """Home page showing both recent and compacted observations"""
-    cutoff = datetime.now(UTC) - timedelta(hours=hours)
-
-    # Get recent (unprocessed) summaries
-    recent_summaries = []
-    for summary_file in settings.summaries_dir.glob('summary_*.json'):
-        try:
-            summary = ObservationSummary.model_validate_json(summary_file.read_text())
-            if summary.timestamp > cutoff:
-                recent_summaries.append(summary)
-        except Exception as e:
-            logger.error(f'Failed to load summary {summary_file.name}: {e}')
-            continue
-
-    # Get compact summaries from the compact directory
-    compact_dir = settings.summaries_dir / 'compact'
-    compact_summaries = []
-    if compact_dir.exists():
-        for summary_file in compact_dir.glob('compact_*.json'):
-            try:
-                summary = CompactedSummary.model_validate_json(summary_file.read_text())
-                if summary.end_time > cutoff:
-                    compact_summaries.append(summary)
-            except Exception as e:
-                logger.error(f'Failed to load compact summary {summary_file.name}: {e}')
-                continue
-
-    # Sort summaries
-    recent_summaries.sort(key=lambda x: x.timestamp, reverse=True)
-    compact_summaries.sort(key=lambda x: (x.end_time, x.importance_score), reverse=True)
-
-    return templates.TemplateResponse(
-        'home.html',
-        {
-            'request': request,
-            'recent_summaries': recent_summaries,
-            'compact_summaries': compact_summaries,
-            'hours': hours,
-            'has_data': bool(recent_summaries or compact_summaries),
-        },
-    )
-
-
-@app.get('/observations/recent')
-async def get_recent_observations(hours: int = 24) -> JSONResponse:
-    """Get recent and historical observations"""
-    cutoff = datetime.now() - timedelta(hours=hours)
-    logger.info(f'Loading observations for past {hours} hours (cutoff: {cutoff})')
-
-    # Load recent summaries
-    recent_summaries = []
-    for summary_file in settings.summaries_dir.glob('summary_*.json'):
-        try:
-            summary = ObservationSummary.model_validate_json(summary_file.read_text())
-            if summary.timestamp > cutoff:
-                recent_summaries.append(summary)
-        except Exception as e:
-            logger.error(f'Failed to load summary {summary_file.name}: {e}')
-            continue
-
-    # Load compact summaries (historical record)
-    compact_summaries = []
-    compact_dir = settings.summaries_dir / 'compact'
-    if compact_dir.exists():
-        for summary_file in compact_dir.glob('compact_*.json'):
-            try:
-                summary = CompactedSummary.model_validate_json(summary_file.read_text())
-                compact_summaries.append(summary)
-            except Exception as e:
-                logger.error(f'Failed to load compact summary {summary_file.name}: {e}')
-                continue
-
-    if not recent_summaries and not compact_summaries:
-        return JSONResponse(content={'message': 'No observations found'}, status_code=200)
-
-    # Get recent activity summary
-    recent_aggregate = None
-    if recent_summaries:
-        recent_aggregate = cf.run(
-            'Summarize recent activity',
-            agent=secretary,
-            instructions="""
-            Create a clear summary of recent activity.
-            Focus on what's happening now and immediate implications.
-            Use markdown for formatting if needed.
-            """,
-            context={'summaries': [s.model_dump() for s in recent_summaries]},
-            result_type=str,
-        )
-
-    # Get historical record (extremely condensed)
-    historical_aggregate = None
-    if compact_summaries:
-        historical_aggregate = cf.run(
-            'Distill historical significance',
-            agent=secretary,
-            instructions="""
-            Create an extremely condensed historical record.
-            Include only the most significant developments and enduring patterns.
-            This should read like a brief historical record - just the key milestones.
-            Use markdown for critical emphasis only. Good links can replace long descriptions.
-            """,
-            context={'summaries': [s.model_dump() for s in compact_summaries]},
-            result_type=str,
-        )
-
-    return JSONResponse(
-        {
-            'timespan_hours': hours,
-            'recent_summary': recent_aggregate,
-            'historical_summary': historical_aggregate,
-            'num_recent_summaries': len(recent_summaries),
-            'num_historical_summaries': len(compact_summaries),
-            'source_types': list(set(st for s in recent_summaries + compact_summaries for st in s.source_types)),
-        }
-    )
-
-
-if __name__ == '__main__':
-    import uvicorn
-
-    uvicorn.run(app, host=settings.host, port=settings.port)
+app.include_router(home.router)
+app.include_router(observations.router)

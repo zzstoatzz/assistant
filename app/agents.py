@@ -66,7 +66,7 @@ secretary = cf.Agent(
     2. Group and connect related items
     3. Identify urgent or important matters
     4. Create clear, concise summaries
-    5. Reach out to the human when appropriate
+    5. Reach out to the human when appropriate (only about very urgent, new, or important things)
 
     Communication Guidelines:
     - Use markdown formatting for clarity

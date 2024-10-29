@@ -7,55 +7,34 @@ from assistant.utilities.loggers import get_logger
 logger = get_logger(__name__)
 
 
-class BackgroundTask:
-    """Represents a periodic background task"""
+class BackgroundTaskManager:
+    """Manages periodic background tasks from callable functions"""
 
-    def __init__(self, func: Callable[[], Any], interval_seconds: float, name: str | None = None):
-        self.func = func
-        self.interval_seconds = interval_seconds
-        self.name = name or func.__name__
-        self.task: asyncio.Task | None = None
+    def __init__(self, tasks: Sequence[tuple[Callable[[], Any], float]]):
+        """Initialize with sequence of (callable, interval_seconds) pairs"""
+        self.tasks = tasks
+        self._running_tasks: list[asyncio.Task] = []
 
-    async def run(self) -> None:
-        """Run the task periodically"""
-        logger.debug(f'Starting {self.name!r} with {self.interval_seconds} second interval')
+    async def _run_periodic(self, func: Callable[[], Any], interval: float) -> None:
+        """Run a function periodically with specified interval"""
         while True:
             try:
-                await asyncio.get_event_loop().run_in_executor(None, self.func)
+                await asyncio.get_event_loop().run_in_executor(None, func)
             except Exception as e:
-                logger.error(f'{self.name} failed: {e}')
-            await asyncio.sleep(self.interval_seconds)
-
-
-class BackgroundTaskManager:
-    """Manages multiple background tasks"""
-
-    def __init__(self):
-        self.tasks: list[BackgroundTask] = []
-
-    @classmethod
-    def from_background_tasks(cls, tasks: Sequence[BackgroundTask]) -> 'BackgroundTaskManager':
-        """Create a task manager from a sequence of background tasks"""
-        manager = cls()
-        for task in tasks:
-            manager.tasks.append(task)
-        return manager
-
-    def add_task(self, func: Callable[[], Any], interval_seconds: float, name: str | None = None) -> None:
-        """Add a new background task"""
-        self.tasks.append(BackgroundTask(func, interval_seconds, name))
+                logger.error(f'Task {func.__name__} failed: {e}')
+            await asyncio.sleep(interval)
 
     async def start_all(self) -> None:
-        """Start all registered tasks"""
-        for bg_task in self.tasks:
-            bg_task.task = asyncio.create_task(bg_task.run())
+        """Start all background tasks"""
+        for func, interval in self.tasks:
+            task = asyncio.create_task(self._run_periodic(func, interval))
+            self._running_tasks.append(task)
 
     async def stop_all(self) -> None:
         """Stop all running tasks"""
-        for bg_task in self.tasks:
-            if bg_task.task:
-                bg_task.task.cancel()
-                try:
-                    await bg_task.task
-                except asyncio.CancelledError:
-                    pass
+        for task in self._running_tasks:
+            task.cancel()
+
+        if self._running_tasks:
+            await asyncio.gather(*self._running_tasks, return_exceptions=True)
+        self._running_tasks.clear()

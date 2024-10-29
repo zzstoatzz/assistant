@@ -6,17 +6,17 @@ import controlflow as cf
 from prefect import flow, task
 
 from app.settings import settings
+from app.storage import DiskStorage
 from app.types import CompactedSummary, ObservationSummary
 from assistant.utilities.loggers import get_logger
 
-logger = get_logger()
+logger = get_logger('assistant.background')
 
 
 @task
-def load_unprocessed_summaries() -> list[tuple[Path, ObservationSummary]]:
+def load_unprocessed_summaries(storage: DiskStorage) -> list[tuple[Path, ObservationSummary]]:
     """Load unprocessed summaries and their paths"""
-    summary_files = list(settings.summaries_dir.glob('summary_*.json'))
-    unprocessed = [p for p in summary_files if p.parent == settings.summaries_dir]
+    unprocessed = list(storage.get_unprocessed())
 
     if not unprocessed:
         logger.info('No unprocessed summaries found')
@@ -111,34 +111,22 @@ def compact_summaries(
 
 
 @task
-def store_compacted_summary(summary: CompactedSummary) -> None:
+def store_compacted_summary(storage: DiskStorage, summary: CompactedSummary) -> None:
     """Store a compacted summary"""
-    compact_dir = settings.summaries_dir / 'compact'
-    compact_dir.mkdir(exist_ok=True)
-
-    # Use UTC timestamps in filenames
-    filename = (
-        f'compact_{summary.start_time.astimezone(UTC):%Y%m%d_%H%M}_{summary.end_time.astimezone(UTC):%Y%m%d_%H%M}.json'
-    )
-    (compact_dir / filename).write_text(summary.model_dump_json(indent=2))
+    storage.store_compact(summary)
 
 
 @task
-def archive_processed_summaries(paths: list[Path]) -> None:
-    """Move processed summaries to archive directory"""
-    processed_dir = settings.processed_summaries_dir
-
+def archive_processed_summaries(storage: DiskStorage, paths: list[Path]) -> None:
+    """Move processed summaries to processed directory"""
     for path in paths:
         try:
-            new_path = processed_dir / path.name
+            new_path = storage.processed_dir / path.name
             if new_path.exists():
-                # Use UTC timestamp for uniqueness
                 timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
-                new_path = processed_dir / f'{path.stem}_{timestamp}{path.suffix}'
-
+                new_path = storage.processed_dir / f'{path.stem}_{timestamp}{path.suffix}'
             path.rename(new_path)
             logger.info(f'Archived summary: {path.name} -> {new_path.name}')
-
         except Exception as e:
             logger.error(f'Failed to archive {path.name}: {e}')
 
@@ -169,8 +157,9 @@ def load_compact_summaries(hours: int | None = None) -> list[CompactedSummary]:
 
 
 @flow
-def compress_observations(agents: list[cf.Agent]) -> None:
-    if not (loaded_summaries := load_unprocessed_summaries()):
+def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> None:
+    """Main flow for compressing observations"""
+    if not (loaded_summaries := load_unprocessed_summaries(storage)):
         return None
 
     paths = [p for p, _ in loaded_summaries]
@@ -179,8 +168,8 @@ def compress_observations(agents: list[cf.Agent]) -> None:
     analysis = analyze_summaries(summaries, agents)
 
     if compact_summary := compact_summaries(loaded_summaries, agents):
-        store_compacted_summary(compact_summary)
+        store_compacted_summary(storage, compact_summary)
 
-    archive_processed_summaries(paths)
+    archive_processed_summaries(storage, paths)
 
     return analysis
