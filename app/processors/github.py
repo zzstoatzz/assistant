@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import Any
 
 import controlflow as cf
@@ -24,12 +24,16 @@ def process_github_observations(
     storage: DiskStorage, filters: list[GitHubEventFilter], agents: list[cf.Agent], instructions: str | None = None
 ) -> ObservationSummary | None:
     """Process GitHub notifications and create a summary"""
+    logger = get_logger()
 
     events = []
     with GitHubObserver(token=settings.github_token, filters=filters) as observer:
         if not (events_list := list(observer.observe())):
             logger.info('Successfully checked GitHub - no new notifications found')
             return None
+
+        raw_events = {'timestamp': datetime.now(UTC), 'source': 'github', 'events': events_list}
+        storage.store_raw(raw_events)  # Store raw data first
 
         for event in events_list:
             events.append(
@@ -45,22 +49,26 @@ def process_github_observations(
             )
             logger.info_kv(e['repository'], e['title'])
 
-    # Use the monitor agent to create a summary
-    summary = cf.run(
-        'Create summary of new GitHub notifications',
-        agents=agents,
-        instructions=(
-            instructions
+    # Create and store processed summary
+    summary = ObservationSummary(
+        timestamp=datetime.now(UTC),
+        summary=cf.run(
+            'Create summary of new GitHub notifications',
+            agents=agents,
+            instructions=instructions
             or """
-        Review these GitHub notifications and create a concise summary.
-        Group related items by repository and highlight anything urgent or requiring immediate attention.
-        """
+            Review these GitHub notifications and create a concise summary.
+            Group related items by repository and highlight anything urgent or requiring immediate attention.
+            """,
+            context={'events': events},
+            result_type=str,
         ),
-        context={'events': events},
-        result_type=str,
+        events=events,
+        source_types=['github'],
     )
 
-    return ObservationSummary(timestamp=datetime.now(), summary=summary, events=events, source_types=['github'])
+    storage.store_processed(summary)
+    return summary
 
 
 @flow
@@ -92,8 +100,4 @@ def check_github(
         logger.warning_style('No GitHub event filters found. You may get too many notifications.')
         event_filters = []
 
-    if summary := process_github_observations(storage, event_filters, agents, instructions):
-        storage.store_raw(summary)
-        storage.store_processed(summary)
-    else:
-        logger.info('GitHub check complete - no updates to process')
+    process_github_observations(storage, event_filters, agents, instructions)
