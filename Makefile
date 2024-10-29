@@ -16,7 +16,8 @@ HOST ?= localhost
 all: setup run
 
 .PHONY: setup
-setup:
+setup: check-env
+	@echo "Setting up the environment..."
 	@if [ ! -f .env ]; then \
 		touch .env; \
 	fi
@@ -65,3 +66,13 @@ clean:
 .PHONY: dev-setup
 dev-setup:
 	UV_SYSTEM_PYTHON=1 uv pip install --editable ".[dev]"
+
+check-env:
+	@echo "Checking environment variables..."
+	@[ -n "$(OPENAI_API_KEY)" ] || (echo "OPENAI_API_KEY is not set" && exit 1)
+	@[ -n "$(PREFECT_API_KEY)" ] || (echo "PREFECT_API_KEY is not set" && exit 1)
+	@[ -n "$(PREFECT_API_URL)" ] || (echo "PREFECT_API_URL is not set" && exit 1)
+	@[ -n "$(HUMANLAYER_API_KEY)" ] || (echo "HUMANLAYER_API_KEY is not set" && exit 1)
+	@[ -n "$(GITHUB_TOKEN)" ] || (echo "GITHUB_TOKEN is not set" && exit 1)
+	@[ -n "$(SLACK_BOT_TOKEN)" ] || (echo "SLACK_BOT_TOKEN is not set" && exit 1)
+	@echo "All required environment variables are set."
