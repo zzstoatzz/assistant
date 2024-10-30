@@ -1,0 +1,19 @@
+{
+  "summary": "",
+  "timestamp": "2024-10-30T03:06:18.422254Z",
+  "events": [
+    {
+      "type": "PullRequest",
+      "timestamp": "2024-10-30T03:06:18.238834+00:00",
+      "hash": "8cb42df331ffe50b7d6d05f2d14e343e74c87f3794da29d847cacb03d7303df4",
+      "title": "Patch Selemela07 devcontainer.json",
+      "repository": "PrefectHQ/prefect",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15860"
+    }
+  ],
+  "source_types": [
+    "github"
+  ],
+  "day_id": "2024-10-30"
+}

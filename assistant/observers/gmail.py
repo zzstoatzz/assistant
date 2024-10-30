@@ -27,6 +27,16 @@ class EmailEvent(BaseEvent):
     thread_id: str = field(default='')
     labels: list[str] = field(default_factory=list)
 
+    def __post_init__(self) -> None:
+        self.content = {
+            'subject': self.subject,
+            'sender': self.sender,
+            'snippet': self.snippet,
+            'thread_id': self.thread_id,
+            'labels': self.labels,
+        }
+        super().__post_init__()
+
 
 def get_gmail_service(creds_path: Path, token_path: Path) -> Resource:
     """Initialize and return the Gmail service"""

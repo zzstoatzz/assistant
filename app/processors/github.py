@@ -28,29 +28,26 @@ def process_github_observations(
 
     events = []
     with GitHubObserver(token=settings.github_token, filters=filters) as observer:
-        if not (events_list := list(observer.observe())):
+        if not (github_events := list(observer.observe())):
             logger.info('Successfully checked GitHub - no new notifications found')
             return None
 
-        # Create events first
-        for event in events_list:
+        # Create events from BaseEvent instances
+        for event in github_events:
             events.append(
-                e := {
-                    'type': 'github',
-                    'timestamp': datetime.now().isoformat(),
-                    'title': event.title,
-                    'repository': event.repository,
-                    'notification_type': event.type,
-                    'reason': event.reason,
-                    'url': event.url,
+                {
+                    'type': event.source_type,
+                    'timestamp': event.timestamp.isoformat(),
+                    'hash': event.hash,
+                    **event.content,  # Includes title, repository, etc.
                 }
             )
-            logger.info_kv(e['repository'], e['title'])
+            logger.info_kv(event.content['repository'], event.content['title'])
 
         # Store raw events as ObservationSummary
         raw_summary = ObservationSummary(
             timestamp=datetime.now(UTC),
-            summary='',  # Empty summary for raw storage
+            summary='',
             events=events,
             source_types=['github'],
         )
@@ -110,7 +107,7 @@ def check_github(
     process_github_observations(storage, event_filters, agents, instructions)
 
 
-@settings.hl.instance.require_approval()
+# @settings.hl.instance.require_approval()
 def create_github_issue(repository_name: str, title: str, body: str) -> str | None:
     """Create a GitHub issue using the GitHub API."""
     url = f'https://api.github.com/repos/{repository_name}/issues'

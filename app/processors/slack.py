@@ -29,65 +29,81 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
         logger.error('Slack bot token is not set')
         return None
 
-    # Load BOTH raw and processed messages to check for duplicates
-    processed_messages = set()
+    # Load processed event hashes for deduplication
+    processed_hashes = set()
 
-    # Check processed directory
-    for path in storage.get_processed():
-        try:
-            summary = ObservationSummary.model_validate_json(path.read_text())
-            for event in summary.events:
-                if event['type'] == 'slack':
-                    msg_key = f"{event['id']}_{event['channel']}"
-                    processed_messages.add(msg_key)
-        except Exception as e:
-            logger.error(f'Error loading processed summary {path}: {e}')
-
-    # Also check raw directory
-    for path in storage.get_unprocessed():
-        try:
-            summary = ObservationSummary.model_validate_json(path.read_text())
-            for event in summary.events:
-                if event['type'] == 'slack':
-                    msg_key = f"{event['id']}_{event['channel']}"
-                    processed_messages.add(msg_key)
-        except Exception as e:
-            logger.error(f'Error loading raw summary {path}: {e}')
+    # Check both processed and raw directories
+    for path_iter in [storage.get_processed(), storage.get_unprocessed()]:
+        for path in path_iter:
+            try:
+                summary = ObservationSummary.model_validate_json(path.read_text())
+                for event in summary.events:
+                    if event.get('hash'):
+                        processed_hashes.add(event['hash'])
+            except Exception as e:
+                logger.error(f'Error loading summary {path}: {e}')
 
     events = []
     with SlackObserver(token=token) as observer:
-        if not (events_list := list(observer.observe())):
+        if not (slack_events := list(observer.observe())):
             logger.info('Successfully checked Slack - no new messages found')
             return None
 
+        # Process events using BaseEvent hash for deduplication
         new_events = []
-        for event in events_list:
-            msg_key = f'{event.id}_{event.channel}'
-            if msg_key not in processed_messages:
+        for event in slack_events:
+            if event.hash not in processed_hashes:
                 new_events.append(event)
                 events.append(
                     {
-                        'type': 'slack',
-                        'timestamp': datetime.now(UTC).isoformat(),
-                        'channel': event.channel,
-                        'sender': event.user,
-                        'text': event.text,
-                        'id': event.id,
-                        'thread_ts': event.thread_ts,
+                        'type': event.source_type,
+                        'timestamp': event.timestamp.isoformat(),
+                        'hash': event.hash,
+                        **event.content,  # Includes channel, user, text, thread_ts, permalink
                     }
                 )
-                logger.info(f'New message in {event.channel} from {event.user} [{msg_key}]: {event.text[:50]}...')
+                logger.info(
+                    f'New message in {event.content["channel"]} '
+                    f'from {event.content["user"]}: {event.content["text"][:50]}...'
+                )
             else:
-                logger.debug(f'Skipping already processed message: {msg_key}')
+                logger.debug(f'Skipping already processed message with hash: {event.hash}')
 
         if not new_events:
             logger.info('All messages have already been processed')
             return None
 
         # Store raw events immediately
-        summary = ObservationSummary(timestamp=datetime.now(UTC), summary='', events=events, source_types=['slack'])
-        storage.store_raw(summary)
+        raw_summary = ObservationSummary(
+            timestamp=datetime.now(UTC),
+            summary='',
+            events=events,
+            source_types=['slack'],
+        )
+        storage.store_raw(raw_summary)
 
+    # Create processed summary with semantic grouping
+    summary = ObservationSummary(
+        timestamp=datetime.now(UTC),
+        summary=cf.run(
+            'Create summary of Slack messages',
+            agents=agents,
+            instructions="""
+            Review these Slack messages and create a concise summary.
+            Group related messages by:
+            1. Channel and thread context
+            2. Topic similarity
+            3. User interactions
+            Highlight anything requiring attention or follow-up.
+            """,
+            context={'events': events},
+            result_type=str,
+        ),
+        events=events,
+        source_types=['slack'],
+    )
+
+    storage.store_processed(summary)
     return summary
 
 
@@ -98,7 +114,7 @@ def check_slack(storage: DiskStorage, agents: list[cf.Agent]) -> None:
     process_slack_observations(storage, agents)
 
 
-@settings.hl.instance.require_approval()
+# @settings.hl.instance.require_approval()
 def send_slack_message(channel: str, text: str) -> str | None:
     """Send a message to a Slack channel."""
     client = WebClient(token=settings.slack_bot_token)

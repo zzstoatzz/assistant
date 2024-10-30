@@ -1,8 +1,10 @@
+import json
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
-from typing import Generic, Self, TypeVar
+from hashlib import sha256
+from typing import Any, Generic, Self, TypeVar
 
 
 @dataclass
@@ -11,9 +13,19 @@ class BaseEvent:
 
     id: str
     source_type: str
-
     timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
     raw_source: str | None = None
+    content: dict[str, Any] = field(default_factory=dict)
+    hash: str | None = field(default=None, init=False)
+
+    def __post_init__(self) -> None:
+        """Generate stable hash from content after initialization"""
+        if not self.hash:
+            # Create stable hash from content, excluding volatile fields
+            stable_content = {
+                k: v for k, v in self.content.items() if k not in {'last_updated', 'processed_at', 'timestamp'}
+            }
+            self.hash = sha256(json.dumps(stable_content, sort_keys=True).encode()).hexdigest()
 
 
 S = TypeVar('S')  # Source type

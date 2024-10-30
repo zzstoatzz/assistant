@@ -1,0 +1,20 @@
+{
+  "summary": "A Slack message was posted in the channel #testing-slackbots by the user 'nate' at the timestamp 2024-10-30T02:47:55.452598+00:00. The message content is: 'hello there i need assistance'. There is no thread context or specific topic mentioned in the message, but it signals a need for help or support from Nate. The permalink to the message is provided for further reference.",
+  "timestamp": "2024-10-30T02:47:55.868506Z",
+  "events": [
+    {
+      "type": "slack",
+      "timestamp": "2024-10-30T02:47:55.452598+00:00",
+      "hash": "748ebf641f993773e8c81b21dbbb90afd03b1e04e5698c03db0fe477db28f7cf",
+      "channel": "#testing-slackbots",
+      "user": "nate",
+      "text": "hello there i need assitance",
+      "thread_ts": null,
+      "permalink": "https://stoatllc.slack.com/archives/C03S3HZ2X3M/p1730256336584419"
+    }
+  ],
+  "source_types": [
+    "slack"
+  ],
+  "day_id": "2024-10-30"
+}

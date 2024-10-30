@@ -18,6 +18,17 @@ class GitHubEvent(BaseEvent):
     reason: str = field(default='')
     url: str = field(default='')
 
+    def __post_init__(self) -> None:
+        """Ensure content is populated before hashing"""
+        self.content = {
+            'title': self.title,
+            'repository': self.repository,
+            'type': self.type,
+            'reason': self.reason,
+            'url': self.url,
+        }
+        super().__post_init__()
+
 
 @dataclass
 class GitHubEventFilter:

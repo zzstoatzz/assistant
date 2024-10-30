@@ -14,6 +14,7 @@ class ObservationSummary(BaseModel):
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
     events: list[dict[str, Any]]
     source_types: list[str]
+    day_id: str = Field(default_factory=lambda: datetime.now(UTC).strftime('%Y-%m-%d'))
 
 
 class CompactionResult(BaseModel):
@@ -36,3 +37,10 @@ class CompactedSummary(BaseModel):
         le=1,
     )
     source_types: list[str] = Field(description='Types of sources that contributed to this summary')
+
+
+class FormattedDayContent(BaseModel):
+    day_id: str
+    html_content: str = Field(description='The formatted HTML for the timeline')
+    metadata: dict = Field(description='Any additional context the AI wants to provide')
+    source_types: list[str] = Field(description="Unique sources for this day's events")

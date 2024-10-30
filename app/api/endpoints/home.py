@@ -1,8 +1,11 @@
+from datetime import datetime
+
 import httpx
 from fastapi import APIRouter, Request
 
 from app.api.dependencies import load_summaries
 from app.api.templates import templates
+from app.types import ObservationSummary
 
 router = APIRouter()
 
@@ -16,22 +19,25 @@ async def get_random_duck() -> dict:
 
 @router.get('/')
 async def home(request: Request, hours: int = 24):
-    """Home page showing both recent and compacted observations"""
+    """Home page showing daily cards and historical pinboard"""
     recent_summaries, compact_summaries = load_summaries(hours)
 
-    recent_summaries = sorted(recent_summaries, key=lambda s: s.timestamp)
-    compact_summaries = sorted(compact_summaries, key=lambda s: s.start_time)
+    # Organize summaries by day and time
+    daily_summaries: dict[str, list[ObservationSummary]] = {}
+    for summary in sorted(recent_summaries, key=lambda s: s.timestamp, reverse=True):
+        daily_summaries.setdefault(summary.day_id, []).append(summary)
 
     duck_data = None
-    if not (recent_summaries or compact_summaries):
+    # Show duck for empty days as well as completely empty state
+    if not daily_summaries.get(datetime.now().strftime('%Y-%m-%d'), []):
         duck_data = await get_random_duck()
 
     return templates.TemplateResponse(
         'home.html',
         {
             'request': request,
-            'recent_summaries': recent_summaries,
-            'compact_summaries': compact_summaries,
+            'daily_summaries': daily_summaries,
+            'compact_summaries': sorted(compact_summaries, key=lambda s: s.end_time, reverse=True),
             'hours': hours,
             'has_data': bool(recent_summaries or compact_summaries),
             'duck_data': duck_data,

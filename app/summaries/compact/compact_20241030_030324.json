@@ -1,0 +1,9 @@
+{
+  "summary": "On 2024-10-30, an important email was received from Nate Nowack at 03:02:09 UTC. The email, marked with labels such as 'UNREAD', 'IMPORTANT', 'SENT', and 'INBOX', had the subject 'Testing' and a snippet 'this is a test'. This indicates a potential test or verification communication.",
+  "start_time": "2024-10-30T03:02:09Z",
+  "end_time": "2024-10-30T03:02:09Z",
+  "importance_score": 0.8,
+  "source_types": [
+    "email"
+  ]
+}
