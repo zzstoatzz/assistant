@@ -1,0 +1,64 @@
+{
+  "summary": "**Summary of GitHub Notifications:**\n\n**Repository: PrefectHQ/prefect**\n1. **Branch: small-type-fix**\n   - \"Integrations Packages Tests\" workflow run failed.\n   - Occurred at 2024-10-30T05:54:51.\n\n2. **Branch: untangling-imports**\n   - \"Unit tests\" workflow run failed.\n   - \"Static analysis\" workflow run failed.\n   - \"Verify prefect-client build\" workflow run failed.\n   - \"Integrations Packages Tests\" workflow run failed.\n   - All failures occurred around 2024-10-30T05:54:52.\n\n**Urgency:** Multiple workflow failures on the `untangling-imports` branch might need immediate attention to ensure the code quality and functionality are maintained.",
+  "timestamp": "2024-10-30T05:54:52.692143Z",
+  "events": [
+    {
+      "type": "CheckSuite",
+      "timestamp": "2024-10-30T05:54:51.645511+00:00",
+      "hash": "3c2b7d23d73f99e711508380cc1d1f41c2dac390eca1fee840c946d76d6765fc",
+      "title": "Integrations Packages Tests workflow run failed for small-type-fix branch",
+      "repository": "PrefectHQ/prefect",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "CheckSuite",
+      "timestamp": "2024-10-30T05:54:51.779947+00:00",
+      "hash": "3c2b7d23d73f99e711508380cc1d1f41c2dac390eca1fee840c946d76d6765fc",
+      "title": "Integrations Packages Tests workflow run failed for small-type-fix branch",
+      "repository": "PrefectHQ/prefect",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "CheckSuite",
+      "timestamp": "2024-10-30T05:54:51.919640+00:00",
+      "hash": "6ea8bfb8ff2c8e6e2afa00ab43e8f9ccabc0d608dc74bfc646e5abfdd7e79206",
+      "title": "Unit tests workflow run failed for untangling-imports branch",
+      "repository": "PrefectHQ/prefect",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "CheckSuite",
+      "timestamp": "2024-10-30T05:54:52.112404+00:00",
+      "hash": "93f6720554d9f5d4c6a825874de36f6c3f67a0d4ee0b54bf95d90f5bed9e9437",
+      "title": "Static analysis workflow run failed for untangling-imports branch",
+      "repository": "PrefectHQ/prefect",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "CheckSuite",
+      "timestamp": "2024-10-30T05:54:52.337508+00:00",
+      "hash": "d7b8f2b9f27afe099f4e3d1d1eb7a7920c55795697b4feed598e6d1901123e66",
+      "title": "Verify prefect-client build workflow run failed for untangling-imports branch",
+      "repository": "PrefectHQ/prefect",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "CheckSuite",
+      "timestamp": "2024-10-30T05:54:52.515291+00:00",
+      "hash": "073990d7272aba3e4e6c03dad3493d06c880124901354152e91b813b1ff72a6c",
+      "title": "Integrations Packages Tests workflow run failed for untangling-imports branch",
+      "repository": "PrefectHQ/prefect",
+      "reason": "ci_activity",
+      "url": null
+    }
+  ],
+  "source_types": [
+    "github"
+  ],
+  "day_id": "2024-10-30"
+}

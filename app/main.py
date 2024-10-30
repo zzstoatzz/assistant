@@ -38,7 +38,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     if github_settings.enabled:
         functions.append(
-            (partial(check_github, storage=storage, agents=[github_agent]), github_settings.check_interval_seconds)
+            (
+                partial(check_github, storage=storage, agents=[github_agent]),
+                github_settings.check_interval_seconds,
+            )
         )
 
     if slack_settings.enabled:

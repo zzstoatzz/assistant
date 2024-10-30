@@ -1,0 +1,17 @@
+{
+  "summary": "You have received an email from Chase regarding online security. The subject of the email is \"Details enclosed: Nathan, welcome to the latest tips to help you protect yourself online\". The email emphasizes the importance of protecting your accounts and provides top tips for online security. There are no urgent actions required from this email.",
+  "timestamp": "2024-10-30T05:50:08.122688Z",
+  "events": [
+    {
+      "type": "email",
+      "timestamp": "2024-10-30T05:50:08.116786+00:00",
+      "subject": "Details enclosed: Nathan, welcome to the latest tips to help you protect yourself online",
+      "sender": "Chase <Chase@e.chase.com>",
+      "snippet": "Help protect yourself online with these top tips Top tips to help keep your account secure We take protecting your accounts seriously. There are easy ways you can help protect yourself online. See the"
+    }
+  ],
+  "source_types": [
+    "email"
+  ],
+  "day_id": "2024-10-30"
+}

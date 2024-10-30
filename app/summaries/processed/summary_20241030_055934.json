@@ -1,0 +1,28 @@
+{
+  "summary": "### PrefectHQ/prefect Notifications\n\n1. **[Pull Request: [DNM] Testing a psql upgrade](https://api.github.com/repos/PrefectHQ/prefect/pulls/15198)**\n   - **Type**: Pull Request\n   - **Timestamp**: 2024-10-30T05:59:31.299758+00:00\n   - **Reason**: Review Requested\n   - **Summary**: This pull request is marked as 'Do Not Merge' and involves testing an upgrade to PostgreSQL. Review has been requested.\n\n2. **CheckSuite: Integrations Packages Tests workflow run failed for return-state-data branch**\n   - **Type**: Check Suite\n   - **Timestamp**: 2024-10-30T05:59:31.153735+00:00\n   - **Reason**: CI Activity\n   - **Summary**: The CI workflow for the branch 'return-state-data' has failed during the integrations packages tests. This needs attention to ensure the stability of CI processes.",
+  "timestamp": "2024-10-30T05:59:31.450698Z",
+  "events": [
+    {
+      "type": "CheckSuite",
+      "timestamp": "2024-10-30T05:59:31.153735+00:00",
+      "hash": "1f7fef7b6f085de9b324abdd83e3e3957acee1de319e3bf557b4da417a300e4d",
+      "title": "Integrations Packages Tests workflow run failed for return-state-data branch",
+      "repository": "PrefectHQ/prefect",
+      "reason": "ci_activity",
+      "url": null
+    },
+    {
+      "type": "PullRequest",
+      "timestamp": "2024-10-30T05:59:31.299758+00:00",
+      "hash": "6572195f9fffe5103a2eb7e6fee01ba30a631e35d5965af872ae5beeaeb8caaa",
+      "title": "[DNM] Testing a psql upgrade ",
+      "repository": "PrefectHQ/prefect",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15198"
+    }
+  ],
+  "source_types": [
+    "github"
+  ],
+  "day_id": "2024-10-30"
+}

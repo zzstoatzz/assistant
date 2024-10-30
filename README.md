@@ -1,5 +1,18 @@
 # Assistant
 
+## Quick Start
+
+See `app/README.md` for detailed setup, or run:
+
+```bash
+make setup  # Setup environment
+make dev    # Development with hot reload
+make        # Build and run in container
+make clean  # Cleanup
+```
+
+---
+
 An AI-powered service that observes information streams (email, GitHub, Slack) and maintains a compressed historical record, focusing on what's important while preserving context.
 
 ## How It Works
@@ -41,13 +54,4 @@ CompactedSummary(
 - Context preservation through markdown links
 - Web UI and API access
 
-## Quick Start
-
-See `app/README.md` for detailed setup, or run:
-
-```bash
-make setup  # Setup environment
-make dev    # Development with hot reload
-make        # Production in container
-make clean  # Cleanup
-```
+## Demo
