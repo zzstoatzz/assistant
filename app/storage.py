@@ -19,10 +19,6 @@ class DiskStorage(Generic[M]):
         self.processed_dir = base_dir / 'processed'
         self.compact_dir = base_dir / 'compact'
 
-        # Ensure directories exist
-        for dir in [self.raw_dir, self.processed_dir, self.compact_dir]:
-            dir.mkdir(parents=True, exist_ok=True)
-
     def store_raw(self, data: M) -> Path:
         """Store raw observation data"""
         timestamp = datetime.now(settings.tz).strftime('%Y%m%d_%H%M%S')
