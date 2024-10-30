@@ -32,9 +32,7 @@ def process_github_observations(
             logger.info('Successfully checked GitHub - no new notifications found')
             return None
 
-        raw_events = {'timestamp': datetime.now(UTC), 'source': 'github', 'events': events_list}
-        storage.store_raw(raw_events)  # Store raw data first
-
+        # Create events first
         for event in events_list:
             events.append(
                 e := {
@@ -48,6 +46,15 @@ def process_github_observations(
                 }
             )
             logger.info_kv(e['repository'], e['title'])
+
+        # Store raw events as ObservationSummary
+        raw_summary = ObservationSummary(
+            timestamp=datetime.now(UTC),
+            summary='',  # Empty summary for raw storage
+            events=events,
+            source_types=['github'],
+        )
+        storage.store_raw(raw_summary)
 
     # Create and store processed summary
     summary = ObservationSummary(

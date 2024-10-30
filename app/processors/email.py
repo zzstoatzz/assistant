@@ -35,7 +35,6 @@ def send_email(recipient: str, subject: str, body: str) -> str | None:
 def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
     """Process Gmail observations and create a summary"""
 
-    # Collect raw events
     events = []
     with GmailObserver(
         creds_path=settings.email_credentials_dir / 'gmail_credentials.json',
@@ -45,11 +44,7 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             logger.info('Successfully checked Gmail - no new messages found')
             return None
 
-        # Store raw events immediately
-        raw_events = {'timestamp': datetime.now(UTC), 'source': 'gmail', 'events': events_list}
-        storage.store_raw(raw_events)  # Store raw data first
-
-        # Continue processing...
+        # Create events first
         for event in events_list:
             events.append(
                 {
@@ -61,6 +56,15 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
                 }
             )
             logger.info_kv(event.sender, event.subject)
+
+        # Store raw events as ObservationSummary
+        raw_summary = ObservationSummary(
+            timestamp=datetime.now(UTC),
+            summary='',  # Empty summary for raw storage
+            events=events,
+            source_types=['email'],
+        )
+        storage.store_raw(raw_summary)
 
     # Create and store processed summary
     summary = ObservationSummary(
