@@ -1,5 +1,5 @@
 import base64
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 
 import controlflow as cf
@@ -71,7 +71,7 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             events.append(
                 {
                     'type': 'email',
-                    'timestamp': datetime.now(UTC).isoformat(),
+                    'timestamp': datetime.now(root_settings.tz).isoformat(),
                     'subject': event.subject,
                     'sender': event.sender,
                     'snippet': event.snippet,
@@ -81,7 +81,7 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 
         # Store raw events as ObservationSummary
         raw_summary = ObservationSummary(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(root_settings.tz),
             summary='',  # Empty summary for raw storage
             events=events,
             source_types=['email'],
@@ -90,7 +90,7 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 
     # Create and store processed summary
     summary = ObservationSummary(
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(root_settings.tz),
         summary=cf.run(
             'Create summary of new messages',
             agents=agents,

@@ -1,0 +1,19 @@
+{
+  "timestamp": "2024-10-30T14:21:40.711611-05:00",
+  "summary": "",
+  "events": [
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T14:21:40.708286-05:00",
+      "hash": "13126661470",
+      "title": "Support On_cancellation state change hooks for tasks",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15873"
+    }
+  ],
+  "source_types": [
+    "github"
+  ],
+  "day_id": "2024-10-30"
+}

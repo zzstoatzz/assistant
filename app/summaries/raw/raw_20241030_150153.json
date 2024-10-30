@@ -1,0 +1,19 @@
+{
+  "timestamp": "2024-10-30T15:01:53.361510-05:00",
+  "summary": "",
+  "events": [
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T15:01:53.358617-05:00",
+      "hash": "13127245793",
+      "title": "Jobs triggered from prefect-databricks should be cancelled when the parent flow run is cancelled",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15874"
+    }
+  ],
+  "source_types": [
+    "github"
+  ],
+  "day_id": "2024-10-30"
+}

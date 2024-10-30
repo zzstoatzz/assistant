@@ -1,0 +1,17 @@
+{
+  "timestamp": "2024-10-30T19:50:56.775977Z",
+  "summary": "",
+  "events": [
+    {
+      "type": "email",
+      "timestamp": "2024-10-30T19:50:56.769672+00:00",
+      "subject": "Canceled event with note: Product Engineering Check In @ Tue Nov 5, 2024 11:15am - 11:30am (CST) (Nate Nowack)",
+      "sender": "Jenny Grange <jenny@prefect.io>",
+      "snippet": "Product Engineering Check In This event has been canceled and removed from your calendar with a note: &quot;Prefect closed for Election Day. Go vote! &quot; Join with Google Meet Meeting link meet."
+    }
+  ],
+  "source_types": [
+    "email"
+  ],
+  "day_id": "2024-10-30"
+}

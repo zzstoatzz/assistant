@@ -1,0 +1,24 @@
+{
+  "timestamp": "2024-10-30T18:20:45.431092Z",
+  "summary": "",
+  "events": [
+    {
+      "type": "email",
+      "timestamp": "2024-10-30T18:20:45.426658+00:00",
+      "subject": "[ngrok news] New internal endpoints for flexible and expressive traffic orchestration (+ win swag in our first survey 🎁)",
+      "sender": "ngrok <team@m.ngrok.com>",
+      "snippet": "Check out the latest product updates, technical guides, and content from the team at ngrok! View in browser The ngrok monthly newsletter Product updates ngrok-newsletter-octt-2024_internal-endpoints-v2"
+    },
+    {
+      "type": "email",
+      "timestamp": "2024-10-30T18:20:45.429635+00:00",
+      "subject": "Issue [OSS-5842] prefect deploy issue on Windows added to the Open Source t...",
+      "sender": "Linear <notifications@linear.app>",
+      "snippet": "You have 1 unread notification on Linear. Open your inbox: https://linear.app/prefect/inbox Unsubscribe from these emails: https://linear.app/unsubscribe?token="
+    }
+  ],
+  "source_types": [
+    "email"
+  ],
+  "day_id": "2024-10-30"
+}
