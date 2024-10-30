@@ -1,5 +1,3 @@
-from collections.abc import Sequence
-from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import TypeAlias
 
@@ -19,146 +17,81 @@ DailyGroups: TypeAlias = dict[str, list[ObservationSummary]]
 
 @task
 def load_unprocessed_summaries(storage: DiskStorage) -> list[SummaryWithPath]:
-    """Load unprocessed summaries and their paths"""
+    """Load raw summaries that need processing"""
     unprocessed = list(storage.get_unprocessed())
     if not unprocessed:
-        logger.info('No unprocessed summaries found')
         return []
 
-    loaded: list[SummaryWithPath] = []
+    loaded = []
     for path in unprocessed:
         try:
             summary = ObservationSummary.model_validate_json(path.read_text())
             loaded.append((path, summary))
         except Exception as e:
             logger.error(f'Failed to load summary {path.name}: {e}')
-            continue
-
     return loaded
 
 
-def _get_agent_names(parameters: dict[str, object]) -> str:
-    """Format agent names for task run display"""
-    agents = parameters.get('agents', [])
-    if not isinstance(agents, Sequence):
-        return 'unknown agents'
-    return 'analyzing summaries with agent(s): ' + ', '.join(a.name for a in agents)
-
-
-@task(task_run_name=_get_agent_names)
-def analyze_summaries(summaries: list[ObservationSummary], agents: list[cf.Agent]) -> CompactedSummary | None:
-    """Have agents analyze the summaries"""
-    if not summaries:
-        return None
-
-    return cf.run(
-        'Check if any of the summaries are interesting, reach out to the human if they are',
-        agents=agents,
-        context={'summaries': [s.model_dump() for s in summaries]},
-        result_type=CompactedSummary,
-    )
-
-
 @task
-def compact_summaries(
-    summary_data: list[SummaryWithPath], agents: list[cf.Agent], extra_context: dict | None = None
-) -> CompactedSummary:
-    """Compress and organize summaries for efficient rendering"""
-    daily_groups: DailyGroups = {}
-    for _, summary in summary_data:
-        daily_groups.setdefault(summary.day_id, []).append(summary)
-
+def evaluate_for_pinboard(
+    summaries: list[ObservationSummary], existing_compact: CompactedSummary | None, agents: list[cf.Agent]
+) -> CompactedSummary | None:
+    """Evaluate if recent observations should be added to historical pinboard"""
     return cf.run(
-        'create a compact summary that preserves important context',
-        agents=agents,
+        'Evaluate if these events deserve a spot on the historical pinboard',
+        agents=[agents[-1]],  # Use secretary as gatekeeper
         instructions="""
-        when compacting summaries:
-        1. always include relevant links in markdown format
-        2. prioritize direct links to actionable items
-        3. format should be concise but preserve context through links
-        4. distinguish between the human's activity and others
-        5. make it clear when summarizing the human's own actions
+        Review these events and decide if they warrant historical preservation:
+        1. Look for significant changes or milestones
+        2. Consider long-term impact and relevance
+        3. Evaluate if this adds new context to existing pins
+        4. Preserve critical links and relationships
+        5. Only create/update pins for truly noteworthy items
+
+        If nothing is historically significant, return None.
         """,
         context={
-            'daily_groups': daily_groups,
+            'recent_summaries': [s.model_dump() for s in summaries],
+            'existing_pin': existing_compact.model_dump() if existing_compact else None,
             'user_identities': settings.user_identities,
-            **(extra_context or {}),
         },
         result_type=CompactedSummary,
     )
 
 
-@task
-def store_compacted_summary(storage: DiskStorage, summary: CompactedSummary) -> None:
-    """Store a compacted summary"""
-    storage.store_compact(summary)
-
-
-@task
-def archive_processed_summaries(storage: DiskStorage, paths: list[Path]) -> None:
-    """Move processed summaries to processed directory"""
-    for path in paths:
-        try:
-            new_path = _get_unique_archive_path(storage, path)
-            path.rename(new_path)
-            logger.info(f'Successfully archived {path.name} to {new_path}')
-        except Exception as e:
-            logger.error(f'Failed to archive {path.name}: {e}')
-
-
-def _get_unique_archive_path(storage: DiskStorage, path: Path) -> Path:
-    """Generate a unique path for archiving a summary"""
-    new_path = storage.processed_dir / path.name
-    if new_path.exists():
-        timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
-        new_path = storage.processed_dir / f'{path.stem}_{timestamp}{path.suffix}'
-    return new_path
-
-
-@task
-def load_compact_summaries(hours: int | None = None) -> list[CompactedSummary]:
-    """Load compacted summaries, optionally filtered by time window"""
-    compact_dir = settings.summaries_dir / 'compact'
-    if not compact_dir.exists():
-        return []
-
-    cutoff = datetime.now(UTC) - timedelta(hours=hours) if hours else None
-    summaries: list[CompactedSummary] = []
-
-    for path in compact_dir.glob('compact_*.json'):
-        try:
-            summary = _load_and_normalize_summary(path)
-            if not cutoff or summary.end_time > cutoff:
-                summaries.append(summary)
-        except Exception as e:
-            logger.error(f'Failed to load compact summary {path.name}: {e}')
-            continue
-
-    return sorted(summaries, key=lambda s: (s.end_time, s.importance_score), reverse=True)
-
-
-def _load_and_normalize_summary(path: Path) -> CompactedSummary:
-    """Load a summary and ensure its timestamps are UTC"""
-    summary = CompactedSummary.model_validate_json(path.read_text())
-    if summary.end_time.tzinfo is None:
-        summary.end_time = summary.end_time.replace(tzinfo=UTC)
-    return summary
-
-
 @flow
 def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> None:
-    """Main flow for compressing observations"""
+    """Process and consolidate observations"""
     logger.info('Compressing observations')
-    if not (loaded_summaries := load_unprocessed_summaries(storage)):
-        logger.info('No unprocessed summaries found')
-        return
 
-    paths = [p for p, _ in loaded_summaries]
-    summaries = [s for _, s in loaded_summaries]
+    # 1. Process raw summaries to processed/
+    if loaded_summaries := load_unprocessed_summaries(storage):
+        for path, summary in loaded_summaries:
+            storage.store_processed(summary)
+            path.rename(storage.processed_dir / path.name)
 
-    analysis = analyze_summaries(summaries, agents)
-    extra_context = {'analysis': analysis} if analysis else None
+    # 2. Group processed summaries by day
+    day_groups = {}
+    for path in storage.get_processed():
+        try:
+            summary = ObservationSummary.model_validate_json(path.read_text())
+            day_groups.setdefault(summary.day_id, []).append(summary)
+        except Exception as e:
+            logger.error(f'Failed to load processed summary {path.name}: {e}')
 
-    if compact_summary := compact_summaries(loaded_summaries, agents, extra_context):
-        store_compacted_summary(storage, compact_summary)
-        archive_processed_summaries(storage, paths)
+    # 3. Let secretary evaluate each day for historical significance
+    for day_id, summaries in day_groups.items():
+        # Check existing pin
+        existing = None
+        for path in storage.get_compact():
+            try:
+                compact = CompactedSummary.model_validate_json(path.read_text())
+                if compact.end_time.date() == summaries[0].day_id:
+                    existing = compact
+                    break
+            except Exception as e:
+                logger.error(f'Failed to load compact summary {path.name}: {e}')
+
+        # Let secretary decide if this should be pinned
+        if compact_summary := evaluate_for_pinboard(summaries, existing, agents):
+            storage.store_compact(compact_summary)

@@ -3,9 +3,14 @@ from fastapi import APIRouter, Request
 
 from app.api.dependencies import get_enabled_processors, load_summaries
 from app.api.templates import templates
-from app.types import ObservationSummary
+from app.settings import settings
+from app.storage import DiskStorage
+from assistant.utilities.loggers import get_logger
 
 router = APIRouter()
+storage = DiskStorage(settings.app_dir)
+
+logger = get_logger('app.api.endpoints.home')
 
 
 async def get_random_duck() -> dict:
@@ -20,10 +25,18 @@ async def home(request: Request, hours: int = 24):
     """Home page showing daily cards and historical pinboard"""
     recent_summaries, compact_summaries = load_summaries(hours)
 
-    # Organize summaries by day and time
-    daily_summaries: dict[str, list[ObservationSummary]] = {}
+    # Group recent summaries by day and sort newest first within each day
+    daily_summaries = {}
     for summary in sorted(recent_summaries, key=lambda s: s.timestamp, reverse=True):
-        daily_summaries.setdefault(summary.day_id, []).append(summary)
+        # Convert UTC timestamp to local time for display
+        logger.debug(f'Using timezone: {settings.tz}')
+        local_ts = summary.timestamp.astimezone(settings.tz)
+        day_id = local_ts.strftime('%Y-%m-%d')
+        daily_summaries.setdefault(day_id, []).append(summary)
+
+    # Sort each day's summaries newest first
+    for day_summaries in daily_summaries.values():
+        day_summaries.sort(key=lambda s: s.timestamp, reverse=True)
 
     return templates.TemplateResponse(
         'home.html',
@@ -32,7 +45,7 @@ async def home(request: Request, hours: int = 24):
             'daily_summaries': daily_summaries,
             'compact_summaries': sorted(compact_summaries, key=lambda s: s.end_time, reverse=True),
             'hours': hours,
-            'has_data': bool(recent_summaries or compact_summaries),
+            'has_data': bool(daily_summaries or compact_summaries),
             'duck_data': await get_random_duck(),
             'enabled_processors': get_enabled_processors(),
         },

@@ -1,9 +1,11 @@
 from collections.abc import Iterator
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from typing import Generic, TypeVar
 
 from pydantic import BaseModel
+
+from app.settings import settings
 
 M = TypeVar('M', bound=BaseModel)
 
@@ -23,21 +25,21 @@ class DiskStorage(Generic[M]):
 
     def store_raw(self, data: M) -> Path:
         """Store raw observation data"""
-        timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
+        timestamp = datetime.now(settings.tz).strftime('%Y%m%d_%H%M%S')
         path = self.raw_dir / f'raw_{timestamp}.json'
         path.write_text(data.model_dump_json(indent=2))
         return path
 
     def store_processed(self, data: M) -> Path:
         """Store processed summary data"""
-        timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
+        timestamp = datetime.now(settings.tz).strftime('%Y%m%d_%H%M%S')
         path = self.processed_dir / f'summary_{timestamp}.json'
         path.write_text(data.model_dump_json(indent=2))
         return path
 
     def store_compact(self, data: M) -> Path:
         """Store compacted summary data"""
-        timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
+        timestamp = datetime.now(settings.tz).strftime('%Y%m%d_%H%M%S')
         path = self.compact_dir / f'compact_{timestamp}.json'
         path.write_text(data.model_dump_json(indent=2))
         return path

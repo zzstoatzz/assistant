@@ -1,77 +1,20 @@
 [
     {
-        "repositories": [
-            "PrefectHQ/prefect"
-        ],
-        "event_types": [
-            "CheckSuite"
-        ],
-        "reasons": [
-            "ci_activity",
-            "subscribed"
-        ],
-        "branch": "main"
+        "repositories": ["PrefectHQ/prefect"],
+        "event_types": ["PullRequest", "Issue"],
+        "reasons": ["subscribed", "review_requested", "mention"]
     },
     {
-        "repositories": [
-            "PrefectHQ/prefect",
-            "PrefectHQ/ControlFlow"
-        ],
-        "event_types": [
-            "PullRequest"
-        ],
+        "repositories": ["zzstoatzz/assistant"],
+        "event_types": ["PullRequest", "Issue"],
         "reasons": [
+            "subscribed",
             "review_requested",
             "mention",
             "comment",
             "state_change",
-            "subscribed"
-        ]
-    },
-    {
-        "repositories": [
-            "PrefectHQ/prefect",
-            "PrefectHQ/ControlFlow"
-        ],
-        "event_types": [
-            "Issue"
-        ],
-        "reasons": [
-            "mention",
-            "comment",
-            "assigned",
-            "labeled",
-            "subscribed"
-        ]
-    },
-    {
-        "repositories": [
-            "zzstoatzz/assistant"
-        ],
-        "event_types": [
-            "PullRequest"
-        ],
-        "reasons": [
-            "review_requested",
-            "mention",
-            "comment",
-            "state_change",
-            "subscribed"
-        ]
-    },
-    {
-        "repositories": [
-            "zzstoatzz/assistant"
-        ],
-        "event_types": [
-            "Issue"
-        ],
-        "reasons": [
-            "mention",
-            "comment",
-            "assigned",
-            "labeled",
-            "subscribed"
+            "assign",
+            "author"
         ]
     }
 ]

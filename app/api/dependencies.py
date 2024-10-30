@@ -18,36 +18,31 @@ def get_storage() -> DiskStorage:
     return DiskStorage(settings.summaries_dir)
 
 
-def load_summaries(hours: int = 24) -> ProcessorSummaries:
-    """Load both recent and compact summaries"""
-    storage = get_storage()
-    cutoff = datetime.now(UTC) - timedelta(hours=hours)
+def load_summaries(hours: int) -> tuple[list[ObservationSummary], list[CompactedSummary]]:
+    """Load recent and compact summaries within time window"""
+    storage = DiskStorage(settings.summaries_dir)
 
-    recent_summaries = []
-    for summary_file in storage.get_processed():
+    # Load processed summaries from the last N hours
+    recent = []
+    for path in storage.get_processed():
         try:
-            summary = ObservationSummary.model_validate_json(summary_file.read_text())
-            if summary.timestamp.tzinfo is None:
-                summary.timestamp = summary.timestamp.replace(tzinfo=UTC)
-            if summary.timestamp > cutoff:
-                recent_summaries.append(summary)
+            summary = ObservationSummary.model_validate_json(path.read_text())
+            if summary.timestamp > datetime.now(UTC) - timedelta(hours=hours):
+                recent.append(summary)
         except Exception as e:
-            logger.error(f'Failed to load summary {summary_file.name}: {e}')
-            continue
+            logger.error(f'Failed to load summary {path.name}: {e}')
 
-    compact_summaries = []
-    for summary_file in storage.get_compact():
+    # Load compact summaries
+    compact = []
+    for path in storage.get_compact():
         try:
-            summary = CompactedSummary.model_validate_json(summary_file.read_text())
-            if summary.end_time.tzinfo is None:
-                summary.end_time = summary.end_time.replace(tzinfo=UTC)
-            if summary.end_time > cutoff:
-                compact_summaries.append(summary)
+            summary = CompactedSummary.model_validate_json(path.read_text())
+            if summary.end_time > datetime.now(UTC) - timedelta(hours=hours):
+                compact.append(summary)
         except Exception as e:
-            logger.error(f'Failed to load compact summary {summary_file.name}: {e}')
-            continue
+            logger.error(f'Failed to load compact summary {path.name}: {e}')
 
-    return recent_summaries, compact_summaries
+    return recent, compact
 
 
 def get_enabled_processors() -> list[str]:

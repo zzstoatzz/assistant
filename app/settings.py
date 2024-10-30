@@ -1,6 +1,7 @@
 from functools import partial
 from pathlib import Path
 from typing import Annotated, Self
+from zoneinfo import ZoneInfo
 
 from prefect.types import validate_set_T_from_delim_string
 from pydantic import BeforeValidator, Field, computed_field, model_validator
@@ -33,6 +34,12 @@ class Settings(BaseSettings):
     port: int = Field(default=8000, ge=1024, le=65535)
     app_dir: Path = Field(default=Path(__file__).parent)
     log_level: str = Field(default='INFO')
+    timezone: str = Field(default='America/Chicago')
+
+    @computed_field
+    @property
+    def tz(self) -> ZoneInfo:
+        return ZoneInfo(self.timezone)
 
     # User identity
     user_identities: list[UserIdentity] = Field(default=[])
