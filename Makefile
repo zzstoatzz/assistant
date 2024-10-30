@@ -1,14 +1,19 @@
 # Makefile for running the assistant and setting up environment variables
 
+ifeq (,$(shell which uv))
+$(error "uv is not installed. Please install it using one of these methods:\n\
+	• curl -LsSf https://astral.sh/uv/install.sh | sh  # For macOS/Linux\n\
+	• pip install uv  # Using pip\n\
+	For more information, visit: https://github.com/astral-sh/uv")
+endif
+
 # Configuration
 DOCKER_IMAGE := assistant
 DOCKERFILE := app/Dockerfile.main
 
-# Load environment variables
-include .env
+-include .env
 export
 
-# Development port with a different default than production
 DEV_PORT ?= 8001
 HOST ?= localhost
 
@@ -17,26 +22,11 @@ all: setup run
 
 .PHONY: setup
 setup: check-env
-	@echo "Setting up the environment..."
-	@if [ ! -f .env ]; then \
-		touch .env; \
-	fi
-	@if ! grep -q ASSISTANT_PORT .env; then \
-		echo "ASSISTANT_PORT=8000" >> .env; \
-	fi
-	@if ! grep -q OPENAI_API_KEY .env; then \
-		read -p "Enter your OpenAI API key: " openai_key; \
-		echo "OPENAI_API_KEY=$$openai_key" >> .env; \
-	fi
-	@if ! grep -q PREFECT_API_KEY .env; then \
-		read -p "Enter your Prefect API key: " prefect_key; \
-		echo "PREFECT_API_KEY=$$prefect_key" >> .env; \
-	fi
-	@if ! grep -q PREFECT_API_URL .env; then \
-		read -p "Enter your Prefect API URL: " prefect_url; \
-		echo "PREFECT_API_URL=$$prefect_url" >> .env; \
-	fi
-	@echo "Setup complete. Required environment variables are present in .env file."
+	@echo "✨ Setup complete"
+
+.PHONY: check-env
+check-env:
+	@uv run scripts/configure.py
 
 # Development with hot reload
 .PHONY: dev
@@ -66,13 +56,3 @@ clean:
 .PHONY: dev-setup
 dev-setup:
 	UV_SYSTEM_PYTHON=1 uv pip install --editable ".[dev]"
-
-check-env:
-	@echo "Checking environment variables..."
-	@[ -n "$(OPENAI_API_KEY)" ] || (echo "OPENAI_API_KEY is not set" && exit 1)
-	@[ -n "$(PREFECT_API_KEY)" ] || (echo "PREFECT_API_KEY is not set" && exit 1)
-	@[ -n "$(PREFECT_API_URL)" ] || (echo "PREFECT_API_URL is not set" && exit 1)
-	@[ -n "$(HUMANLAYER_API_KEY)" ] || (echo "HUMANLAYER_API_KEY is not set" && exit 1)
-	@[ -n "$(GITHUB_TOKEN)" ] || (echo "GITHUB_TOKEN is not set" && exit 1)
-	@[ -n "$(SLACK_BOT_TOKEN)" ] || (echo "SLACK_BOT_TOKEN is not set" && exit 1)
-	@echo "All required environment variables are set."

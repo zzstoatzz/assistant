@@ -2,11 +2,11 @@ from datetime import UTC, datetime
 
 import controlflow as cf
 from prefect import flow, task
-from pydantic import BaseModel
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
-from app.settings import settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
 from assistant.observers.slack import SlackObserver
@@ -15,24 +15,34 @@ from assistant.utilities.loggers import get_logger
 logger = get_logger('assistant.slack')
 
 
-class RawEvents(BaseModel):
-    timestamp: datetime
-    source: str
-    events: list
+class SlackSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix='SLACK_', extra='ignore')
+
+    enabled: bool = Field(default=False, description='Enable Slack processing')
+    bot_token: str | None = Field(default=None, description='Slack bot token')
+    check_interval_seconds: int = Field(default=300, ge=10)
+
+    agent_instructions: str = Field(
+        default="""
+        Review these Slack messages and create a concise summary.
+        Group by channel and thread context, highlight important items.
+        """
+    )
+
+
+settings = SlackSettings()
 
 
 @task
 def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
     """Process Slack messages and create a summary"""
 
-    if not (token := settings.slack_bot_token):
+    if not (token := settings.bot_token):
         logger.error('Slack bot token is not set')
         return None
 
-    # Load processed event hashes for deduplication
     processed_hashes = set()
 
-    # Check both processed and raw directories
     for path_iter in [storage.get_processed(), storage.get_unprocessed()]:
         for path in path_iter:
             try:
@@ -49,7 +59,6 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             logger.info('Successfully checked Slack - no new messages found')
             return None
 
-        # Process events using BaseEvent hash for deduplication
         new_events = []
         for event in slack_events:
             if event.hash not in processed_hashes:
@@ -82,7 +91,6 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
         )
         storage.store_raw(raw_summary)
 
-    # Create processed summary with semantic grouping
     summary = ObservationSummary(
         timestamp=datetime.now(UTC),
         summary=cf.run(
@@ -117,7 +125,7 @@ def check_slack(storage: DiskStorage, agents: list[cf.Agent]) -> None:
 # @settings.hl.instance.require_approval()
 def send_slack_message(channel: str, text: str) -> str | None:
     """Send a message to a Slack channel."""
-    client = WebClient(token=settings.slack_bot_token)
+    client = WebClient(token=settings.bot_token)
 
     try:
         response = client.chat_postMessage(channel=channel, text=text)

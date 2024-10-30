@@ -1,5 +1,9 @@
 from datetime import UTC, datetime, timedelta
+from typing import TypeAlias
 
+from app.processors.email import settings as email_settings
+from app.processors.github import settings as github_settings
+from app.processors.slack import settings as slack_settings
 from app.settings import settings
 from app.storage import DiskStorage
 from app.types import CompactedSummary, ObservationSummary
@@ -7,12 +11,14 @@ from assistant.utilities.loggers import get_logger
 
 logger = get_logger()
 
+ProcessorSummaries: TypeAlias = tuple[list[ObservationSummary], list[CompactedSummary]]
+
 
 def get_storage() -> DiskStorage:
     return DiskStorage(settings.summaries_dir)
 
 
-def load_summaries(hours: int = 24) -> tuple[list[ObservationSummary], list[CompactedSummary]]:
+def load_summaries(hours: int = 24) -> ProcessorSummaries:
     """Load both recent and compact summaries"""
     storage = get_storage()
     cutoff = datetime.now(UTC) - timedelta(hours=hours)
@@ -42,3 +48,15 @@ def load_summaries(hours: int = 24) -> tuple[list[ObservationSummary], list[Comp
             continue
 
     return recent_summaries, compact_summaries
+
+
+def get_enabled_processors() -> list[str]:
+    """Get list of enabled processors"""
+    enabled = []
+    if email_settings.enabled:
+        enabled.append('email')
+    if github_settings.enabled:
+        enabled.append('github')
+    if slack_settings.enabled:
+        enabled.append('slack')
+    return enabled

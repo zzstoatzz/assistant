@@ -3,7 +3,7 @@ from datetime import datetime
 import httpx
 from fastapi import APIRouter, Request
 
-from app.api.dependencies import load_summaries
+from app.api.dependencies import get_enabled_processors, load_summaries
 from app.api.templates import templates
 from app.types import ObservationSummary
 
@@ -41,5 +41,6 @@ async def home(request: Request, hours: int = 24):
             'hours': hours,
             'has_data': bool(recent_summaries or compact_summaries),
             'duck_data': duck_data,
+            'enabled_processors': get_enabled_processors(),
         },
     )

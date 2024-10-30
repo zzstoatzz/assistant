@@ -83,4 +83,44 @@
     border-top: 2px solid var(--border-color);
 }
 
-/* Keep existing styles for empty state and theme toggle */
+/* Empty State */
+.empty-state {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem;
+    text-align: center;
+}
+
+.empty-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Duck Animation */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+    100% { transform: translateY(0px); }
+}
+
+.duck-image {
+    width: 150px;
+    height: auto;
+    animation: float 2.5s ease-in-out infinite;
+    will-change: transform;
+}
+
+.duck-credit {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* Pinboard Empty State */
+.pinboard-empty {
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    margin-top: 1rem;
+}

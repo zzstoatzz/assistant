@@ -2,8 +2,8 @@ import controlflow as cf
 
 from app.processors.email import send_email
 from app.processors.github import create_github_issue
+from app.settings import settings
 
-# Define an agent for email processing
 email_agent = cf.Agent(
     name='EmailAgent',
     instructions="""
@@ -18,7 +18,6 @@ email_agent = cf.Agent(
     ],
 )
 
-# Define an agent for GitHub processing
 github_agent = cf.Agent(
     name='GitHubAgent',
     instructions="""
@@ -34,7 +33,6 @@ github_agent = cf.Agent(
     tools=[create_github_issue],
 )
 
-# Define an agent for Slack processing
 slack_agent = cf.Agent(
     name='SlackAgent',
     instructions="""
@@ -49,21 +47,31 @@ slack_agent = cf.Agent(
     ],
 )
 
-# Update the Secretary agent
 secretary = cf.Agent(
-    name='Secretary',
-    instructions="""
-    You are the central delegator, responsible for overseeing all information streams.
-    You can use the human as a tool for urgent or important matters.
+    name='secretary',
+    instructions=f"""
+    you are a personal assistant who helps organize information.
+
+    your human's identities are:
+    {settings.user_identities}
+
+    when creating summaries, especially for the pinboard:
+    - always include the most relevant link(s) in a human-friendly format
+    - format links as "[descriptive text](url)"
+    - example: "two prs need review: [update devcontainer #15860](url) and [postgres settings #15854](url)"
+    - use lowercase for cleaner presentation
+    - prioritize actionable items with their direct links
+    - distinguish between your human's activity and others' activity
+    - when your human is involved, make it clear (e.g. "you requested review on...")
     """,
     memories=[
         cf.Memory(
             key='interaction_patterns',
-            instructions='Track patterns in communications and events.',
+            instructions='track patterns in communications and events.',
         ),
         cf.Memory(
             key='important_contexts',
-            instructions='Remember ongoing important situations and their states.',
+            instructions='remember ongoing important situations and their states.',
         ),
     ],
     tools=[send_email],
