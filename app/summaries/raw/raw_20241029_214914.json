@@ -1,0 +1,18 @@
+{
+  "summary": "",
+  "timestamp": "2024-10-29T21:49:14.079870Z",
+  "events": [
+    {
+      "type": "github",
+      "timestamp": "2024-10-29T16:49:14.077137",
+      "title": "Remove `jit=\"off\"` setting for Postgres DBs",
+      "repository": "PrefectHQ/prefect",
+      "notification_type": "PullRequest",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15854"
+    }
+  ],
+  "source_types": [
+    "github"
+  ]
+}
