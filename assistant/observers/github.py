@@ -6,6 +6,9 @@ import httpx
 from pydantic import BaseModel, ConfigDict
 
 from assistant.observer import BaseEvent, Observer
+from assistant.utilities.loggers import get_logger
+
+logger = get_logger('observer.github')
 
 
 @dataclass
@@ -95,10 +98,25 @@ class GitHubObserver(BaseModel, Observer[dict[str, Any], GitHubEvent]):
         response.raise_for_status()
         notifications = response.json()
 
+        logger.info(f'Received {len(notifications)} notifications from GitHub')
+
         for notification in notifications:
-            # Skip if no filters match
-            if self.filters and not any(f.matches(notification) for f in self.filters):
-                continue
+            logger.debug(
+                f"Processing notification: repo={notification['repository']['full_name']}, "
+                f"type={notification['subject']['type']}, "
+                f"reason={notification['reason']}"
+            )
+
+            if self.filters:
+                for f in self.filters:
+                    matches = f.matches(notification)
+                    logger.debug(
+                        f'Filter check: repo={f.repositories}, types={f.event_types}, '
+                        f'reasons={f.reasons}, branch={f.branch} -> matches={matches}'
+                    )
+                if not any(f.matches(notification) for f in self.filters):
+                    logger.debug('Notification filtered out - no matching filters')
+                    continue
 
             yield GitHubEvent(
                 id=notification['id'],

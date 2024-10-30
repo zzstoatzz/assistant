@@ -7,13 +7,15 @@
             "CheckSuite"
         ],
         "reasons": [
-            "ci_activity"
+            "ci_activity",
+            "subscribed"
         ],
         "branch": "main"
     },
     {
         "repositories": [
-            "PrefectHQ/prefect"
+            "PrefectHQ/prefect",
+            "PrefectHQ/ControlFlow"
         ],
         "event_types": [
             "PullRequest"
@@ -22,12 +24,14 @@
             "review_requested",
             "mention",
             "comment",
-            "state_change"
+            "state_change",
+            "subscribed"
         ]
     },
     {
         "repositories": [
-            "PrefectHQ/prefect"
+            "PrefectHQ/prefect",
+            "PrefectHQ/ControlFlow"
         ],
         "event_types": [
             "Issue"
@@ -36,7 +40,38 @@
             "mention",
             "comment",
             "assigned",
-            "labeled"
+            "labeled",
+            "subscribed"
+        ]
+    },
+    {
+        "repositories": [
+            "zzstoatzz/assistant"
+        ],
+        "event_types": [
+            "PullRequest"
+        ],
+        "reasons": [
+            "review_requested",
+            "mention",
+            "comment",
+            "state_change",
+            "subscribed"
+        ]
+    },
+    {
+        "repositories": [
+            "zzstoatzz/assistant"
+        ],
+        "event_types": [
+            "Issue"
+        ],
+        "reasons": [
+            "mention",
+            "comment",
+            "assigned",
+            "labeled",
+            "subscribed"
         ]
     }
 ]

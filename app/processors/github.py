@@ -6,7 +6,7 @@ import controlflow as cf
 import httpx
 from jinja2 import Template
 from prefect import flow, task
-from pydantic import Field, TypeAdapter
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from app.storage import DiskStorage
@@ -36,12 +36,14 @@ class GitHubSettings(BaseSettings):
     def event_filters(self) -> list[GitHubEventFilter]:
         """Load event filters from JSON file"""
         if not self.token or not self.event_filters_path.exists():
+            logger.warning(f'No token or filter file not found at {self.event_filters_path}')
             return []
         try:
             import json
 
             data = json.loads(self.event_filters_path.read_text())
-            return [GitHubEventFilter(**f) for f in data]
+            filters = [GitHubEventFilter(**f) for f in data]
+            return filters
         except Exception as e:
             logger.error(f'Failed to load GitHub event filters: {e}')
             return []
@@ -56,12 +58,15 @@ def _get_agent_names(parameters: dict[str, Any]) -> str:
 
 @task(task_run_name=_get_agent_names)
 def process_github_observations(
-    storage: DiskStorage, filters: list[GitHubEventFilter], agents: list[cf.Agent], instructions: str | None = None
+    storage: DiskStorage,
+    agents: list[cf.Agent],
+    event_filters: list[GitHubEventFilter],
+    instructions: str | None = None,
 ) -> ObservationSummary | None:
     """Process GitHub notifications and create a summary"""
 
     events = []
-    with GitHubObserver(token=settings.token, filters=filters) as observer:
+    with GitHubObserver(token=settings.token, filters=event_filters) as observer:
         if not (github_events := list(observer.observe())):
             logger.info('Successfully checked GitHub - no new notifications found')
             return None
@@ -91,7 +96,7 @@ def process_github_observations(
     summary = ObservationSummary(
         timestamp=datetime.now(UTC),
         summary=cf.run(
-            'Create summary of new GitHub notifications',
+            'Create pretty, concise, html_url-first, summary of new GitHub notifications for humans',
             agents=agents,
             instructions=instructions or settings.agent_instructions,
             context={'events': events},
@@ -110,15 +115,15 @@ def check_github(
     storage: DiskStorage,
     agents: list[cf.Agent],
     instructions: str | None = None,
-    github_filters: list[GitHubEventFilter] | None = None,
 ) -> None:
     """Process GitHub notifications and store using storage abstraction"""
+
     filter_template = Template("""{{ repo }}
     {%- if event_types %} │ {{ event_types|join(', ') }}{% endif -%}
     {%- if reasons %} │ {{ reasons|join(', ') }}{% endif -%}
     {%- if branch %} │ {{ branch }}{% endif %}""")
 
-    if event_filters := TypeAdapter(list[GitHubEventFilter]).validate_python(github_filters or settings.event_filters):
+    if event_filters := settings.event_filters:
         logger.info_style('Checking GitHub for 🛎️')
         for github_filter in event_filters:
             filter_desc = filter_template.render(
@@ -132,7 +137,7 @@ def check_github(
         logger.warning_style('No GitHub event filters found. You may get too many notifications.')
         event_filters = []
 
-    process_github_observations(storage, event_filters, agents, instructions)
+    process_github_observations(storage, agents, event_filters, instructions)
 
 
 # @settings.hl.instance.require_approval()

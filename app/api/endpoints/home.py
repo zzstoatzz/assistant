@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import httpx
 from fastapi import APIRouter, Request
 
@@ -27,11 +25,6 @@ async def home(request: Request, hours: int = 24):
     for summary in sorted(recent_summaries, key=lambda s: s.timestamp, reverse=True):
         daily_summaries.setdefault(summary.day_id, []).append(summary)
 
-    duck_data = None
-    # Show duck for empty days as well as completely empty state
-    if not daily_summaries.get(datetime.now().strftime('%Y-%m-%d'), []):
-        duck_data = await get_random_duck()
-
     return templates.TemplateResponse(
         'home.html',
         {
@@ -40,7 +33,7 @@ async def home(request: Request, hours: int = 24):
             'compact_summaries': sorted(compact_summaries, key=lambda s: s.end_time, reverse=True),
             'hours': hours,
             'has_data': bool(recent_summaries or compact_summaries),
-            'duck_data': duck_data,
+            'duck_data': await get_random_duck(),
             'enabled_processors': get_enabled_processors(),
         },
     )
