@@ -43,31 +43,27 @@ class GitHubEventFilter:
     branch: str | None = None
 
     def matches(self, notification: dict[str, Any]) -> bool:
-        """Return True if notification matches filter criteria"""
-        # Repository matching (exact matches)
-        if self.repositories:
-            repo_name = notification['repository']['full_name']
-            if repo_name not in self.repositories:
-                return False
+        """Return True if this filter matches the notification"""
+        repo = notification['repository']['full_name']
+        type = notification['subject']['type']
+        reason = notification['reason']
 
-        # Event type matching
-        if self.event_types and notification['subject']['type'] not in self.event_types:
+        # Log each check separately to see which criteria is failing
+        repo_match = repo in self.repositories
+        type_match = type in self.event_types
+        reason_match = reason in self.reasons
+
+        if not any([repo_match, type_match, reason_match]):
+            logger.debug(f'Skipped {repo} - no criteria matched')
             return False
 
-        # Reason matching
-        if self.reasons and notification['reason'] not in self.reasons:
-            return False
+        matches = repo_match and type_match and reason_match
+        if matches:
+            logger.debug(f'✓ Matched: {repo} | {type} | {reason}')
+        else:
+            logger.debug(f'✗ Failed: {repo} ({repo_match}) | {type} ({type_match}) | {reason} ({reason_match})')
 
-        # Branch matching (only for CheckSuite events)
-        if (
-            self.branch
-            and notification['subject']['type'] == 'CheckSuite'
-            and 'head' in notification['subject']  # Ensure we have the data
-            and self.branch != notification['subject']['head']['ref']  # Actual branch reference
-        ):
-            return False
-
-        return True
+        return matches
 
 
 class GitHubObserver(BaseModel, Observer[dict[str, Any], GitHubEvent]):
@@ -101,36 +97,26 @@ class GitHubObserver(BaseModel, Observer[dict[str, Any], GitHubEvent]):
         logger.info(f'Received {len(notifications)} notifications from GitHub')
 
         for notification in notifications:
-            logger.debug(
-                f"Processing notification: repo={notification['repository']['full_name']}, "
-                f"type={notification['subject']['type']}, "
-                f"reason={notification['reason']}"
-            )
-
-            if self.filters:
-                for f in self.filters:
-                    matches = f.matches(notification)
-                    logger.debug(
-                        f'Filter check: repo={f.repositories}, types={f.event_types}, '
-                        f'reasons={f.reasons}, branch={f.branch} -> matches={matches}'
+            # Check once if ANY filter matches
+            matched = False
+            for f in self.filters:
+                if f.matches(notification):
+                    matched = True
+                    yield GitHubEvent(
+                        id=notification['id'],
+                        source_type='github',
+                        title=notification['subject']['title'],
+                        repository=notification['repository']['full_name'],
+                        type=notification['subject']['type'],
+                        reason=notification['reason'],
+                        url=notification['subject']['url'],
+                        raw_source=notification,
                     )
-                if not any(f.matches(notification) for f in self.filters):
-                    logger.debug('Notification filtered out - no matching filters')
-                    continue
+                    self.client.patch(f"/notifications/threads/{notification['id']}", json={'read': True})
+                    break  # Stop checking other filters once we match
 
-            yield GitHubEvent(
-                id=notification['id'],
-                source_type='github',
-                title=notification['subject']['title'],
-                repository=notification['repository']['full_name'],
-                type=notification['subject']['type'],
-                reason=notification['reason'],
-                url=notification['subject']['url'],
-                raw_source=notification,
-            )
-
-            # Mark as read after processing
-            self.client.patch(f"/notifications/threads/{notification['id']}", json={'read': True})
+            if not matched:
+                logger.debug('Skipped notification - no filters matched')
 
     def disconnect(self) -> None:
         if self.client:

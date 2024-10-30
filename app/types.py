@@ -1,46 +1,28 @@
 from datetime import UTC, datetime
 from typing import Any
 
-from prefect.logging.loggers import get_logger
 from pydantic import BaseModel, Field
-
-logger = get_logger()
 
 
 class ObservationSummary(BaseModel):
-    """Summary of observations from a time period"""
+    """Raw observation from information streams"""
 
-    summary: str
     timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
-    events: list[dict[str, Any]]
-    source_types: list[str]
-    day_id: str = Field(default_factory=lambda: datetime.now(UTC).strftime('%Y-%m-%d'))
-
-
-class CompactionResult(BaseModel):
-    """The result of compacting multiple summaries"""
-
-    summary: str = Field(description='Brief high-level overview of the time period')
-    key_points: list[str] = Field(description='Most important individual points to retain')
-    importance_score: float = Field(description='How critical this information is (0-1)', ge=0, le=1)
+    summary: str = Field(description='Human-readable summary of the observation')
+    events: list[dict[str, Any]] = Field(description='Raw event data with source links')
+    source_types: list[str] = Field(description='Types of sources (github, slack, etc)')
+    day_id: str = Field(
+        default_factory=lambda: datetime.now(UTC).strftime('%Y-%m-%d'), description='YYYY-MM-DD grouping key'
+    )
 
 
 class CompactedSummary(BaseModel):
-    """A condensed summary of observations over a time period"""
+    """Historical record preserving important context"""
 
-    summary: str = Field(description='Consolidated summary of critical events and changes')
-    start_time: datetime = Field(description='Timestamp of earliest observation in this summary')
-    end_time: datetime = Field(description='Timestamp of latest observation in this summary')
-    importance_score: float = Field(
-        description='Score from 0-1 indicating historical significance',
-        ge=0,
-        le=1,
-    )
-    source_types: list[str] = Field(description='Types of sources that contributed to this summary')
-
-
-class FormattedDayContent(BaseModel):
-    day_id: str
-    html_content: str = Field(description='The formatted HTML for the timeline')
-    metadata: dict = Field(description='Any additional context the AI wants to provide')
-    source_types: list[str] = Field(description="Unique sources for this day's events")
+    summary: str = Field(description='Consolidated summary with markdown links to sources')
+    start_time: datetime = Field(description='Start of observation window')
+    end_time: datetime = Field(description='End of observation window')
+    key_points: list[str] = Field(description='Critical points worth preserving', default_factory=list)
+    importance_score: float = Field(description='Historical significance (0-1)', ge=0, le=1)
+    source_types: list[str] = Field(description='Source types in this summary')
+    day_id: str = Field(description='YYYY-MM-DD this summary belongs to')

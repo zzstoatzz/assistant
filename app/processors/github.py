@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -9,6 +9,7 @@ from prefect import flow, task
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
 from assistant.observers.github import GitHubEventFilter, GitHubObserver
@@ -67,26 +68,29 @@ def process_github_observations(
 
     events = []
     with GitHubObserver(token=settings.token, filters=event_filters) as observer:
-        if not (github_events := list(observer.observe())):
-            logger.info('Successfully checked GitHub - no new notifications found')
+        if not (events_list := list(observer.observe())):
+            logger.info('Successfully checked GitHub - no new notifications')
             return None
 
-        # Create events from BaseEvent instances
-        for event in github_events:
+        # Create events first
+        for event in events_list:
             events.append(
                 {
-                    'type': event.source_type,
-                    'timestamp': event.timestamp.isoformat(),
-                    'hash': event.hash,
-                    **event.content,  # Includes title, repository, etc.
+                    'type': event.type,
+                    'timestamp': datetime.now(root_settings.tz).isoformat(),
+                    'hash': event.id,
+                    'title': event.title,
+                    'repository': event.repository,
+                    'reason': event.reason,
+                    'url': event.url,
                 }
             )
-            logger.info_kv(event.content['repository'], event.content['title'])
+            logger.info_kv(event.repository, event.title)
 
-        # Store raw events as ObservationSummary
+        # Store raw events
         raw_summary = ObservationSummary(
-            timestamp=datetime.now(UTC),
-            summary='',
+            timestamp=datetime.now(root_settings.tz),  # Use Chicago time
+            summary='',  # Empty summary for raw storage
             events=events,
             source_types=['github'],
         )
@@ -94,9 +98,12 @@ def process_github_observations(
 
     # Create and store processed summary
     summary = ObservationSummary(
-        timestamp=datetime.now(UTC),
+        timestamp=datetime.now(root_settings.tz),
         summary=cf.run(
-            'Create pretty, concise, html_url-first, summary of new GitHub notifications for humans',
+            (
+                'Create pretty, concise, summary of new GitHub notifications for humans. '
+                'Always use html links instead of api links.'
+            ),
             agents=agents,
             instructions=instructions or settings.agent_instructions,
             context={'events': events},
