@@ -60,17 +60,30 @@ def analyze_summaries(summaries: list[ObservationSummary], agents: list[cf.Agent
 
 
 @task
-def compact_summaries(summary_data: list[SummaryWithPath], agents: list[cf.Agent]) -> CompactedSummary:
+def compact_summaries(
+    summary_data: list[SummaryWithPath], agents: list[cf.Agent], extra_context: dict | None = None
+) -> CompactedSummary:
     """Compress and organize summaries for efficient rendering"""
     daily_groups: DailyGroups = {}
     for _, summary in summary_data:
         daily_groups.setdefault(summary.day_id, []).append(summary)
 
-    # Let secretary organize each day's content
     return cf.run(
-        'Organize these daily summary groups chronologically and return a compact summary',
+        'create a compact summary that preserves important context',
         agents=agents,
-        context={'daily_groups': daily_groups},
+        instructions="""
+        when compacting summaries:
+        1. always include relevant links in markdown format
+        2. prioritize direct links to actionable items
+        3. format should be concise but preserve context through links
+        4. distinguish between the human's activity and others
+        5. make it clear when summarizing the human's own actions
+        """,
+        context={
+            'daily_groups': daily_groups,
+            'user_identities': settings.user_identities,
+            **(extra_context or {}),
+        },
         result_type=CompactedSummary,
     )
 
@@ -133,20 +146,19 @@ def _load_and_normalize_summary(path: Path) -> CompactedSummary:
 
 
 @flow
-def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> CompactedSummary | None:
+def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> None:
     """Main flow for compressing observations"""
     logger.info('Compressing observations')
     if not (loaded_summaries := load_unprocessed_summaries(storage)):
         logger.info('No unprocessed summaries found')
-        return None
+        return
 
     paths = [p for p, _ in loaded_summaries]
     summaries = [s for _, s in loaded_summaries]
 
     analysis = analyze_summaries(summaries, agents)
+    extra_context = {'analysis': analysis} if analysis else None
 
-    if compact_summary := compact_summaries(loaded_summaries, agents):
+    if compact_summary := compact_summaries(loaded_summaries, agents, extra_context):
         store_compacted_summary(storage, compact_summary)
         archive_processed_summaries(storage, paths)
-
-    return analysis

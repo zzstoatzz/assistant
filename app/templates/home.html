@@ -36,7 +36,7 @@
             <div class="empty-content">
                 <img src="{{ duck_data.url }}" alt="A friendly duck" class="duck-image">
                 <h2>No recent observations</h2>
-                <p>Our duck friend is keeping watch for the past {{ hours }} hours...</p>
+                <p>Our duck friend has been keeping watch for the past {{ hours }} hours...</p>
                 <small class="duck-credit">{{ duck_data.message }}</small>
             </div>
         </div>
@@ -67,11 +67,17 @@
                 <div class="empty-content">
                     <img src="{{ duck_data.url }}" alt="A friendly duck" class="duck-image">
                     <h3>No pins yet!</h3>
-                    <p>Visit <a href="https://nate.software" target="_blank" rel="noopener noreferrer">nate.software</a> to learn more</p>
+                    <p>Visit <a href="https://alternatebuild.dev/zen" target="_blank" rel="noopener noreferrer">alternatebuild.dev/zen</a> to pass some time</p>
                     <small class="duck-credit">{{ duck_data.message }}</small>
                 </div>
             </div>
         {% endif %}
+    </div>
+
+    <div class="processor-status">
+        {% for processor in enabled_processors %}
+            <span class="badge badge-{{ processor }}">{{ processor }} enabled</span>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

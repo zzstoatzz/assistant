@@ -1,19 +1,53 @@
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import controlflow as cf
 import httpx
 from jinja2 import Template
 from prefect import flow, task
-from pydantic import TypeAdapter
+from pydantic import Field, TypeAdapter
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.settings import settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
 from assistant.observers.github import GitHubEventFilter, GitHubObserver
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger('assistant.github')
+
+
+class GitHubSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix='GITHUB_', extra='ignore')
+
+    enabled: bool = Field(default=False, description='Enable GitHub processing')
+    token: str = Field(description='GitHub API token')
+    check_interval_seconds: int = Field(default=300, ge=10)
+    event_filters_path: Path = Field(default=Path(__file__).parent.parent / 'github_event_filters.json')
+
+    agent_instructions: str = Field(
+        default="""
+        Review these GitHub notifications and create a concise summary.
+        Group related items by repository and highlight anything urgent.
+        """
+    )
+
+    @property
+    def event_filters(self) -> list[GitHubEventFilter]:
+        """Load event filters from JSON file"""
+        if not self.token or not self.event_filters_path.exists():
+            return []
+        try:
+            import json
+
+            data = json.loads(self.event_filters_path.read_text())
+            return [GitHubEventFilter(**f) for f in data]
+        except Exception as e:
+            logger.error(f'Failed to load GitHub event filters: {e}')
+            return []
+
+
+settings = GitHubSettings()  # type: ignore
 
 
 def _get_agent_names(parameters: dict[str, Any]) -> str:
@@ -27,7 +61,7 @@ def process_github_observations(
     """Process GitHub notifications and create a summary"""
 
     events = []
-    with GitHubObserver(token=settings.github_token, filters=filters) as observer:
+    with GitHubObserver(token=settings.token, filters=filters) as observer:
         if not (github_events := list(observer.observe())):
             logger.info('Successfully checked GitHub - no new notifications found')
             return None
@@ -59,11 +93,7 @@ def process_github_observations(
         summary=cf.run(
             'Create summary of new GitHub notifications',
             agents=agents,
-            instructions=instructions
-            or """
-            Review these GitHub notifications and create a concise summary.
-            Group related items by repository and highlight anything urgent or requiring immediate attention.
-            """,
+            instructions=instructions or settings.agent_instructions,
             context={'events': events},
             result_type=str,
         ),
@@ -88,9 +118,7 @@ def check_github(
     {%- if reasons %} │ {{ reasons|join(', ') }}{% endif -%}
     {%- if branch %} │ {{ branch }}{% endif %}""")
 
-    if event_filters := TypeAdapter(list[GitHubEventFilter]).validate_python(
-        github_filters or settings.github_event_filters
-    ):
+    if event_filters := TypeAdapter(list[GitHubEventFilter]).validate_python(github_filters or settings.event_filters):
         logger.info_style('Checking GitHub for 🛎️')
         for github_filter in event_filters:
             filter_desc = filter_template.render(
@@ -112,7 +140,7 @@ def create_github_issue(repository_name: str, title: str, body: str) -> str | No
     """Create a GitHub issue using the GitHub API."""
     url = f'https://api.github.com/repos/{repository_name}/issues'
     headers = {
-        'Authorization': f'token {settings.github_token}',
+        'Authorization': f'token {settings.token}',
         'Accept': 'application/vnd.github.v3+json',
     }
     data = {'title': title, 'body': body}

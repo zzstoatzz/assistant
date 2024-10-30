@@ -1,0 +1,28 @@
+{
+  "summary": "",
+  "timestamp": "2024-10-30T04:58:15.627086Z",
+  "events": [
+    {
+      "type": "PullRequest",
+      "timestamp": "2024-10-30T04:58:15.326483+00:00",
+      "hash": "55698c85198bd99abcc05e47ec6d7d8bf44e48dea310813f6ff593663915e30b",
+      "title": "Refactor some concurrency utilities to be sync_compatible",
+      "repository": "PrefectHQ/prefect",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15273"
+    },
+    {
+      "type": "PullRequest",
+      "timestamp": "2024-10-30T04:58:15.445122+00:00",
+      "hash": "3286e80b66e79fde82a1e0fe307793a06699f72857e39f463dfde11fe2b52928",
+      "title": "Notification security controls",
+      "repository": "PrefectHQ/prefect",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15272"
+    }
+  ],
+  "source_types": [
+    "github"
+  ],
+  "day_id": "2024-10-30"
+}

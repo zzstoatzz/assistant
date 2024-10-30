@@ -1,15 +1,103 @@
-# Information Observer
+# Assistant App
 
-AI assistant that processes information streams and maintains a compressed historical record.
+Implementation of the Assistant service with web UI and API endpoints.
 
-## Sources
+## Prerequisites
 
-- **GitHub**: PRs, issues, and workflow runs
-- **Gmail**: Unread messages
-- **Slack**: Channel messages and threads
-- _More coming soon_
+- Python 3.10+
+- `uv` package manager ([install guide](https://github.com/astral-sh/uv))
+- API credentials:
+  - OpenAI API key
+  - Gmail OAuth2 (`gmail_credentials.json` and `gmail_token.json`)
+  - GitHub token with `repo` scope
+  - Slack bot token with `channels:history` and `channels:read` scopes
+  - Prefect Cloud workspace (optional)
+  - HumanLayer API key (optional)
 
-## Structure
+## Setup
+
+1. **Install Dependencies**
+
+```bash
+pip install -U uv
+uv venv --python 3.12
+source .venv/bin/activate
+UV_SYSTEM_PYTHON=1 uv pip install --editable ".[dev]"
+```
+
+2. **Configure Environment**
+
+```bash
+# Create .env file
+cat > app/secrets/.env << EOL
+# Required
+OPENAI_API_KEY=sk-...
+GITHUB_TOKEN=ghp_...
+SLACK_BOT_TOKEN=xoxb-...
+
+# Optional
+PREFECT_API_KEY=pnu_...
+PREFECT_API_URL=https://api.prefect.cloud/...
+HUMANLAYER_API_KEY=hl_...
+
+# Enable Processors
+EMAIL_ENABLED=true
+GITHUB_ENABLED=true
+SLACK_ENABLED=true
+
+# Intervals (seconds)
+EMAIL_CHECK_INTERVAL_SECONDS=300
+GITHUB_CHECK_INTERVAL_SECONDS=300
+SLACK_CHECK_INTERVAL_SECONDS=300
+OBSERVATION_CHECK_INTERVAL_SECONDS=300
+
+# Port for web UI
+ASSISTANT_PORT=8000
+EOL
+```
+
+3. **Add Gmail Credentials**
+
+```bash
+mkdir -p app/secrets
+# Copy credentials from Google Cloud Console
+cp /path/to/credentials.json app/secrets/gmail_credentials.json
+# Token will be generated on first run
+touch app/secrets/gmail_token.json
+```
+
+4. **Storage Management**
+
+The app automatically creates storage directories for observations and summaries. If you want to clear the assistant's memory:
+
+```bash
+rm -rf app/summaries/{compact,processed}
+```
+
+## Running
+
+```bash
+make dev    # Development with hot reload
+# or
+make        # Production in container
+```
+
+Access:
+
+- Web UI: `http://localhost:8000`
+- API docs: `http://localhost:8000/docs`
+
+## API Examples
+
+```bash
+# Get recent observations
+curl "localhost:8000/observations/recent"
+
+# Past 12 hours only
+curl "localhost:8000/observations/recent?hours=12"
+```
+
+## Directory Structure
 
 ```
 app/
@@ -18,101 +106,39 @@ app/
 │   ├── compact/        # Compressed historical record
 │   └── processed/      # Archived raw observations
 ├── secrets/            # Credentials
-│   ├── gmail_*.json
-│   └── .env           # Environment variables
+│   ├── gmail_*.json    # Gmail OAuth2
 ├── templates/          # Web UI
 └── static/            # Assets
 ```
 
-## Features
+## Troubleshooting
 
-- Web UI at `http://localhost:8000`
-- View the API docs at `http://localhost:8000/docs`
-- Markdown support in summaries
-- Link preservation for context
-- LSM-inspired compression (recent detailed, history condensed)
-
-## Running Locally
+1. **Gmail Authentication**
 
 ```bash
-# 1. Install dependencies
-UV_SYSTEM_PYTHON=1 uv pip install --editable ".[gmail,github,slack]"
-
-# 2. Set up environment variables
-cat > app/secrets/.env << EOL
-OPENAI_API_KEY=sk-...
-GITHUB_TOKEN=ghp_...  # needs repo scope
-SLACK_BOT_TOKEN=xoxb-...  # needs channels:history, channels:read
-PREFECT_API_KEY=pnu_...
-PREFECT_API_URL=https://api.prefect.cloud/...
-HUMANLAYER_API_KEY=hl_...
-EMAIL_CHECK_INTERVAL_SECONDS=300
-GITHUB_CHECK_INTERVAL_SECONDS=300
-SLACK_CHECK_INTERVAL_SECONDS=300
-OBSERVATION_CHECK_INTERVAL_SECONDS=300
-EOL
-
-# 3. Add Gmail credentials
-# Get these from Google Cloud Console
-cp gmail_credentials.json app/secrets/
-# Token will be generated on first run
-touch app/secrets/gmail_token.json
-
-# 4. Run
-make dev  # hot reload
-# or
-make      # production mode
-```
-
-## API Examples
-
-```bash
-# Get recent and historical summaries
-curl "localhost:8000/observations/recent"
-
-# Past 12 hours only
-curl "localhost:8000/observations/recent?hours=12"
-```
-
-Response format:
-
-```json
-{
-  "timespan_hours": 24,
-  "recent_summary": "Recent GitHub activity: [PR #123](url) needs review...",
-  "historical_summary": "Core API redesign ([RFC-123](url)) in progress...",
-  "num_recent_summaries": 5,
-  "num_historical_summaries": 1,
-  "source_types": ["github", "email"]
-}
-```
-
-## Common Issues
-
-1. Gmail authentication:
-
-```bash
-# If token expires
+# If token expires:
 rm app/secrets/gmail_token.json
 # Restart app and follow OAuth prompt
 ```
 
-2. GitHub rate limits:
+2. **GitHub Rate Limits**
 
-```python
-# Adjust in settings.py
-GITHUB_CHECK_INTERVAL_SECONDS = 300  # 5 minutes minimum
-```
+- Increase `GITHUB_CHECK_INTERVAL_SECONDS` in `.env`
+- Use a token with appropriate scopes
 
-3. Missing summaries directory:
+3. **Slack Issues**
 
-```bash
-mkdir -p app/summaries/{compact,processed}
-```
+- Ensure bot is invited to channels
+- Verify bot has required scopes
+- Check token validity
 
-4. Slack authentication:
+4. **Missing Summaries**
 
-```bash
-# Ensure bot is invited to channels
-# Bot needs channels:history and channels:read scopes
-```
+- Create directories: `mkdir -p app/summaries/{compact,processed}`
+- Check file permissions
+
+## Development
+
+- Use `make dev` for hot reload during development
+- Run `make check-env` to verify configuration
+- See `scripts/configure.py` for environment validation

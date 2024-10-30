@@ -1,10 +1,12 @@
 import base64
 from datetime import UTC, datetime
+from pathlib import Path
 
 import controlflow as cf
 from prefect import flow, task
+from pydantic import Field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.settings import settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
 from assistant.observers.gmail import GmailObserver, get_gmail_service
@@ -13,25 +15,34 @@ from assistant.utilities.loggers import get_logger
 logger = get_logger('assistant.email')
 
 
+class EmailSettings(BaseSettings):
+    model_config = SettingsConfigDict(env_prefix='EMAIL_', extra='ignore')
+
+    enabled: bool = Field(default=False, description='Enable email processing')
+    credentials_path: Path = Field(default=Path(__file__).parent.parent / 'secrets' / 'gmail_credentials.json')
+    token_path: Path = Field(default=Path(__file__).parent.parent / 'secrets' / 'gmail_token.json')
+    check_interval_seconds: int = Field(default=300, ge=10)
+
+    agent_instructions: str = Field(
+        default="""
+        Review these email messages and create a concise summary.
+        Group related messages by thread and highlight urgent items.
+        """
+    )
+
+
+settings = EmailSettings()
+
+
 # @settings.hl.instance.require_approval()
 def send_email(recipient: str, subject: str, body: str) -> str | None:
     """Send an email using the Gmail API."""
     service = get_gmail_service(
-        creds_path=settings.email_credentials_dir / 'gmail_credentials.json',
-        token_path=settings.email_credentials_dir / 'gmail_token.json',
+        creds_path=settings.credentials_path,
+        token_path=settings.token_path,
     )
 
     message = {'raw': base64.urlsafe_b64encode(f'To: {recipient}\nSubject: {subject}\n\n{body}'.encode()).decode()}
-
-    # Show message details and get approval
-    print('\nPreparing to send email:')
-    print(f'To: {recipient}')
-    print(f'Subject: {subject}')
-    print(f'Body:\n{body}')
-
-    if input('\nSend this email? (y/n): ').lower().strip() != 'y':
-        logger.info('Email sending cancelled by user')
-        return None
 
     try:
         service.users().messages().send(userId='me', body=message).execute()  # type: ignore
@@ -47,48 +58,42 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 
     events = []
     with GmailObserver(
-        creds_path=settings.email_credentials_dir / 'gmail_credentials.json',
-        token_path=settings.email_credentials_dir / 'gmail_token.json',
+        creds_path=settings.credentials_path,
+        token_path=settings.token_path,
     ) as observer:
-        if not (email_events := list(observer.observe())):
+        if not (events_list := list(observer.observe())):
             logger.info('Successfully checked Gmail - no new messages found')
             return None
 
-        # Create events from BaseEvent instances
-        for event in email_events:
+        # Create events first
+        for event in events_list:
             events.append(
                 {
-                    'type': event.source_type,
-                    'timestamp': event.timestamp.isoformat(),
-                    'hash': event.hash,
-                    **event.content,  # Includes subject, sender, snippet, thread_id
+                    'type': 'email',
+                    'timestamp': datetime.now(UTC).isoformat(),
+                    'subject': event.subject,
+                    'sender': event.sender,
+                    'snippet': event.snippet,
                 }
             )
-            logger.info_kv(event.content['sender'], event.content['subject'])
+            logger.info_kv(event.sender, event.subject)
 
-        # Store raw events immediately
+        # Store raw events as ObservationSummary
         raw_summary = ObservationSummary(
             timestamp=datetime.now(UTC),
-            summary='',
+            summary='',  # Empty summary for raw storage
             events=events,
             source_types=['email'],
         )
         storage.store_raw(raw_summary)
 
-    # Create processed summary with semantic grouping
+    # Create and store processed summary
     summary = ObservationSummary(
         timestamp=datetime.now(UTC),
         summary=cf.run(
             'Create summary of new messages',
             agents=agents,
-            instructions="""
-            Review these email messages and create a concise summary.
-            Group related messages by:
-            1. Thread/conversation
-            2. Sender organization
-            3. Topic similarity
-            Highlight anything urgent or requiring immediate attention.
-            """,
+            instructions=settings.agent_instructions,
             context={'events': events},
             result_type=str,
         ),

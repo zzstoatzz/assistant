@@ -4,6 +4,9 @@ from fastapi.responses import JSONResponse
 
 from app.agents import secretary
 from app.api.dependencies import load_summaries
+from app.processors.email import settings as email_settings
+from app.processors.github import settings as github_settings
+from app.processors.slack import settings as slack_settings
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger()
@@ -15,6 +18,15 @@ async def get_recent_observations(hours: int = 24) -> JSONResponse:
     """Get recent and historical observations"""
     logger.info(f'Loading observations for past {hours} hours')
     recent_summaries, compact_summaries = load_summaries(hours)
+
+    # Get enabled source types for context
+    enabled_sources = []
+    if email_settings.enabled:
+        enabled_sources.append('email')
+    if github_settings.enabled:
+        enabled_sources.append('github')
+    if slack_settings.enabled:
+        enabled_sources.append('slack')
 
     if not recent_summaries and not compact_summaries:
         logger.info(f'Successfully searched past {hours} hours - no observations found')
@@ -30,7 +42,7 @@ async def get_recent_observations(hours: int = 24) -> JSONResponse:
             Focus on what's happening now and immediate implications.
             Use markdown for formatting if needed.
             """,
-            context={'summaries': [s.model_dump() for s in recent_summaries]},
+            context={'summaries': [s.model_dump() for s in recent_summaries], 'enabled_sources': enabled_sources},
             result_type=str,
         )
 
