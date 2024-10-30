@@ -7,6 +7,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
+from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
 from assistant.observers.slack import SlackObserver
@@ -122,7 +123,7 @@ def check_slack(storage: DiskStorage, agents: list[cf.Agent]) -> None:
     process_slack_observations(storage, agents)
 
 
-# @settings.hl.instance.require_approval()
+@root_settings.hl.instance.require_approval()
 def send_slack_message(channel: str, text: str) -> str | None:
     """Send a message to a Slack channel."""
     client = WebClient(token=settings.bot_token)

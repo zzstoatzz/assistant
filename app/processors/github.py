@@ -147,7 +147,7 @@ def check_github(
     process_github_observations(storage, agents, event_filters, instructions)
 
 
-# @settings.hl.instance.require_approval()
+@root_settings.hl.instance.require_approval()
 def create_github_issue(repository_name: str, title: str, body: str) -> str | None:
     """Create a GitHub issue using the GitHub API."""
     url = f'https://api.github.com/repos/{repository_name}/issues'

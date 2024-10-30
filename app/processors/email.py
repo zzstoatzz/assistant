@@ -7,6 +7,7 @@ from prefect import flow, task
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
 from assistant.observers.gmail import GmailObserver, get_gmail_service
@@ -34,7 +35,7 @@ class EmailSettings(BaseSettings):
 settings = EmailSettings()
 
 
-# @settings.hl.instance.require_approval()
+@root_settings.hl.instance.require_approval()
 def send_email(recipient: str, subject: str, body: str) -> str | None:
     """Send an email using the Gmail API."""
     service = get_gmail_service(

@@ -1,0 +1,100 @@
+{
+  "timestamp": "2024-10-30T12:09:57.621875-05:00",
+  "summary": "### GitHub Notifications Summary\n\n#### Repository: PrefectHQ/prefect\n\n- **Issues**:\n  1. [Completed tasks from a failing worker are retried](https://github.com/PrefectHQ/prefect/issues/12970) - Subscribed\n  2. [If one of multiple cache policies fails to compute cache key a cached result is still produced](https://github.com/PrefectHQ/prefect/issues/15861) - Subscribed\n  3. [Behavioural Issues in Retry Logic for Failed Tasks](https://github.com/PrefectHQ/prefect/issues/15658) - Subscribed\n  4. [Logs missing when flow finishes too quickly](https://github.com/PrefectHQ/prefect/issues/15866) - Subscribed\n  5. [Too Many Concurrent Attempts to Register Task Definition in ECS Work Pool](https://github.com/PrefectHQ/prefect/issues/15865) - Subscribed\n  6. [prefect rest api, create task run fail](https://github.com/PrefectHQ/prefect/issues/15842) - Subscribed\n  7. [Not able to run Kubernetes Job on a self-hosted Prefect Server](https://github.com/PrefectHQ/prefect/issues/15793) - Subscribed\n  8. [retry_condition_fn doesn't work on Failed state](https://github.com/PrefectHQ/prefect/issues/15826) - Mention\n\n- **Pull Requests**:\n  1. [Adds in the worker_id to the LogCreate schema](https://github.com/PrefectHQ/prefect/pulls/15851) - Review Requested\n  2. [Add pre-commit hook to generate OpenAPI schema](https://github.com/PrefectHQ/prefect/pulls/15863) - Subscribed\n\n**Note**: No urgent items identified in this summary.",
+  "events": [
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T12:09:57.610925-05:00",
+      "hash": "13124462878",
+      "title": "Completed tasks from a failing worker are retried",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/12970"
+    },
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T12:09:57.612171-05:00",
+      "hash": "13116759756",
+      "title": "If one of multiple cache policies fails to compute cache key a cached result is still produced",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15861"
+    },
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T12:09:57.613254-05:00",
+      "hash": "12826567669",
+      "title": "Behavioural Issues in Retry Logic for Failed Tasks",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15658"
+    },
+    {
+      "type": "PullRequest",
+      "timestamp": "2024-10-30T12:09:57.614168-05:00",
+      "hash": "13108125063",
+      "title": "Adds in the worker_id to the LogCreate schema",
+      "repository": "PrefectHQ/prefect",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15851"
+    },
+    {
+      "type": "PullRequest",
+      "timestamp": "2024-10-30T12:09:57.615050-05:00",
+      "hash": "13121895663",
+      "title": "Add pre-commit hook to generate OpenAPI schema",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15863"
+    },
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T12:09:57.615970-05:00",
+      "hash": "13122697565",
+      "title": "Logs missing when flow finishes to quickly",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15866"
+    },
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T12:09:57.616953-05:00",
+      "hash": "13122328137",
+      "title": "Too Many Concurrent Attempts to Register Task Definition in ECS Work Pool",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15865"
+    },
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T12:09:57.618178-05:00",
+      "hash": "13093170658",
+      "title": "prefect rest api, create task run fail",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15842"
+    },
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T12:09:57.619101-05:00",
+      "hash": "13024720280",
+      "title": "Not able to run Kubernetes Job on a self-hosted Prefect Server",
+      "repository": "PrefectHQ/prefect",
+      "reason": "subscribed",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15793"
+    },
+    {
+      "type": "Issue",
+      "timestamp": "2024-10-30T12:09:57.620040-05:00",
+      "hash": "13083043876",
+      "title": "retry_condition_fn doesn't work on Failed state",
+      "repository": "PrefectHQ/prefect",
+      "reason": "mention",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/issues/15826"
+    }
+  ],
+  "source_types": [
+    "github"
+  ],
+  "day_id": "2024-10-30"
+}

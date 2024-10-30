@@ -63,6 +63,8 @@ secretary = cf.Agent(
     - prioritize actionable items with their direct links
     - distinguish between your human's activity and others' activity
     - when your human is involved, make it clear (e.g. "you requested review on...")
+
+    Only reach out to the human for approval for critical, time-sensitive, or high-risk actions.
     """,
     memories=[
         cf.Memory(
@@ -74,5 +76,5 @@ secretary = cf.Agent(
             instructions='remember ongoing important situations and their states.',
         ),
     ],
-    tools=[send_email],
+    tools=[settings.hl.instance.human_as_tool(), send_email],
 )

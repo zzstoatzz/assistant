@@ -1,8 +1,10 @@
+import os
 from functools import partial
 from pathlib import Path
 from typing import Annotated, Self
 from zoneinfo import ZoneInfo
 
+from humanlayer import ContactChannel, HumanLayer, SlackContactChannel
 from prefect.types import validate_set_T_from_delim_string
 from pydantic import BeforeValidator, Field, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -15,6 +17,33 @@ Emails = Annotated[
     str | list[str] | set[str] | None,
     BeforeValidator(partial(validate_set_T_from_delim_string, type_=str)),
 ]
+
+
+def get_default_contact_channel() -> ContactChannel | None:
+    if not (testing_user := os.getenv('TESTING_USER')):
+        return None
+
+    return ContactChannel(
+        slack=SlackContactChannel(
+            channel_or_user_id='',
+            context_about_channel_or_user=f'a dm with {testing_user.lower()}',
+            experimental_slack_blocks=True,
+        )
+    )
+
+
+class HumanLayerSettings(BaseSettings):
+    """Settings for the HumanLayer"""
+
+    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra='ignore')
+
+    slack: ContactChannel | None = Field(default_factory=get_default_contact_channel)
+
+    @computed_field
+    @property
+    def instance(self) -> HumanLayer:
+        """HumanLayer instance"""
+        return HumanLayer(contact_channel=self.slack)
 
 
 class UserIdentity(BaseSettings):
@@ -43,8 +72,10 @@ class Settings(BaseSettings):
 
     # User identity
     user_identities: list[UserIdentity] = Field(default=[])
+
     # Observation settings
     observation_check_interval_seconds: int = Field(default=300, ge=10, examples=[30, 120, 600])
+    hl: HumanLayerSettings = Field(default_factory=HumanLayerSettings)
 
     @computed_field
     @property
