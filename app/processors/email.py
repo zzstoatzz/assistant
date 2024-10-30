@@ -13,7 +13,7 @@ from assistant.utilities.loggers import get_logger
 logger = get_logger('assistant.email')
 
 
-@settings.hl.instance.require_approval()
+# @settings.hl.instance.require_approval()
 def send_email(recipient: str, subject: str, body: str) -> str | None:
     """Send an email using the Gmail API."""
     service = get_gmail_service(
@@ -22,6 +22,16 @@ def send_email(recipient: str, subject: str, body: str) -> str | None:
     )
 
     message = {'raw': base64.urlsafe_b64encode(f'To: {recipient}\nSubject: {subject}\n\n{body}'.encode()).decode()}
+
+    # Show message details and get approval
+    print('\nPreparing to send email:')
+    print(f'To: {recipient}')
+    print(f'Subject: {subject}')
+    print(f'Body:\n{body}')
+
+    if input('\nSend this email? (y/n): ').lower().strip() != 'y':
+        logger.info('Email sending cancelled by user')
+        return None
 
     try:
         service.users().messages().send(userId='me', body=message).execute()  # type: ignore
@@ -40,41 +50,44 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
         creds_path=settings.email_credentials_dir / 'gmail_credentials.json',
         token_path=settings.email_credentials_dir / 'gmail_token.json',
     ) as observer:
-        if not (events_list := list(observer.observe())):
+        if not (email_events := list(observer.observe())):
             logger.info('Successfully checked Gmail - no new messages found')
             return None
 
-        # Create events first
-        for event in events_list:
+        # Create events from BaseEvent instances
+        for event in email_events:
             events.append(
                 {
-                    'type': 'email',
-                    'timestamp': datetime.now(UTC).isoformat(),
-                    'subject': event.subject,
-                    'sender': event.sender,
-                    'snippet': event.snippet,
+                    'type': event.source_type,
+                    'timestamp': event.timestamp.isoformat(),
+                    'hash': event.hash,
+                    **event.content,  # Includes subject, sender, snippet, thread_id
                 }
             )
-            logger.info_kv(event.sender, event.subject)
+            logger.info_kv(event.content['sender'], event.content['subject'])
 
-        # Store raw events as ObservationSummary
+        # Store raw events immediately
         raw_summary = ObservationSummary(
             timestamp=datetime.now(UTC),
-            summary='',  # Empty summary for raw storage
+            summary='',
             events=events,
             source_types=['email'],
         )
         storage.store_raw(raw_summary)
 
-    # Create and store processed summary
+    # Create processed summary with semantic grouping
     summary = ObservationSummary(
         timestamp=datetime.now(UTC),
         summary=cf.run(
             'Create summary of new messages',
             agents=agents,
             instructions="""
-            Review these events and create a concise summary.
-            Group related items and highlight anything urgent or important.
+            Review these email messages and create a concise summary.
+            Group related messages by:
+            1. Thread/conversation
+            2. Sender organization
+            3. Topic similarity
+            Highlight anything urgent or requiring immediate attention.
             """,
             context={'events': events},
             result_type=str,

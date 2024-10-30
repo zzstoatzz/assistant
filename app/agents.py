@@ -2,7 +2,6 @@ import controlflow as cf
 
 from app.processors.email import send_email
 from app.processors.github import create_github_issue
-from app.settings import settings
 
 # Define an agent for email processing
 email_agent = cf.Agent(
@@ -17,7 +16,6 @@ email_agent = cf.Agent(
             instructions='Track patterns in email communications and events.',
         ),
     ],
-    tools=[send_email],
 )
 
 # Define an agent for GitHub processing
@@ -68,5 +66,5 @@ secretary = cf.Agent(
             instructions='Remember ongoing important situations and their states.',
         ),
     ],
-    tools=[settings.hl.instance.human_as_tool()],
+    tools=[send_email],
 )

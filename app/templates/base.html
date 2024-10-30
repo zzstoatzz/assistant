@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Observer</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fira-code@6.2.0/distr/fira_code.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+    <style>
+        :root {
+            /* Light theme */
+            --bg-color: #f8f9fa;
+            --text-color: #2d3436;
+            --card-bg: #ffffff;
+            --border-color: #dfe6e9;
+            --accent-color: #74b9ff;
+            --meta-color: #636e72;
+            --shadow-color: rgba(0,0,0,0.1);
+        }
+
+        .dark-theme {
+            /* Dark theme - earth tones */
+            --bg-color: #2d3436;
+            --text-color: #dfe6e9;
+            --card-bg: #353b48;
+            --border-color: #4a4f57;
+            --accent-color: #74b9ff;
+            --meta-color: #b2bec3;
+            --shadow-color: rgba(0,0,0,0.3);
+        }
+
+        body {
+            font-family: 'Fira Code', monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+        }
+
+        .theme-toggle button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
+        }
+
+        .theme-toggle button:hover {
+            background-color: var(--border-color);
+        }
+
+        .event-link {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .event-link a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .event-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Pinboard styles */
+        .pinboard {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .pinboard-empty {
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .pinboard-empty a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+
+        .pinboard-empty a:hover {
+            text-decoration: underline;
+        }
+
+        .pinboard-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px var(--shadow-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .pin-time {
+            color: var(--meta-color);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .pin-content {
+            margin: 1rem 0;
+        }
+
+        .pin-meta {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Empty state variations */
+        .empty-state {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin: 1rem 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .empty-content img {
+            max-width: 200px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .duck-credit {
+            color: var(--meta-color);
+            display: block;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="theme-toggle">
+        <button onclick="toggleTheme()" aria-label="Toggle theme">🌓</button>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <script>
+        function toggleTheme() {
+            document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+        }
+
+        // Set initial theme
+        if (localStorage.getItem('theme') === 'dark' ||
+            (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.body.classList.add('dark-theme');
+        }
+    </script>
+</body>
+</html>

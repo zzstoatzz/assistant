@@ -1,6 +1,7 @@
+from collections.abc import Sequence
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
-from typing import Any
+from typing import TypeAlias
 
 import controlflow as cf
 from prefect import flow, task
@@ -12,17 +13,19 @@ from assistant.utilities.loggers import get_logger
 
 logger = get_logger('assistant.background')
 
+SummaryWithPath: TypeAlias = tuple[Path, ObservationSummary]
+DailyGroups: TypeAlias = dict[str, list[ObservationSummary]]
+
 
 @task
-def load_unprocessed_summaries(storage: DiskStorage) -> list[tuple[Path, ObservationSummary]]:
+def load_unprocessed_summaries(storage: DiskStorage) -> list[SummaryWithPath]:
     """Load unprocessed summaries and their paths"""
     unprocessed = list(storage.get_unprocessed())
-
     if not unprocessed:
         logger.info('No unprocessed summaries found')
         return []
 
-    loaded = []
+    loaded: list[SummaryWithPath] = []
     for path in unprocessed:
         try:
             summary = ObservationSummary.model_validate_json(path.read_text())
@@ -34,12 +37,16 @@ def load_unprocessed_summaries(storage: DiskStorage) -> list[tuple[Path, Observa
     return loaded
 
 
-def _get_agent_names(parameters: dict[str, Any]) -> str:
-    return 'analyzing summaries with agent(s): ' + ', '.join(a.name for a in parameters['agents'])
+def _get_agent_names(parameters: dict[str, object]) -> str:
+    """Format agent names for task run display"""
+    agents = parameters.get('agents', [])
+    if not isinstance(agents, Sequence):
+        return 'unknown agents'
+    return 'analyzing summaries with agent(s): ' + ', '.join(a.name for a in agents)
 
 
 @task(task_run_name=_get_agent_names)
-def analyze_summaries(summaries: list[ObservationSummary], agents: list[cf.Agent]) -> Any:
+def analyze_summaries(summaries: list[ObservationSummary], agents: list[cf.Agent]) -> CompactedSummary | None:
     """Have agents analyze the summaries"""
     if not summaries:
         return None
@@ -48,64 +55,22 @@ def analyze_summaries(summaries: list[ObservationSummary], agents: list[cf.Agent
         'Check if any of the summaries are interesting, reach out to the human if they are',
         agents=agents,
         context={'summaries': [s.model_dump() for s in summaries]},
+        result_type=CompactedSummary,
     )
 
 
 @task
-def compact_summaries(
-    summary_data: list[tuple[Path, ObservationSummary]], agents: list[cf.Agent]
-) -> CompactedSummary | None:
-    """Compact multiple summaries using LSM-tree inspired approach"""
-    if not summary_data:
-        return None
-
-    existing_summaries = load_compact_summaries()
-
-    # Ensure all timestamps are timezone-aware before sorting
-    summaries = []
+def compact_summaries(summary_data: list[SummaryWithPath], agents: list[cf.Agent]) -> CompactedSummary:
+    """Compress and organize summaries for efficient rendering"""
+    daily_groups: DailyGroups = {}
     for _, summary in summary_data:
-        if summary.timestamp.tzinfo is None:
-            # If timestamp is naive, assume UTC
-            summary.timestamp = summary.timestamp.replace(tzinfo=UTC)
-        summaries.append(summary)
+        daily_groups.setdefault(summary.day_id, []).append(summary)
 
-    summaries.sort(key=lambda s: s.timestamp)
-
+    # Let secretary organize each day's content
     return cf.run(
-        'Condense observations to only critical information',
+        'Organize these daily summary groups chronologically and return a compact summary',
         agents=agents,
-        instructions="""
-        Create a historically significant summary that will persist in long-term memory.
-
-        Think like a database with multiple tiers of storage:
-
-        Tier 1 (Hot/Recent) - Last 24 hours:
-        - CI failures on main/2.x branches
-        - Critical security issues
-        - Major feature releases
-
-        Tier 2 (Warm/Weekly) - Last 7 days:
-        - Significant architectural changes
-        - Breaking changes
-        - Important deprecations
-
-        Tier 3 (Cold/Historical) - Long-term:
-        - Major version releases
-        - Critical security patches
-        - Fundamental architectural shifts
-
-        Guidelines:
-        - Use precise timestamps for historically significant events
-        - Link to permanent references (commits, tags, releases)
-        - Consolidate repeated information
-        - Drop transient issues that were quickly resolved
-        """,
-        context={
-            'summaries': [s.model_dump() for s in summaries],
-            'existing_summaries': [s.model_dump() for s in existing_summaries],
-            'start_time': min(s.timestamp for s in summaries),
-            'end_time': max(s.timestamp for s in summaries),
-        },
+        context={'daily_groups': daily_groups},
         result_type=CompactedSummary,
     )
 
@@ -121,15 +86,20 @@ def archive_processed_summaries(storage: DiskStorage, paths: list[Path]) -> None
     """Move processed summaries to processed directory"""
     for path in paths:
         try:
-            new_path = storage.processed_dir / path.name
-            if new_path.exists():
-                timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
-                new_path = storage.processed_dir / f'{path.stem}_{timestamp}{path.suffix}'
-
+            new_path = _get_unique_archive_path(storage, path)
             path.rename(new_path)
             logger.info(f'Successfully archived {path.name} to {new_path}')
         except Exception as e:
             logger.error(f'Failed to archive {path.name}: {e}')
+
+
+def _get_unique_archive_path(storage: DiskStorage, path: Path) -> Path:
+    """Generate a unique path for archiving a summary"""
+    new_path = storage.processed_dir / path.name
+    if new_path.exists():
+        timestamp = datetime.now(UTC).strftime('%Y%m%d_%H%M%S')
+        new_path = storage.processed_dir / f'{path.stem}_{timestamp}{path.suffix}'
+    return new_path
 
 
 @task
@@ -139,15 +109,12 @@ def load_compact_summaries(hours: int | None = None) -> list[CompactedSummary]:
     if not compact_dir.exists():
         return []
 
-    summaries = []
     cutoff = datetime.now(UTC) - timedelta(hours=hours) if hours else None
+    summaries: list[CompactedSummary] = []
 
     for path in compact_dir.glob('compact_*.json'):
         try:
-            summary = CompactedSummary.model_validate_json(path.read_text())
-            # Ensure end_time is timezone-aware
-            if summary.end_time.tzinfo is None:
-                summary.end_time = summary.end_time.replace(tzinfo=UTC)
+            summary = _load_and_normalize_summary(path)
             if not cutoff or summary.end_time > cutoff:
                 summaries.append(summary)
         except Exception as e:
@@ -157,8 +124,16 @@ def load_compact_summaries(hours: int | None = None) -> list[CompactedSummary]:
     return sorted(summaries, key=lambda s: (s.end_time, s.importance_score), reverse=True)
 
 
+def _load_and_normalize_summary(path: Path) -> CompactedSummary:
+    """Load a summary and ensure its timestamps are UTC"""
+    summary = CompactedSummary.model_validate_json(path.read_text())
+    if summary.end_time.tzinfo is None:
+        summary.end_time = summary.end_time.replace(tzinfo=UTC)
+    return summary
+
+
 @flow
-def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> None:
+def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> CompactedSummary | None:
     """Main flow for compressing observations"""
     logger.info('Compressing observations')
     if not (loaded_summaries := load_unprocessed_summaries(storage)):
@@ -172,7 +147,6 @@ def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> None:
 
     if compact_summary := compact_summaries(loaded_summaries, agents):
         store_compacted_summary(storage, compact_summary)
-
-    archive_processed_summaries(storage, paths)
+        archive_processed_summaries(storage, paths)
 
     return analysis

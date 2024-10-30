@@ -1,280 +1,77 @@
-<!DOCTYPE html>
-<html data-theme="light">
-<head>
-    <title>Information Observer</title>
-    <link rel="icon" href="{{ url_for('static', path='favicon.ico') }}" type="image/x-icon">
-    <style>
-        /* Define CSS variables for both themes */
-        :root[data-theme="light"] {
-            --bg-color: #ffffff;
-            --text-color: #1a1a1a;
-            --border-color: #ddd;
-            --hover-border: #bbb;
-            --section-border: #eee;
-            --compact-bg: #fafafa;
-            --code-bg: #f5f5f5;
-            --blockquote-color: #666;
-            --meta-color: #666;
-            --shadow-color: rgba(0,0,0,0.05);
-            --hover-shadow: rgba(0,0,0,0.1);
-        }
+{% extends "base.html" %}
 
-        :root[data-theme="dark"] {
-            --bg-color: #1a1a1a;
-            --text-color: #e0e0e0;
-            --border-color: #333;
-            --hover-border: #444;
-            --section-border: #333;
-            --compact-bg: #242424;
-            --code-bg: #2d2d2d;
-            --blockquote-color: #999;
-            --meta-color: #888;
-            --shadow-color: rgba(0,0,0,0.2);
-            --hover-shadow: rgba(0,0,0,0.3);
-        }
+{% block content %}
+<div class="container">
+    {# Recent Events Container #}
+    {% if daily_summaries %}
+        {% for day_id, summaries in daily_summaries.items() %}
+        <div class="daily-card">
+            <div class="day-header">
+                <h2>{{ day_id }}</h2>
+            </div>
 
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            max-width: 1000px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            line-height: 1.5;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            transition: all 0.3s ease;
-        }
-
-        /* Theme toggle button */
-        .theme-toggle {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            border: 1px solid var(--border-color);
-            background: var(--bg-color);
-            color: var(--text-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle:hover {
-            border-color: var(--hover-border);
-            box-shadow: 0 2px 4px var(--hover-shadow);
-        }
-
-        /* Update existing styles with variables */
-        .summary {
-            border: 1px solid var(--border-color);
-            padding: 1rem;
-            margin: 1rem 0;
-            border-radius: 6px;
-            background: var(--bg-color);
-            box-shadow: 0 1px 2px var(--shadow-color);
-        }
-
-        .summary:hover {
-            border-color: var(--hover-border);
-            box-shadow: 0 2px 4px var(--hover-shadow);
-        }
-
-        .compact-summary {
-            border: 1px solid var(--border-color);
-            padding: 1.5rem;
-            margin: 1rem 0;
-            border-radius: 6px;
-            background: var(--compact-bg);
-        }
-
-        /* ... rest of your existing styles, updated with variables ... */
-
-        .markdown code {
-            background: var(--code-bg);
-            color: var(--text-color);
-        }
-
-        .markdown pre {
-            background: var(--code-bg);
-        }
-
-        .markdown blockquote {
-            border-left: 4px solid var(--border-color);
-            color: var(--blockquote-color);
-        }
-
-        .meta {
-            color: var(--meta-color);
-        }
-
-        .empty-state {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 60vh;
-            text-align: center;
-        }
-
-        .empty-content {
-            background: var(--compact-bg);
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px var(--shadow-color);
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .duck-image {
-            max-width: 200px;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-            transition: transform 0.3s ease;
-        }
-
-        .duck-image:hover {
-            transform: scale(1.05) rotate(-2deg);
-        }
-
-        .empty-content h2 {
-            margin: 0;
-            color: var(--text-color);
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-content p {
-            color: var(--meta-color);
-            margin: 0;
-            margin-bottom: 1rem;
-        }
-
-        .duck-credit {
-            display: block;
-            color: var(--meta-color);
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        .duck-image {
-            animation: float 3s ease-in-out infinite;
-        }
-    </style>
-</head>
-<body>
-    <!-- Add theme toggle button -->
-    <button class="theme-toggle" onclick="toggleTheme()">🌓 Toggle Theme</button>
-
-    {% if not has_data %}
-        <div class="empty-state">
-            <div class="empty-content">
-                <img
-                    src="{{ duck_data.url }}"
-                    alt="A friendly duck"
-                    class="duck-image"
-                >
-                <h2>No observations yet!</h2>
-                <p>Our duck friend is keeping watch for the past {{ hours }} hours...</p>
-                <small class="duck-credit">{{ duck_data.message }}</small>
-                <p style="margin-top: 2rem; font-size: 0.9rem; color: var(--meta-color);">
-                    While you wait, why not check out <a href="https://alternatebuild.dev/zen" style="color: inherit;">alternatebuild.dev/zen</a>?
-                </p>
+            <div class="timeline">
+                {% for summary in summaries %}
+                <div class="event">
+                    <div class="event-time">{{ summary.timestamp.strftime('%-I:%M %p').lower() }}</div>
+                    <div class="event-content">
+                        {{ summary.summary | markdown | safe }}
+                        {% if summary.events %}
+                            {% for event in summary.events %}
+                                {% if event.permalink %}
+                                    <div class="event-link">
+                                        <a href="{{ event.permalink }}" target="_blank" rel="noopener noreferrer">View in {{ event.type }}</a>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
             </div>
         </div>
+        {% endfor %}
     {% else %}
-        {% if recent_summaries %}
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">Recent Observations</h2>
-                <span class="section-meta">Last {{ hours }} hours</span>
+        <div class="empty-state">
+            <div class="empty-content">
+                <img src="{{ duck_data.url }}" alt="A friendly duck" class="duck-image">
+                <h2>No recent observations</h2>
+                <p>Our duck friend is keeping watch for the past {{ hours }} hours...</p>
+                <small class="duck-credit">{{ duck_data.message }}</small>
             </div>
-
-            {% for summary in recent_summaries %}
-                <div class="summary">
-                    <div class="timestamp">{{ summary.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</div>
-                    <div class="markdown">
-                        {{ summary.summary | markdown | safe }}
-                    </div>
-                    <div class="meta">Sources: {{ summary.source_types|join(', ') }}</div>
-                </div>
-            {% endfor %}
-        </section>
-        {% endif %}
-
-        {% if compact_summaries %}
-        <section class="section">
-            <div class="section-header">
-                <h2 class="section-title">Historical Summary</h2>
-                <span class="section-meta">Condensed insights</span>
-            </div>
-
-            {% for summary in compact_summaries %}
-                <div class="compact-summary">
-                    <div class="compact-header">
-                        <span class="compact-timespan">
-                            {{ summary.start_time.strftime('%Y-%m-%d %H:%M') }} -
-                            {{ summary.end_time.strftime('%Y-%m-%d %H:%M') }}
-                        </span>
-                        <span class="importance-score">
-                            Importance: {{ "%.2f"|format(summary.importance_score) }}
-                        </span>
-                    </div>
-
-                    <div class="markdown">
-                        {{ summary.summary | markdown | safe }}
-                    </div>
-
-                    {% if summary.key_points %}
-                    <ul class="key-points markdown">
-                        {% for point in summary.key_points %}
-                            <li>{{ point | markdown | safe }}</li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-
-                    <div class="meta">
-                        Sources: {{ summary.source_types|join(', ') }}
-                    </div>
-                </div>
-            {% endfor %}
-        </section>
-        {% endif %}
+        </div>
     {% endif %}
 
-    <script>
-        // Theme toggle functionality
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-
-            html.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        }
-
-        // Set initial theme from localStorage or system preference
-        function initializeTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                document.documentElement.setAttribute('data-theme', savedTheme);
-            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
-        }
-
-        // Initialize theme on page load
-        initializeTheme();
-
-        // Listen for system theme changes
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-            if (!localStorage.getItem('theme')) {
-                document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
-            }
-        });
-    </script>
-</body>
-</html>
+    {# Pinboard Container - Always Present #}
+    <div class="pinboard">
+        <h2>Historical Pinboard</h2>
+        {% if compact_summaries %}
+            {% for summary in compact_summaries %}
+            <div class="pinboard-card">
+                <div class="pin-time">
+                    {{ summary.start_time.strftime('%b %-d, %-I:%M %p').lower() }} -
+                    {{ summary.end_time.strftime('%-I:%M %p').lower() }}
+                </div>
+                <div class="pin-content">
+                    {{ summary.summary | markdown | safe }}
+                </div>
+                <div class="pin-meta">
+                    {% for source in summary.source_types %}
+                        <span class="badge badge-{{ source }}">{{ source }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state pinboard-empty">
+                <div class="empty-content">
+                    <img src="{{ duck_data.url }}" alt="A friendly duck" class="duck-image">
+                    <h3>No pins yet!</h3>
+                    <p>Visit <a href="https://nate.software" target="_blank" rel="noopener noreferrer">nate.software</a> to learn more</p>
+                    <small class="duck-credit">{{ duck_data.message }}</small>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

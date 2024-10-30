@@ -23,6 +23,16 @@ class SlackEvent(BaseEvent):
     thread_ts: str | None = field(default=None)
     permalink: str | None = field(default=None)
 
+    def __post_init__(self) -> None:
+        self.content = {
+            'channel': self.channel,
+            'user': self.user,
+            'text': self.text,
+            'thread_ts': self.thread_ts,
+            'permalink': self.permalink,
+        }
+        super().__post_init__()
+
 
 class SlackObserver(BaseModel, Observer[dict[str, Any], SlackEvent]):
     """Slack implementation of the Observer protocol"""
