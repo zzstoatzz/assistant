@@ -1,4 +1,5 @@
 from datetime import UTC, datetime
+from pathlib import Path
 
 import controlflow as cf
 from prefect import flow, task
@@ -10,6 +11,7 @@ from slack_sdk.errors import SlackApiError
 from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
+from assistant import run_agent_loop
 from assistant.observers.slack import SlackObserver
 from assistant.utilities.loggers import get_logger
 
@@ -23,22 +25,26 @@ class SlackSettings(BaseSettings):
     bot_token: str | None = Field(default=None, description='Slack bot token')
     check_interval_seconds: int = Field(default=300, ge=10)
 
-    agent_instructions: str = Field(
-        default="""
-        Review these Slack messages and create a concise summary.
-        Group by channel and thread context, highlight important items.
-        """
-    )
+    instructions_path: Path = Field(default=Path(__file__).parent.parent / 'slack_instructions.md')
+
+    @property
+    def instructions(self) -> str:
+        """Load instructions from Markdown file"""
+        if not self.instructions_path.exists():
+            return """
+            Review these Slack messages and create a concise summary.
+            Group by channel and thread context, highlight important items.
+            """
+        return self.instructions_path.read_text()
 
 
-settings = SlackSettings()
+slack_settings = SlackSettings()
 
 
 @task
 def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
     """Process Slack messages and create a summary"""
-
-    if not (token := settings.bot_token):
+    if not (token := slack_settings.bot_token):
         logger.error('Slack bot token is not set')
         return None
 
@@ -98,7 +104,7 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
         # Create processed summary with AI analysis
         summary = ObservationSummary(
             timestamp=datetime.now(UTC),
-            summary=cf.run(
+            summary=run_agent_loop(
                 'Create summary of Slack messages',
                 agents=agents,
                 instructions="""
@@ -124,13 +130,14 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 def check_slack(storage: DiskStorage, agents: list[cf.Agent]) -> None:
     """Process Slack messages and store using storage abstraction"""
     logger.info_style('Checking Slack for 💬')
+    logger.debug(f'Processing Slack messages with instructions: {slack_settings.instructions}')
     process_slack_observations(storage, agents)
 
 
 @root_settings.hl.instance.require_approval()
 def send_slack_message(channel: str, text: str) -> str | None:
     """Send a message to a Slack channel."""
-    client = WebClient(token=settings.bot_token)
+    client = WebClient(token=slack_settings.bot_token)
 
     try:
         response = client.chat_postMessage(channel=channel, text=text)

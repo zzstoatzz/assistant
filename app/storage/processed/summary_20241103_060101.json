@@ -1,0 +1,24 @@
+{
+  "timestamp": "2024-11-03T05:57:04.892987-06:00",
+  "summary": "",
+  "events": [
+    {
+      "type": "PullRequest",
+      "timestamp": "2024-11-03T05:57:04.892932-06:00",
+      "hash": "13127450506",
+      "title": "Add support for defining settings via `pyproject.toml`",
+      "repository": "PrefectHQ/prefect",
+      "reason": "review_requested",
+      "url": "https://api.github.com/repos/PrefectHQ/prefect/pulls/15875"
+    }
+  ],
+  "source_types": [
+    "github"
+  ],
+  "day_id": "2024-11-03",
+  "entity_mentions": [
+    "pr-15875",
+    "repo-prefecthq-prefect"
+  ],
+  "referenced_entities": []
+}

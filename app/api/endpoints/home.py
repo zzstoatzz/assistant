@@ -1,7 +1,7 @@
 import httpx
 from fastapi import APIRouter, Request
 
-from app.api.dependencies import get_enabled_processors, load_summaries
+from app.api.dependencies import get_enabled_sources, load_summaries
 from app.api.templates import templates
 from app.settings import settings
 from app.storage import DiskStorage
@@ -57,7 +57,7 @@ async def home(request: Request, hours: int = 24):
             'hours': hours,
             'has_data': bool(daily_summaries or compact_summaries),
             'duck_data': await get_random_duck(),
-            'enabled_processors': get_enabled_processors(),
+            'enabled_sources': get_enabled_sources(),
             'entities': sorted(entities_by_id.values(), key=lambda e: e.importance, reverse=True),
         },
     )

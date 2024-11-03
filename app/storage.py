@@ -28,11 +28,10 @@ class DiskStorage:
 
     def __init__(self) -> None:
         """Initialize storage using paths from settings"""
-        storage = settings.paths.storage
-        self.raw_dir = storage.raw
-        self.processed_dir = storage.processed
-        self.compact_dir = storage.compact
-        self.entities_dir = storage.entities
+        self.raw_dir = settings.paths.storage.raw
+        self.processed_dir = settings.paths.storage.processed
+        self.compact_dir = settings.paths.storage.compact
+        self.entities_dir = settings.paths.storage.entities
 
     # Raw observations
     def store_raw(self, data: ObservationSummary) -> Path:

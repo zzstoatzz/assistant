@@ -12,6 +12,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
+from assistant import run_agent_loop
 from assistant.observers.github import GitHubEventFilter, GitHubObserver
 from assistant.utilities.loggers import get_logger
 
@@ -25,13 +26,17 @@ class GitHubSettings(BaseSettings):
     token: str = Field(description='GitHub API token')
     check_interval_seconds: int = Field(default=300, ge=10)
     event_filters_path: Path = Field(default=Path(__file__).parent.parent / 'github_event_filters.json')
+    instructions_path: Path = Field(default=Path(__file__).parent.parent / 'github_instructions.md')
 
-    agent_instructions: str = Field(
-        default="""
-        Review these GitHub notifications and create a concise summary.
-        Group related items by repository and highlight anything urgent.
-        """
-    )
+    @property
+    def instructions(self) -> str:
+        """Load instructions from Markdown file"""
+        if not self.instructions_path.exists():
+            return """
+            Review these GitHub notifications and create a concise summary.
+            Group related items by repository and highlight anything urgent.
+            """
+        return self.instructions_path.read_text()
 
     @property
     def event_filters(self) -> list[GitHubEventFilter]:
@@ -50,7 +55,7 @@ class GitHubSettings(BaseSettings):
             return []
 
 
-settings = GitHubSettings()  # type: ignore
+github_settings = GitHubSettings()  # type: ignore
 
 
 def _get_agent_names(parameters: dict[str, Any]) -> str:
@@ -66,7 +71,7 @@ def process_github_observations(
     """Process GitHub notifications and create a summary"""
 
     events = []
-    with GitHubObserver(token=settings.token, filters=event_filters) as observer:
+    with GitHubObserver(token=github_settings.token, filters=event_filters) as observer:
         if not (events_list := list(observer.observe())):
             logger.info('Successfully checked GitHub - no new notifications')
             return None
@@ -97,10 +102,10 @@ def process_github_observations(
         # Create processed summary with AI analysis
         summary = ObservationSummary(
             timestamp=datetime.now(root_settings.tz),
-            summary=cf.run(
+            summary=run_agent_loop(
                 'Create summary of GitHub activity',
                 agents=agents,
-                instructions=settings.agent_instructions,
+                instructions=github_settings.instructions,
                 context={'events': events},
                 result_type=str,
             ),
@@ -124,7 +129,7 @@ def check_github(
     {%- if reasons %} │ {{ reasons|join(', ') }}{% endif -%}
     {%- if branch %} │ {{ branch }}{% endif %}""")
 
-    if event_filters := settings.event_filters:
+    if event_filters := github_settings.event_filters:
         logger.info_style('Checking GitHub for 🛎️')
         for github_filter in event_filters:
             filter_desc = filter_template.render(
@@ -138,6 +143,8 @@ def check_github(
         logger.warning_style('No GitHub event filters found. You may get too many notifications.')
         event_filters = []
 
+    logger.debug(f'Processing GitHub notifications with instructions: {github_settings.instructions}')
+
     process_github_observations(storage, agents, event_filters)
 
 
@@ -146,7 +153,7 @@ def create_github_issue(repository_name: str, title: str, body: str) -> str | No
     """Create a GitHub issue using the GitHub API."""
     url = f'https://api.github.com/repos/{repository_name}/issues'
     headers = {
-        'Authorization': f'token {settings.token}',
+        'Authorization': f'token {github_settings.token}',
         'Accept': 'application/vnd.github.v3+json',
     }
     data = {'title': title, 'body': body}

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import controlflow as cf
 from pydantic import BaseModel, Field
 
 from app.agents import secretary
+from assistant import run_agent_loop
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger('commit-msg')
@@ -37,9 +37,9 @@ def main() -> int:
             logger.warning('No staged changes')
             return 1
 
-        msg = cf.run(
+        msg = run_agent_loop(
             'Generate commit message',
-            agent=secretary,
+            agents=[secretary],
             instructions="""
             Analyze the git diff and generate a conventional commit message.
             Be concise but descriptive. Focus on the what and why.
