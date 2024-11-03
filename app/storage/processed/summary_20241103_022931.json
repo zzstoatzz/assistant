@@ -1,0 +1,20 @@
+{
+  "timestamp": "2024-11-03T02:29:25.410055-06:00",
+  "summary": "Subject: RE: important opportunity\nSender: Nate Nowack <nate@prefect.io>\nSnippet: The email follows up on a phone call from the previous week. Nate Nowack expresses the need for the recipient to reach out to him if they wish to proceed with the opportunity mentioned.\n\nKey Points:\n- Follow-up: This email is a follow-up to a phone call that took place last week.\n- Action Required: The recipient needs to reach out to Nate to proceed with the opportunity.",
+  "events": [
+    {
+      "type": "email",
+      "timestamp": "2024-11-03T02:29:25.407255-06:00",
+      "hash": "192f068c6f94eb15",
+      "subject": "RE: important opportunity",
+      "sender": "Nate Nowack <nate@prefect.io>",
+      "snippet": "just following up the phone call last week, you&#39;re going to have to reach out to me if you want to make this happen"
+    }
+  ],
+  "source_types": [
+    "email"
+  ],
+  "day_id": "2024-11-03",
+  "entity_mentions": [],
+  "referenced_entities": []
+}

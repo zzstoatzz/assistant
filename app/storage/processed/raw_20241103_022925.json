@@ -1,10 +1,10 @@
 {
-  "timestamp": "2024-11-03T00:45:56.839448-05:00",
+  "timestamp": "2024-11-03T02:29:25.408796-06:00",
   "summary": "",
   "events": [
     {
       "type": "email",
-      "timestamp": "2024-11-03T00:45:56.836935-05:00",
+      "timestamp": "2024-11-03T02:29:25.407255-06:00",
       "hash": "192f068c6f94eb15",
       "subject": "RE: important opportunity",
       "sender": "Nate Nowack <nate@prefect.io>",
@@ -15,8 +15,6 @@
     "email"
   ],
   "day_id": "2024-11-03",
-  "entity_mentions": [
-    "nate-nowack"
-  ],
+  "entity_mentions": [],
   "referenced_entities": []
 }

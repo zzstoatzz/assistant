@@ -8,7 +8,7 @@ from app.storage import DiskStorage
 from assistant.utilities.loggers import get_logger
 
 router = APIRouter()
-storage = DiskStorage(settings.summaries_dir)
+storage = DiskStorage()
 logger = get_logger('app.api.endpoints.home')
 
 

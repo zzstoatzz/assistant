@@ -56,3 +56,8 @@ clean:
 .PHONY: dev-setup
 dev-setup:
 	UV_SYSTEM_PYTHON=1 uv pip install --editable ".[dev]"
+
+# Install pre-commit hooks
+.PHONY: install-hooks
+install-hooks:
+	python scripts/install_hooks.py

@@ -30,29 +30,32 @@ logger = get_logger('main')
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Start background task processing"""
-    storage = DiskStorage(settings.summaries_dir)
+    summary_storage = DiskStorage()
     functions: list[tuple[Callable[..., None], float]] = []
 
     if email_settings.enabled:
         functions.append(
-            (partial(check_email, storage=storage, agents=[email_agent]), email_settings.check_interval_seconds)
+            (partial(check_email, storage=summary_storage, agents=[email_agent]), email_settings.check_interval_seconds)
         )
 
     if github_settings.enabled:
         functions.append(
             (
-                partial(check_github, storage=storage, agents=[github_agent]),
+                partial(check_github, storage=summary_storage, agents=[github_agent]),
                 github_settings.check_interval_seconds,
             )
         )
 
     if slack_settings.enabled:
         functions.append(
-            (partial(check_slack, storage=storage, agents=[slack_agent]), slack_settings.check_interval_seconds)
+            (partial(check_slack, storage=summary_storage, agents=[slack_agent]), slack_settings.check_interval_seconds)
         )
 
     if not functions:
         logger.warning('☹️ No 3rd party processors enabled')
+
+    if settings.user_identity:
+        logger.info(f'🧾 Using configured identity: {settings.user_identity}')
 
     logger.info(f'👀 Watching sources: {get_enabled_processors()!r}')
 
@@ -62,7 +65,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         (
             partial(
                 compress_observations,
-                storage=storage,
+                storage=summary_storage,
                 agents=[secretary],
             ),
             settings.observation_check_interval_seconds,
@@ -149,12 +152,12 @@ app.add_middleware(
 
 app.openapi = custom_openapi
 
-app.mount('/static', StaticFiles(directory=str(settings.static_dir)), name='static')
+app.mount('/static', StaticFiles(directory=str(settings.paths.static)), name='static')
 
 
 @app.get('/favicon.ico', include_in_schema=False)
 async def favicon():
-    return FileResponse(str(settings.static_dir / 'favicon.ico'))
+    return FileResponse(str(settings.paths.static / 'favicon.ico'))
 
 
 app.include_router(home.router)
