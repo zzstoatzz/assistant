@@ -10,7 +10,7 @@ from app.types import Entity, ObservationSummary
 from assistant.utilities.loggers import get_logger
 
 router = APIRouter(prefix='/api')
-storage = DiskStorage(settings.app_dir)
+storage = DiskStorage()
 logger = get_logger('app.api.entities')
 
 

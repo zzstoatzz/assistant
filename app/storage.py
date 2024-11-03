@@ -1,17 +1,14 @@
 from collections.abc import Iterator
 from datetime import datetime
 from pathlib import Path
-from typing import Generic, TypeVar
 
 from pydantic import BaseModel
 
 from app.settings import settings
-from app.types import Entity
+from app.types import CompactedSummary, Entity, ObservationSummary
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger(__name__)
-
-M = TypeVar('M', bound=BaseModel)
 
 
 def _get_timestamped_path(directory: Path, prefix: str) -> Path:
@@ -21,56 +18,57 @@ def _get_timestamped_path(directory: Path, prefix: str) -> Path:
 
 
 def _safe_write(path: Path, data: BaseModel) -> Path:
-    """Safely write data to path, creating parent dirs if needed"""
-    path.parent.mkdir(parents=True, exist_ok=True)
+    """Safely write data to path"""
     path.write_text(data.model_dump_json(indent=2))
     return path
 
 
-class DiskStorage(Generic[M]):
-    """Simple disk-based storage for observations and summaries"""
+class DiskStorage:
+    """Storage for observations, summaries, and entities"""
 
-    def __init__(self, base_dir: Path):
-        self.base_dir = base_dir
-        self.raw_dir = base_dir / 'raw'
-        self.processed_dir = base_dir / 'processed'
-        self.compact_dir = base_dir / 'compact'
-        self.entities_dir = base_dir / 'entities'
+    def __init__(self) -> None:
+        """Initialize storage using paths from settings"""
+        storage = settings.paths.storage
+        self.raw_dir = storage.raw
+        self.processed_dir = storage.processed
+        self.compact_dir = storage.compact
+        self.entities_dir = storage.entities
 
-    def store_raw(self, data: M) -> Path:
+    # Raw observations
+    def store_raw(self, data: ObservationSummary) -> Path:
         """Store raw observation data"""
         path = _get_timestamped_path(self.raw_dir, 'raw')
         return _safe_write(path, data)
 
-    def store_processed(self, data: M) -> Path:
+    def get_unprocessed(self) -> Iterator[Path]:
+        """Get paths of unprocessed observations"""
+        return self.raw_dir.glob('raw_*.json')
+
+    # Processed summaries
+    def store_processed(self, data: ObservationSummary) -> Path:
         """Store processed summary data"""
         path = _get_timestamped_path(self.processed_dir, 'summary')
         return _safe_write(path, data)
 
-    def store_compact(self, data: M) -> Path:
+    def get_processed(self) -> Iterator[Path]:
+        """Get paths of processed summaries"""
+        return self.processed_dir.glob('summary_*.json')
+
+    # Compact summaries
+    def store_compact(self, data: CompactedSummary) -> Path:
         """Store compacted summary data"""
         path = _get_timestamped_path(self.compact_dir, 'compact')
         return _safe_write(path, data)
 
+    def get_compact(self) -> Iterator[Path]:
+        """Get paths of compact summaries"""
+        return self.compact_dir.glob('compact_*.json')
+
+    # Entity operations
     def store_entity(self, entity: Entity) -> Path:
         """Store an entity"""
         path = self.entities_dir / f'{entity.id}.json'
         return _safe_write(path, entity)
-
-    def get_unprocessed(self) -> Iterator[Path]:
-        """Get paths of unprocessed observations"""
-        self.raw_dir.mkdir(parents=True, exist_ok=True)
-        return self.raw_dir.glob('raw_*.json')
-
-    def get_processed(self) -> Iterator[Path]:
-        """Get paths of processed summaries"""
-        self.processed_dir.mkdir(parents=True, exist_ok=True)
-        return self.processed_dir.glob('summary_*.json')
-
-    def get_compact(self) -> Iterator[Path]:
-        """Get paths of compact summaries"""
-        self.compact_dir.mkdir(parents=True, exist_ok=True)
-        return self.compact_dir.glob('compact_*.json')
 
     def get_entity(self, entity_id: str) -> Entity | None:
         """Get entity by ID"""
@@ -85,7 +83,6 @@ class DiskStorage(Generic[M]):
 
     def get_entities(self) -> list[Entity]:
         """Get all entities"""
-        self.entities_dir.mkdir(parents=True, exist_ok=True)
         entities = []
         for path in self.entities_dir.glob('*.json'):
             try:

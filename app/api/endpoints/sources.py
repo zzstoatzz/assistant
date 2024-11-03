@@ -8,12 +8,11 @@ from app.processors.github import check_github
 from app.processors.github import settings as github_settings
 from app.processors.slack import check_slack
 from app.processors.slack import settings as slack_settings
-from app.settings import settings
 from app.storage import DiskStorage
 from assistant.utilities.loggers import get_logger
 
 router = APIRouter(prefix='/api/sources')
-storage = DiskStorage(settings.summaries_dir)
+storage = DiskStorage()
 logger = get_logger('app.api.sources')
 
 

@@ -117,7 +117,7 @@ def get_logger(
     return logger  # type: ignore
 
 
-def setup_logging(level: str | None = None) -> None:
+def setup_logging(level: str | None = None, log_time_format: str = '%x %X') -> None:
     logger: AssistantLogger = get_logger()
 
     if level is not None:
@@ -130,10 +130,12 @@ def setup_logging(level: str | None = None) -> None:
     handler = RichHandler(
         rich_tracebacks=True,
         markup=True,
-        show_time=False,
+        show_path=False,
+        show_time=True,
         show_level=True,
         enable_link_path=True,
         omit_repeated_times=True,
+        log_time_format=log_time_format,
     )
 
     formatter = logging.Formatter('%(name)s: %(message)s')

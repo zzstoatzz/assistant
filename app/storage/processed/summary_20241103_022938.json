@@ -1,10 +1,10 @@
 {
-  "timestamp": "2024-11-03T00:45:56.840891-05:00",
-  "summary": "The email from Nate Nowack at Prefect.io is a follow-up to a previous phone call regarding an important opportunity. Nate urges the recipient to reach out if they want to proceed with the opportunity.",
+  "timestamp": "2024-11-03T02:29:25.408796-06:00",
+  "summary": "",
   "events": [
     {
       "type": "email",
-      "timestamp": "2024-11-03T00:45:56.836935-05:00",
+      "timestamp": "2024-11-03T02:29:25.407255-06:00",
       "hash": "192f068c6f94eb15",
       "subject": "RE: important opportunity",
       "sender": "Nate Nowack <nate@prefect.io>",
@@ -15,6 +15,8 @@
     "email"
   ],
   "day_id": "2024-11-03",
-  "entity_mentions": [],
+  "entity_mentions": [
+    "nate-nowack"
+  ],
   "referenced_entities": []
 }

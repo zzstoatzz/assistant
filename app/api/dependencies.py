@@ -15,12 +15,13 @@ ProcessorSummaries: TypeAlias = tuple[list[ObservationSummary], list[CompactedSu
 
 
 def get_storage() -> DiskStorage:
-    return DiskStorage(settings.summaries_dir)
+    """Get storage instance"""
+    return DiskStorage()  # No args needed
 
 
 def load_summaries(hours: int = 24) -> tuple[list[ObservationSummary], list[CompactedSummary]]:
     """Load recent summaries and historical pins"""
-    storage = DiskStorage(settings.summaries_dir)
+    storage = DiskStorage()
     cutoff = datetime.now(settings.tz) - timedelta(hours=hours)
 
     recent_summaries = []
