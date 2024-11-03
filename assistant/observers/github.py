@@ -8,7 +8,7 @@ from pydantic import BaseModel, ConfigDict
 from assistant.observer import BaseEvent, Observer
 from assistant.utilities.loggers import get_logger
 
-logger = get_logger('observer.github')
+logger = get_logger('assistant.github')
 
 
 @dataclass
@@ -93,8 +93,6 @@ class GitHubObserver(BaseModel, Observer[dict[str, Any], GitHubEvent]):
         response = self.client.get('/notifications', params={'all': False})
         response.raise_for_status()
         notifications = response.json()
-
-        logger.info(f'Received {len(notifications)} notifications from GitHub')
 
         for notification in notifications:
             # Check once if ANY filter matches

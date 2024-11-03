@@ -4,12 +4,14 @@ from functools import partial
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.agents import email_agent, github_agent, secretary, slack_agent
-from app.api.endpoints import home, observations
+from app.api.dependencies import get_enabled_processors
+from app.api.endpoints import entities, home, observations, sources
 from app.background import compress_observations
 from app.processors.email import check_email
 from app.processors.email import settings as email_settings
@@ -52,13 +54,16 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     if not functions:
         logger.warning('☹️ No 3rd party processors enabled')
 
+    logger.info(f'👀 Watching sources: {get_enabled_processors()!r}')
+
+    logger.info(f'🔍 Compressing observations every {settings.observation_check_interval_seconds} seconds')
+
     functions.append(
         (
             partial(
                 compress_observations,
                 storage=storage,
                 agents=[secretary],
-                extra_context={'user_identities': settings.user_identities},
             ),
             settings.observation_check_interval_seconds,
         )
@@ -82,9 +87,10 @@ def custom_openapi():
         description=f"""
         An intelligent service that observes and summarizes information from multiple sources:
 
-        * 📧 **Email**: Processes Gmail messages
-        * 🐙 **GitHub**: Tracks PRs, issues, and workflow runs
-        * 📚 **Historical**: Maintains compressed historical records
+        {email_settings.enabled and '* 📧 **Email**: Processes Gmail messages' or ''}
+        {github_settings.enabled and '* 🐙 **GitHub**: Tracks PRs, issues, and workflow runs' or ''}
+        {slack_settings.enabled and '* 📢 **Slack**: Processes Slack messages' or ''}
+        '* 📚 **Historical**: Maintains compressed historical records'
 
         ### Features
 
@@ -128,7 +134,11 @@ app = FastAPI(
     swagger_ui_parameters={'defaultModelsExpandDepth': -1},
 )
 
-# Add CORS middleware
+app.add_middleware(
+    GZipMiddleware,
+    minimum_size=1000,
+)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],  # Allows all origins in development
@@ -149,3 +159,5 @@ async def favicon():
 
 app.include_router(home.router)
 app.include_router(observations.router)
+app.include_router(entities.router)
+app.include_router(sources.router)

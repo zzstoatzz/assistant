@@ -62,7 +62,6 @@ def process_github_observations(
     storage: DiskStorage,
     agents: list[cf.Agent],
     event_filters: list[GitHubEventFilter],
-    instructions: str | None = None,
 ) -> ObservationSummary | None:
     """Process GitHub notifications and create a summary"""
 
@@ -72,7 +71,7 @@ def process_github_observations(
             logger.info('Successfully checked GitHub - no new notifications')
             return None
 
-        # Create events first
+        # Enrich raw events with metadata
         for event in events_list:
             events.append(
                 {
@@ -85,43 +84,38 @@ def process_github_observations(
                     'url': event.url,
                 }
             )
-            logger.info_kv(event.repository, event.title)
 
-        # Store raw events
+        # Store raw events first
         raw_summary = ObservationSummary(
-            timestamp=datetime.now(root_settings.tz),  # Use Chicago time
-            summary='',  # Empty summary for raw storage
+            timestamp=datetime.now(root_settings.tz),
+            summary='',  # Empty for raw storage
             events=events,
             source_types=['github'],
         )
         storage.store_raw(raw_summary)
 
-    # Create and store processed summary
-    summary = ObservationSummary(
-        timestamp=datetime.now(root_settings.tz),
-        summary=cf.run(
-            (
-                'Create pretty, concise, summary of new GitHub notifications for humans. '
-                'Always use html links instead of api links.'
+        # Create processed summary with AI analysis
+        summary = ObservationSummary(
+            timestamp=datetime.now(root_settings.tz),
+            summary=cf.run(
+                'Create summary of GitHub activity',
+                agents=agents,
+                instructions=settings.agent_instructions,
+                context={'events': events},
+                result_type=str,
             ),
-            agents=agents,
-            instructions=instructions or settings.agent_instructions,
-            context={'events': events},
-            result_type=str,
-        ),
-        events=events,
-        source_types=['github'],
-    )
+            events=events,
+            source_types=['github'],
+        )
 
-    storage.store_processed(summary)
-    return summary
+        storage.store_processed(summary)
+        return summary
 
 
 @flow
 def check_github(
     storage: DiskStorage,
     agents: list[cf.Agent],
-    instructions: str | None = None,
 ) -> None:
     """Process GitHub notifications and store using storage abstraction"""
 
@@ -144,7 +138,7 @@ def check_github(
         logger.warning_style('No GitHub event filters found. You may get too many notifications.')
         event_filters = []
 
-    process_github_observations(storage, agents, event_filters, instructions)
+    process_github_observations(storage, agents, event_filters)
 
 
 @root_settings.hl.instance.require_approval()

@@ -1,97 +1,106 @@
-from pathlib import Path
-from typing import TypeAlias
-
 import controlflow as cf
 from prefect import flow, task
 
 from app.settings import settings
 from app.storage import DiskStorage
-from app.types import CompactedSummary, ObservationSummary
+from app.types import CompactedSummary, Entity, ObservationSummary
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger('assistant.background')
 
-SummaryWithPath: TypeAlias = tuple[Path, ObservationSummary]
-DailyGroups: TypeAlias = dict[str, list[ObservationSummary]]
-
 
 @task
-def load_unprocessed_summaries(storage: DiskStorage) -> list[SummaryWithPath]:
-    """Load raw summaries that need processing"""
-    unprocessed = list(storage.get_unprocessed())
-    if not unprocessed:
-        return []
+def process_raw_summaries(storage: DiskStorage, agents: list[cf.Agent]) -> list[ObservationSummary]:
+    """Process raw summaries and detect entities"""
+    processed = []
 
-    loaded = []
-    for path in unprocessed:
+    for path in storage.get_unprocessed():
         try:
             summary = ObservationSummary.model_validate_json(path.read_text())
-            loaded.append((path, summary))
+
+            # Detect/update entities from this summary
+            entities = cf.run(
+                'Analyze observation for entities',
+                agents=agents,
+                instructions="""
+                Review this observation and:
+                1. Identify key entities (users, repos, topics)
+                2. For each entity:
+                   - Set importance based on current context
+                   - Write clear description of current state
+                   - Link to related entities if any
+                Return list of entities to track.
+                """,
+                context={'observation': summary.model_dump()},
+                result_type=list[Entity],
+            )
+
+            # Store/update entities
+            for entity in entities:
+                storage.store_entity(entity)
+
+            # Add entity references to summary
+            summary.entity_mentions = [e.id for e in entities]
+            storage.store_processed(summary)
+            processed.append(summary)
+
+            # Move raw to processed
+            path.rename(storage.processed_dir / path.name)
+
         except Exception as e:
-            logger.error(f'Failed to load summary {path.name}: {e}')
-    return loaded
+            logger.error(f'Failed to process summary {path}: {e}')
+
+    return processed
 
 
 @task
-def evaluate_for_pinboard(
-    summaries: list[ObservationSummary], existing_compact: CompactedSummary | None, agents: list[cf.Agent]
-) -> CompactedSummary | None:
-    """Evaluate if recent observations should be added to historical pinboard"""
-    return cf.run(
-        'Evaluate if these events deserve a spot on the historical pinboard',
-        agents=[agents[-1]],  # Use secretary as gatekeeper
-        instructions="""
-        Review these events and decide if they warrant historical preservation:
-        1. Look for significant changes or milestones
-        2. Consider long-term impact and relevance
-        3. Evaluate if this adds new context to existing pins
-        4. Preserve critical links and relationships
-        5. Only create/update pins for truly noteworthy items
+def update_historical_pins(
+    storage: DiskStorage,
+    agents: list[cf.Agent],
+    recent_summaries: list[ObservationSummary],
+) -> None:
+    """Update historical pins based on recent activity and entities"""
 
-        If nothing is historically significant, return None.
+    # Get active entities for context
+    entities = storage.get_entities()
+
+    # Let secretary evaluate historical significance
+    pin = cf.run(
+        'Evaluate historical significance',
+        agents=agents,
+        instructions="""
+        Review recent observations and active entities to determine:
+        1. What deserves historical preservation
+        2. How this connects to existing knowledge
+        3. What patterns or trends are emerging
+
+        If nothing significant to pin, return a CompactedSummary with empty=True.
         """,
         context={
-            'recent_summaries': [s.model_dump() for s in summaries],
-            'existing_pin': existing_compact.model_dump() if existing_compact else None,
-            'user_identities': settings.user_identities,
+            'recent_summaries': [s.model_dump() for s in recent_summaries],
+            'active_entities': [e.model_dump() for e in entities],
+            'user_identity': settings.user_identity,
         },
         result_type=CompactedSummary,
     )
 
+    if not pin.empty:
+        storage.store_compact(pin)
+        logger.info('Created new historical pin')
+    else:
+        logger.info('No significant events to pin')
+
 
 @flow
 def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> None:
-    """Process and consolidate observations"""
-    logger.info('Compressing observations')
+    """Process observations and maintain historical context"""
+    logger.info('🔄 Starting observation compression')
 
-    # 1. Process raw summaries to processed/
-    if loaded_summaries := load_unprocessed_summaries(storage):
-        for path, summary in loaded_summaries:
-            storage.store_processed(summary)
-            path.rename(storage.processed_dir / path.name)
+    # 1. Process any raw summaries
+    if recent := process_raw_summaries(storage, agents):
+        logger.info(f'Processed {len(recent)} new summaries')
 
-    # 2. Group processed summaries by day
-    day_groups = {}
-    for path in storage.get_processed():
-        try:
-            summary = ObservationSummary.model_validate_json(path.read_text())
-            day_groups.setdefault(summary.day_id, []).append(summary)
-        except Exception as e:
-            logger.error(f'Failed to load processed summary {path.name}: {e}')
-
-    # 3. Let secretary evaluate each day for historical significance
-    for day_id, summaries in day_groups.items():
-        # Check existing pin
-        existing = None
-        for path in storage.get_compact():
-            try:
-                compact = CompactedSummary.model_validate_json(path.read_text())
-                if compact.end_time.date() == summaries[0].day_id:
-                    existing = compact
-                    break
-            except Exception as e:
-                logger.error(f'Failed to load compact summary {path.name}: {e}')
-
-        # Let secretary decide if this should be pinned
-        if compact_summary := evaluate_for_pinboard(summaries, existing, agents):
-            storage.store_compact(compact_summary)
+        # 2. Update historical pins with new context
+        update_historical_pins(storage, agents, recent)
+    else:
+        logger.info('No new observations to process')
