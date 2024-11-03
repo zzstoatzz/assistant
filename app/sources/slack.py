@@ -3,6 +3,7 @@ from pathlib import Path
 
 import controlflow as cf
 from prefect import flow, task
+from prefect.cache_policies import NONE
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from slack_sdk import WebClient
@@ -41,7 +42,7 @@ class SlackSettings(BaseSettings):
 slack_settings = SlackSettings()
 
 
-@task
+@task(cache_policy=NONE)
 def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
     """Process Slack messages and create a summary"""
     if not (token := slack_settings.bot_token):

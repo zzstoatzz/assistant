@@ -169,5 +169,48 @@ class Settings(BaseSettings):
         self.paths.create_all()
         return self
 
+    # Storage limits and thresholds
+    max_unprocessed_batch_size: int = Field(
+        default=50,
+        gt=0,
+        description='Maximum number of raw summaries to process in one batch',
+        examples=[25, 50, 100],
+    )
+    max_context_entities: int = Field(
+        default=100,
+        gt=0,
+        description='Maximum number of entities to use for context',
+        examples=[50, 100, 200],
+    )
+    max_historical_pins: int = Field(
+        default=10,
+        gt=0,
+        description='Maximum number of historical pins to use for context',
+        examples=[5, 10, 20],
+    )
+
+    # Importance thresholds
+    entity_importance_threshold: float = Field(
+        default=0.5,
+        ge=0.0,
+        le=1.0,
+        description='Minimum importance score to keep an entity',
+        examples=[0.3, 0.5, 0.7],
+    )
+    historical_pin_threshold: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description='Minimum importance score to create historical pin',
+        examples=[0.5, 0.7, 0.9],
+    )
+    context_entity_threshold: float = Field(
+        default=0.7,
+        ge=0.0,
+        le=1.0,
+        description='Minimum importance score for entities used in historical context',
+        examples=[0.5, 0.7, 0.9],
+    )
+
 
 settings = Settings()

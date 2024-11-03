@@ -1,0 +1,28 @@
+{
+  "timestamp": "2024-11-03T06:33:49.399875-06:00",
+  "summary": "",
+  "events": [
+    {
+      "type": "email",
+      "timestamp": "2024-11-03T06:33:49.395714-06:00",
+      "hash": "192f1ff2c4df0a06",
+      "subject": "Overdue: Operating system update will install today",
+      "sender": "Rippling <no-reply@rippling.com>",
+      "snippet": "Hi Nate, As part of your company&#39;s IT security policy, at least one operating system update will be automatically installed today. Update your computer before the enforcement to avoid any"
+    },
+    {
+      "type": "email",
+      "timestamp": "2024-11-03T06:33:49.397658-06:00",
+      "hash": "192f1fe1b0b4162c",
+      "subject": "Nathan,  time to jump back into your Weights & Biases certification!",
+      "sender": "\"W&B AI Academy\" <noreply@notify.thinkific.com>",
+      "snippet": "Hi Nathan! It looks like you are making progress on your W&amp;B courses! Keep going! LLM Engineering: Structured Outputs is 21% complete. Resume this course. Continue learning and get your certificate"
+    }
+  ],
+  "source_types": [
+    "email"
+  ],
+  "day_id": "2024-11-03",
+  "entity_mentions": [],
+  "referenced_entities": []
+}

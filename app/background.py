@@ -2,6 +2,7 @@ from functools import partial
 
 import controlflow as cf
 from prefect import flow, task
+from prefect.cache_policies import NONE
 from prefect.runtime.flow_run import get_parameters
 
 from app.agents import ALL_AGENTS
@@ -23,39 +24,42 @@ def process_raw_summaries(storage: DiskStorage, agents: list[cf.Agent]) -> list[
     """Process raw summaries and detect entities"""
     processed = []
 
-    for path in storage.get_unprocessed():
+    for path in sorted(storage.get_unprocessed())[-settings.max_unprocessed_batch_size :]:
         try:
             summary = ObservationSummary.model_validate_json(path.read_text())
+
+            existing_entities = sorted(storage.get_entities(), key=lambda e: e.importance, reverse=True)[
+                : settings.max_context_entities
+            ]
 
             entities = run_agent_loop(
                 'Analyze observation for entities',
                 agents=agents,
-                instructions="""
-                Review this observation and:
-                1. Identify any key entities
-                2. Reconcile with existing entities
-                3. For each entity:
-                   - Set importance based on current context
-                   - Write clear description of current state
-                   - Link to related entities if any
-                Return list of entities to track.
+                instructions=f"""
+                Review this observation and identify/update key entities.
+
+                Guidelines:
+                1. Focus on important entities (importance > {settings.entity_importance_threshold})
+                2. Merge similar or related entities
+                3. Keep entity descriptions concise but informative
+
+                Return only entities worth tracking long-term.
                 """,
                 context={
                     'observation': summary.model_dump(),
-                    'entities': storage.get_entities(),
+                    'entities': [e.model_dump() for e in existing_entities],
                 },
                 result_type=list[Entity],
             )
 
+            # Store only significant entities
             for entity in entities:
-                storage.store_entity(entity)
+                if entity.importance > settings.entity_importance_threshold:
+                    storage.store_entity(entity)
 
-            # Add entity references to summary
             summary.entity_mentions = [e.id for e in entities]
             storage.store_processed(summary)
             processed.append(summary)
-
-            # Move raw to processed
             path.rename(storage.processed_dir / path.name)
 
         except Exception as e:
@@ -71,38 +75,48 @@ def update_historical_pins(
     recent_summaries: list[ObservationSummary],
 ) -> None:
     """Update historical pins based on recent activity and entities"""
-    # Get active entities for context
-    entities = storage.get_entities()
+    # Get only high-importance entities
+    entities = [e for e in storage.get_entities() if e.importance > settings.context_entity_threshold]
+    compacted = [CompactedSummary.model_validate_json(p.read_text()) for p in storage.get_compact()]
+    # Get recent pins using configured limit
+    existing_pins = sorted(
+        compacted,
+        key=lambda p: p.importance_score,
+        reverse=True,
+    )[: settings.max_historical_pins]
 
-    # Let secretary evaluate historical significance
     pin: CompactedSummary = run_agent_loop(
         'Evaluate historical significance',
         agents=agents,
-        instructions="""
-        Review recent observations and active entities to determine:
-        1. What deserves historical preservation
-        2. How this connects to existing knowledge
-        3. What patterns or trends are emerging
+        instructions=f"""
+        Review recent observations and determine historical significance.
 
-        If nothing significant to pin, return a CompactedSummary with empty=True.
+        Guidelines:
+        1. Focus on significant events (importance > {settings.historical_pin_threshold})
+        2. Consolidate related historical events
+        3. Update existing pins if topics overlap
+        4. Keep summaries concise but informative
+
+        Return CompactedSummary with empty=True if nothing warrants preservation.
         """,
         context={
             'recent_summaries': [s.model_dump() for s in recent_summaries],
             'active_entities': [e.model_dump() for e in entities],
+            'existing_pins': [p.model_dump() for p in existing_pins],
             'user_identity': settings.user_identity,
         },
         result_type=CompactedSummary,
     )
 
-    if not pin.empty:
+    if not pin.empty and pin.importance_score > settings.historical_pin_threshold:
         storage.store_compact(pin)
         logger.info('Created new historical pin')
     else:
         logger.info('No significant events to pin')
 
 
-@task(task_run_name=partial(_make_task_run_name, verb='check alerts'))
-def check_agent_alerts(
+@task(cache_policy=NONE)
+def check_for_humanworthy_events(
     recent_summaries: list[ObservationSummary],
     entities: list[Entity],
 ) -> None:
@@ -144,7 +158,7 @@ def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> None:
     if recent := process_raw_summaries(storage, agents):
         logger.info(f'Processed {len(recent)} new summaries')
 
-        check_agent_alerts(recent, storage.get_entities())
+        check_for_humanworthy_events(recent, storage.get_entities())
 
         update_historical_pins(storage, agents, recent)
 

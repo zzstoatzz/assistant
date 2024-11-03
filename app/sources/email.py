@@ -85,7 +85,6 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             )
             logger.info_kv(event.sender, event.subject)
 
-        # Store raw events first
         raw_summary = ObservationSummary(
             timestamp=datetime.now(root_settings.tz),
             summary='',  # Empty summary for raw storage
@@ -94,7 +93,6 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
         )
         storage.store_raw(raw_summary)
 
-        # Create and store processed summary with AI analysis
         summary = ObservationSummary(
             timestamp=datetime.now(root_settings.tz),
             summary=run_agent_loop(
@@ -117,4 +115,5 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 def check_email(storage: DiskStorage, agents: list[cf.Agent]) -> None:
     """Process observations and store using storage abstraction"""
     logger.info_style('Checking Gmail for 📧')
+    logger.debug(f'Processing emails with instructions: {email_settings.instructions}')
     process_gmail_observations(storage, agents)

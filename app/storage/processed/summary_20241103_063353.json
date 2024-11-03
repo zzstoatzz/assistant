@@ -1,0 +1,28 @@
+{
+  "timestamp": "2024-11-03T06:33:49.401337-06:00",
+  "summary": "Summary of New Email Messages:\n\n1. **Subject**: Overdue: Operating system update will install today\n   - **Sender**: Rippling <no-reply@rippling.com>\n   - **Snippet**: Notification about an automatic operating system update scheduled for today as part of IT security policy. The user is advised to update their computer before enforcement to avoid any issues.\n   - **Urgency**: High, due to the immediate action required to update the operating system.\n\n2. **Subject**: Nathan, time to jump back into your Weights & Biases certification!\n   - **Sender**: \"W&B AI Academy\" <noreply@notify.thinkific.com>\n   - **Snippet**: Encouragement for Nathan to continue his progress on the Weights & Biases course, which is 21% complete.\n   - **Urgency**: Low, as this is a motivational reminder rather than an urgent task.",
+  "events": [
+    {
+      "type": "email",
+      "timestamp": "2024-11-03T06:33:49.395714-06:00",
+      "hash": "192f1ff2c4df0a06",
+      "subject": "Overdue: Operating system update will install today",
+      "sender": "Rippling <no-reply@rippling.com>",
+      "snippet": "Hi Nate, As part of your company&#39;s IT security policy, at least one operating system update will be automatically installed today. Update your computer before the enforcement to avoid any"
+    },
+    {
+      "type": "email",
+      "timestamp": "2024-11-03T06:33:49.397658-06:00",
+      "hash": "192f1fe1b0b4162c",
+      "subject": "Nathan,  time to jump back into your Weights & Biases certification!",
+      "sender": "\"W&B AI Academy\" <noreply@notify.thinkific.com>",
+      "snippet": "Hi Nathan! It looks like you are making progress on your W&amp;B courses! Keep going! LLM Engineering: Structured Outputs is 21% complete. Resume this course. Continue learning and get your certificate"
+    }
+  ],
+  "source_types": [
+    "email"
+  ],
+  "day_id": "2024-11-03",
+  "entity_mentions": [],
+  "referenced_entities": []
+}
