@@ -1,3 +1,19 @@
+:root {
+    /* Colors */
+    --bg-primary: rgb(30, 32, 35);
+    --bg-secondary: rgb(45, 47, 50);
+    --bg-primary-rgb: 30, 32, 35;
+    --bg-secondary-rgb: 45, 47, 50;
+    --text-primary: rgb(220, 220, 220);
+    --text-secondary: rgb(180, 180, 180);
+    --text-muted: rgb(140, 140, 140);
+    --border-color: rgb(60, 63, 68);
+    --border-color-rgb: 60, 63, 68;
+    --shadow-color: rgba(0, 0, 0, 0.2);
+    --accent-color: #4a9eff;
+    --card-bg: rgb(35, 37, 40);
+}
+
 /* Container */
 .container {
     max-width: 1200px;
@@ -65,7 +81,7 @@
 
 .time {
     font-size: 0.9rem;
-    color: var(--text-muted);
+    color: var(--meta-color);
     margin-bottom: 0.5rem;
     display: block;
 }
@@ -81,6 +97,32 @@
     margin-top: 3rem;
     padding-top: 2rem;
     border-top: 2px solid var(--border-color);
+}
+
+.pinboard-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 4px var(--shadow-color);
+    border: 1px solid var(--border-color);
+}
+
+.pin-time {
+    color: var(--meta-color);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+}
+
+.pin-content {
+    margin: 1rem 0;
+    color: var(--text-color);
+}
+
+.pin-meta {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
 }
 
 /* Empty State */
@@ -114,7 +156,7 @@
 }
 
 .duck-credit {
-    color: var(--text-muted);
+    color: var(--meta-color);
     font-size: 0.8rem;
 }
 
@@ -123,4 +165,128 @@
     border: 1px dashed var(--border-color);
     border-radius: 8px;
     margin-top: 1rem;
+}
+
+/* Entity Styles */
+.entity-sidebar {
+    position: fixed;
+    right: 2rem;
+    top: 2rem;
+    width: 300px;
+    max-height: 80vh;
+    padding: 1rem;
+    background: rgba(var(--bg-color), 0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 12px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    transition: all 0.3s ease;
+}
+
+.entity-sidebar h2 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    opacity: 0.8;
+}
+
+.entity-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid;
+    border-color: hsl(calc(120 * var(--importance)), 70%, 60%);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.entity-card:hover {
+    transform: translateX(-4px);
+    background: var(--card-bg);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.entity-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.entity-details {
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    opacity: 0;
+}
+
+.entity-card:hover .entity-details {
+    max-height: 200px;
+    opacity: 1;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(var(--border-color-rgb), 0.2);
+}
+
+.entity-type {
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--meta-color);
+    background: rgba(var(--bg-secondary-rgb), 0.5);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.entity-name {
+    color: var(--text-color);
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+.entity-description {
+    font-size: 0.85em;
+    color: var(--meta-color);
+    margin-bottom: 0.5rem;
+    line-height: 1.4;
+}
+
+.entity-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75em;
+    color: var(--meta-color);
+}
+
+/* Entity references in events */
+.entity-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--card-bg);
+    font-size: 0.85em;
+    margin: 4px;
+    border-left: 2px solid var(--accent-color);
+}
+
+.event-metadata {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--border-color);
+    font-size: 0.9em;
+}
+
+.metadata-label {
+    color: var(--meta-color);
+    font-size: 0.85em;
+    margin-right: 0.5rem;
+}
+
+.event-entities {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
 }

@@ -70,8 +70,7 @@ class Settings(BaseSettings):
     def tz(self) -> ZoneInfo:
         return ZoneInfo(self.timezone)
 
-    # User identity
-    user_identities: list[UserIdentity] = Field(default=[])
+    user_identity: UserIdentity = Field(default_factory=UserIdentity)
 
     # Observation settings
     observation_check_interval_seconds: int = Field(default=300, ge=10, examples=[30, 120, 600])
@@ -92,11 +91,26 @@ class Settings(BaseSettings):
     def summaries_dir(self) -> Path:
         return self.app_dir / 'summaries'
 
+    @computed_field
+    @property
+    def entities_dir(self) -> Path:
+        return self.app_dir / 'entities'
+
     @model_validator(mode='after')
     def set_log_level(self) -> Self:
         from assistant.utilities.loggers import setup_logging
 
         setup_logging(self.log_level)
+        return self
+
+    @model_validator(mode='after')
+    def create_dirs(self) -> Self:
+        for dir in [
+            self.summaries_dir,
+            self.entities_dir,
+        ]:
+            if not dir.exists():
+                dir.mkdir(parents=True, exist_ok=True)
         return self
 
 

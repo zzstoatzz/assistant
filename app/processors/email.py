@@ -66,12 +66,13 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             logger.info('Successfully checked Gmail - no new messages found')
             return None
 
-        # Create events first
+        # Create enriched events with AI analysis
         for event in events_list:
             events.append(
                 {
                     'type': 'email',
                     'timestamp': datetime.now(root_settings.tz).isoformat(),
+                    'hash': event.id,
                     'subject': event.subject,
                     'sender': event.sender,
                     'snippet': event.snippet,
@@ -79,7 +80,7 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             )
             logger.info_kv(event.sender, event.subject)
 
-        # Store raw events as ObservationSummary
+        # Store raw events first
         raw_summary = ObservationSummary(
             timestamp=datetime.now(root_settings.tz),
             summary='',  # Empty summary for raw storage
@@ -88,22 +89,23 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
         )
         storage.store_raw(raw_summary)
 
-    # Create and store processed summary
-    summary = ObservationSummary(
-        timestamp=datetime.now(root_settings.tz),
-        summary=cf.run(
-            'Create summary of new messages',
-            agents=agents,
-            instructions=settings.agent_instructions,
-            context={'events': events},
-            result_type=str,
-        ),
-        events=events,
-        source_types=['email'],
-    )
+        # Create and store processed summary with AI analysis
+        summary = ObservationSummary(
+            timestamp=datetime.now(root_settings.tz),
+            summary=cf.run(
+                'Create summary of new messages',
+                agents=agents,
+                instructions=settings.agent_instructions,
+                context={'events': events},
+                result_type=str,
+            ),
+            events=events,
+            source_types=['email'],
+        )
 
-    storage.store_processed(summary)
-    return summary
+        storage.store_processed(summary)
+        logger.info(f'Finished processing {len(events)} new email(s)')
+        return summary
 
 
 @flow

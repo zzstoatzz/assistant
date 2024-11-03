@@ -43,7 +43,6 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
         return None
 
     processed_hashes = set()
-
     for path_iter in [storage.get_processed(), storage.get_unprocessed()]:
         for path in path_iter:
             try:
@@ -60,30 +59,34 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
             logger.info('Successfully checked Slack - no new messages found')
             return None
 
-        new_events = []
+        # Create enriched events with AI analysis
         for event in slack_events:
-            if event.hash not in processed_hashes:
-                new_events.append(event)
-                events.append(
-                    {
-                        'type': event.source_type,
-                        'timestamp': event.timestamp.isoformat(),
-                        'hash': event.hash,
-                        **event.content,  # Includes channel, user, text, thread_ts, permalink
-                    }
-                )
-                logger.info(
-                    f'New message in {event.content["channel"]} '
-                    f'from {event.content["user"]}: {event.content["text"][:50]}...'
-                )
-            else:
+            if event.hash in processed_hashes:
                 logger.debug(f'Skipping already processed message with hash: {event.hash}')
+                continue
 
-        if not new_events:
+            events.append(
+                {
+                    'type': event.source_type,
+                    'timestamp': event.timestamp.isoformat(),
+                    'hash': event.hash,
+                    'channel': event.content['channel'],
+                    'user': event.content['user'],
+                    'text': event.content['text'],
+                    'thread_ts': event.content.get('thread_ts'),
+                    'permalink': event.content.get('permalink'),
+                }
+            )
+            logger.info(
+                f'New message in {event.content["channel"]} '
+                f'from {event.content["user"]}: {event.content["text"][:50]}...'
+            )
+
+        if not events:
             logger.info('All messages have already been processed')
             return None
 
-        # Store raw events immediately
+        # Store raw events first
         raw_summary = ObservationSummary(
             timestamp=datetime.now(UTC),
             summary='',
@@ -92,28 +95,29 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
         )
         storage.store_raw(raw_summary)
 
-    summary = ObservationSummary(
-        timestamp=datetime.now(UTC),
-        summary=cf.run(
-            'Create summary of Slack messages',
-            agents=agents,
-            instructions="""
-            Review these Slack messages and create a concise summary.
-            Group related messages by:
-            1. Channel and thread context
-            2. Topic similarity
-            3. User interactions
-            Highlight anything requiring attention or follow-up.
-            """,
-            context={'events': events},
-            result_type=str,
-        ),
-        events=events,
-        source_types=['slack'],
-    )
+        # Create processed summary with AI analysis
+        summary = ObservationSummary(
+            timestamp=datetime.now(UTC),
+            summary=cf.run(
+                'Create summary of Slack messages',
+                agents=agents,
+                instructions="""
+                Review these Slack messages and create a concise summary.
+                Group related messages by:
+                1. Channel and thread context
+                2. Topic similarity
+                3. User interactions
+                Highlight anything requiring attention or follow-up.
+                """,
+                context={'events': events},
+                result_type=str,
+            ),
+            events=events,
+            source_types=['slack'],
+        )
 
-    storage.store_processed(summary)
-    return summary
+        storage.store_processed(summary)
+        return summary
 
 
 @flow

@@ -13,9 +13,13 @@
             --text-color: #2d3436;
             --card-bg: #ffffff;
             --border-color: #dfe6e9;
-            --accent-color: #74b9ff;
+            --accent-color: #0066cc;
             --meta-color: #636e72;
             --shadow-color: rgba(0,0,0,0.1);
+            --bg-primary-rgb: 30, 32, 35;
+            --bg-secondary-rgb: 45, 47, 50;
+            --border-color-rgb: 60, 63, 68;
+            --link-color: var(--accent-color);
         }
 
         .dark-theme {
@@ -24,9 +28,10 @@
             --text-color: #dfe6e9;
             --card-bg: #353b48;
             --border-color: #4a4f57;
-            --accent-color: #74b9ff;
+            --accent-color: #00b7ff;
             --meta-color: #b2bec3;
             --shadow-color: rgba(0,0,0,0.3);
+            --link-color: #66d9ff;
         }
 
         body {
@@ -73,72 +78,15 @@
             text-decoration: underline;
         }
 
-        /* Pinboard styles */
-        .pinboard {
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 2px solid var(--border-color);
-        }
-
-        .pinboard-empty {
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .pinboard-empty a {
-            color: var(--accent-color);
+        a {
+            color: var(--link-color);
             text-decoration: none;
+            transition: color 0.2s ease;
         }
 
-        .pinboard-empty a:hover {
+        a:hover {
             text-decoration: underline;
-        }
-
-        .pinboard-card {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 2px 4px var(--shadow-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .pin-time {
-            color: var(--meta-color);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .pin-content {
-            margin: 1rem 0;
-        }
-
-        .pin-meta {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        /* Empty state variations */
-        .empty-state {
-            background: var(--card-bg);
-            border-radius: 8px;
-            padding: 2rem;
-            text-align: center;
-            margin: 1rem 0;
-            border: 1px solid var(--border-color);
-        }
-
-        .empty-content img {
-            max-width: 200px;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-
-        .duck-credit {
-            color: var(--meta-color);
-            display: block;
-            margin-top: 1rem;
+            opacity: 0.9;
         }
     </style>
 </head>

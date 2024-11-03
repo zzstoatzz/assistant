@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from typing import TypeAlias
 
 from app.processors.email import settings as email_settings
@@ -18,31 +18,37 @@ def get_storage() -> DiskStorage:
     return DiskStorage(settings.summaries_dir)
 
 
-def load_summaries(hours: int) -> tuple[list[ObservationSummary], list[CompactedSummary]]:
-    """Load recent and compact summaries within time window"""
+def load_summaries(hours: int = 24) -> tuple[list[ObservationSummary], list[CompactedSummary]]:
+    """Load recent summaries and historical pins"""
     storage = DiskStorage(settings.summaries_dir)
+    cutoff = datetime.now(settings.tz) - timedelta(hours=hours)
 
-    # Load processed summaries from the last N hours
-    recent = []
+    recent_summaries = []
     for path in storage.get_processed():
         try:
             summary = ObservationSummary.model_validate_json(path.read_text())
-            if summary.timestamp > datetime.now(UTC) - timedelta(hours=hours):
-                recent.append(summary)
+            # Ensure timestamp is timezone-aware
+            if not summary.timestamp.tzinfo:
+                summary.timestamp = summary.timestamp.replace(tzinfo=settings.tz)
+            if summary.timestamp >= cutoff:
+                recent_summaries.append(summary)
         except Exception as e:
-            logger.error(f'Failed to load summary {path.name}: {e}')
+            logger.error(f'Failed to load summary {path}: {e}')
 
-    # Load compact summaries
-    compact = []
+    compact_summaries = []
     for path in storage.get_compact():
         try:
             summary = CompactedSummary.model_validate_json(path.read_text())
-            if summary.end_time > datetime.now(UTC) - timedelta(hours=hours):
-                compact.append(summary)
+            # Ensure timestamps are timezone-aware
+            if not summary.start_time.tzinfo:
+                summary.start_time = summary.start_time.replace(tzinfo=settings.tz)
+            if not summary.end_time.tzinfo:
+                summary.end_time = summary.end_time.replace(tzinfo=settings.tz)
+            compact_summaries.append(summary)
         except Exception as e:
-            logger.error(f'Failed to load compact summary {path.name}: {e}')
+            logger.error(f'Failed to load compact summary {path}: {e}')
 
-    return recent, compact
+    return recent_summaries, compact_summaries
 
 
 def get_enabled_processors() -> list[str]:

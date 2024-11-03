@@ -53,7 +53,7 @@ secretary = cf.Agent(
     you are a personal assistant who helps organize information.
 
     your human's identities are:
-    {settings.user_identities}
+    {settings.user_identity}
 
     when creating summaries, especially for the pinboard:
     - always include the most relevant link(s) in a human-friendly format
