@@ -131,15 +131,23 @@ class Settings(BaseSettings):
 
     # Core settings
     user_identity: UserIdentity = Field(default_factory=UserIdentity)
+    timezone: str = Field(default='America/Chicago')
+
     host: IPvAnyAddress = Field(default='0.0.0.0')
     port: int = Field(default=8000, ge=1024, le=65535)
     app_dir: Path = Field(default=Path(__file__).parent)
+
     log_level: LogLevel = Field(default='info', examples=['info', 'INFO'])
     log_time_format: str = Field(default='', examples=['%x %X', '%X'])
-    timezone: str = Field(default='America/Chicago')
 
     # Observation settings
     observation_check_interval_seconds: int = Field(default=300, ge=10, examples=[30, 120, 600])
+    observation_initial_delay_seconds: int = Field(
+        default=30,
+        gt=0,
+        description='Initial delay before first compression check',
+        examples=[30, 60, 120],
+    )
     hl: HumanLayerSettings = Field(default_factory=HumanLayerSettings)
 
     @computed_field
@@ -154,12 +162,10 @@ class Settings(BaseSettings):
 
     @model_validator(mode='after')
     def setup_logging(self) -> Self:
-        # Setup logging with custom time format
         from assistant.utilities.loggers import setup_logging
 
         setup_logging(self.log_level, log_time_format=self.log_time_format)
 
-        # Create directories
         self.paths.create_all()
         return self
 

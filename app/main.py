@@ -1,4 +1,4 @@
-from collections.abc import AsyncGenerator, Callable
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from functools import partial
 
@@ -10,18 +10,15 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.agents import email_agent, github_agent, secretary, slack_agent
-from app.api.dependencies import get_enabled_processors
+from app.api.dependencies import get_enabled_sources
 from app.api.endpoints import entities, home, observations, sources
 from app.background import compress_observations
-from app.processors.email import check_email
-from app.processors.email import settings as email_settings
-from app.processors.github import check_github
-from app.processors.github import settings as github_settings
-from app.processors.slack import check_slack
-from app.processors.slack import settings as slack_settings
 from app.settings import settings
+from app.sources.email import check_email, email_settings
+from app.sources.github import check_github, github_settings
+from app.sources.slack import check_slack, slack_settings
 from app.storage import DiskStorage
-from assistant.background.task_manager import BackgroundTaskManager
+from assistant.background.task_manager import BackgroundTaskManager, TaskDef
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger('main')
@@ -29,51 +26,49 @@ logger = get_logger('main')
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-    """Start background task processing"""
-    summary_storage = DiskStorage()
-    functions: list[tuple[Callable[..., None], float]] = []
+    """Manage application background tasks"""
+    storage = DiskStorage()
+
+    background_tasks: list[TaskDef] = []
 
     if email_settings.enabled:
-        functions.append(
-            (partial(check_email, storage=summary_storage, agents=[email_agent]), email_settings.check_interval_seconds)
+        background_tasks.append(
+            (partial(check_email, storage=storage, agents=[email_agent]), email_settings.check_interval_seconds)
         )
 
     if github_settings.enabled:
-        functions.append(
-            (
-                partial(check_github, storage=summary_storage, agents=[github_agent]),
-                github_settings.check_interval_seconds,
-            )
+        background_tasks.append(
+            (partial(check_github, storage=storage, agents=[github_agent]), github_settings.check_interval_seconds)
         )
 
     if slack_settings.enabled:
-        functions.append(
-            (partial(check_slack, storage=summary_storage, agents=[slack_agent]), slack_settings.check_interval_seconds)
+        background_tasks.append(
+            (partial(check_slack, storage=storage, agents=[slack_agent]), slack_settings.check_interval_seconds)
         )
 
-    if not functions:
+    if not background_tasks:
         logger.warning('☹️ No 3rd party processors enabled')
+
+    background_tasks.append(
+        (
+            partial(compress_observations, storage=storage, agents=[secretary]),
+            settings.observation_check_interval_seconds,
+            settings.observation_initial_delay_seconds,
+        )
+    )
 
     if settings.user_identity:
         logger.info(f'🧾 Using configured identity: {settings.user_identity}')
 
-    logger.info(f'👀 Watching sources: {get_enabled_processors()!r}')
-
-    logger.info(f'🔍 Compressing observations every {settings.observation_check_interval_seconds} seconds')
-
-    functions.append(
-        (
-            partial(
-                compress_observations,
-                storage=summary_storage,
-                agents=[secretary],
-            ),
-            settings.observation_check_interval_seconds,
-        )
+    logger.info(f'👀 Watching sources: {get_enabled_sources()!r}')
+    logger.info(
+        f'🔍 Compressing observations every {settings.observation_check_interval_seconds} seconds '
+        f'(after {settings.observation_initial_delay_seconds}s initial delay)'
     )
 
-    task_manager = BackgroundTaskManager(functions)
+    task_manager = BackgroundTaskManager(background_tasks)
     await task_manager.start_all()
+
     try:
         yield
     finally:

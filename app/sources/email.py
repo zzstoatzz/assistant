@@ -10,6 +10,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
+from assistant import run_agent_loop
 from assistant.observers.gmail import GmailObserver, get_gmail_service
 from assistant.utilities.loggers import get_logger
 
@@ -23,24 +24,28 @@ class EmailSettings(BaseSettings):
     credentials_path: Path = Field(default=Path(__file__).parent.parent / 'secrets' / 'gmail_credentials.json')
     token_path: Path = Field(default=Path(__file__).parent.parent / 'secrets' / 'gmail_token.json')
     check_interval_seconds: int = Field(default=300, ge=10)
+    instructions_path: Path = Field(default=Path(__file__).parent.parent / 'email_instructions.md')
 
-    agent_instructions: str = Field(
-        default="""
-        Review these email messages and create a concise summary.
-        Group related messages by thread and highlight urgent items.
-        """
-    )
+    @property
+    def instructions(self) -> str:
+        """Load instructions from Markdown file"""
+        if not self.instructions_path.exists():
+            return """
+            Review these email messages and create a concise summary.
+            Group related messages by thread and highlight urgent items.
+            """
+        return self.instructions_path.read_text()
 
 
-settings = EmailSettings()
+email_settings = EmailSettings()
 
 
 @root_settings.hl.instance.require_approval()
 def send_email(recipient: str, subject: str, body: str) -> str | None:
     """Send an email using the Gmail API."""
     service = get_gmail_service(
-        creds_path=settings.credentials_path,
-        token_path=settings.token_path,
+        creds_path=email_settings.credentials_path,
+        token_path=email_settings.token_path,
     )
 
     message = {'raw': base64.urlsafe_b64encode(f'To: {recipient}\nSubject: {subject}\n\n{body}'.encode()).decode()}
@@ -59,8 +64,8 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 
     events = []
     with GmailObserver(
-        creds_path=settings.credentials_path,
-        token_path=settings.token_path,
+        creds_path=email_settings.credentials_path,
+        token_path=email_settings.token_path,
     ) as observer:
         if not (events_list := list(observer.observe())):
             logger.info('Successfully checked Gmail - no new messages found')
@@ -92,10 +97,10 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
         # Create and store processed summary with AI analysis
         summary = ObservationSummary(
             timestamp=datetime.now(root_settings.tz),
-            summary=cf.run(
+            summary=run_agent_loop(
                 'Create summary of new messages',
                 agents=agents,
-                instructions=settings.agent_instructions,
+                instructions=email_settings.instructions,
                 context={'events': events},
                 result_type=str,
             ),

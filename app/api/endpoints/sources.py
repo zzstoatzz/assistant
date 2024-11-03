@@ -2,12 +2,9 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
 from app.agents import email_agent, github_agent, slack_agent
-from app.processors.email import check_email
-from app.processors.email import settings as email_settings
-from app.processors.github import check_github
-from app.processors.github import settings as github_settings
-from app.processors.slack import check_slack
-from app.processors.slack import settings as slack_settings
+from app.sources.email import check_email, email_settings
+from app.sources.github import check_github, github_settings
+from app.sources.slack import check_slack, slack_settings
 from app.storage import DiskStorage
 from assistant.utilities.loggers import get_logger
 

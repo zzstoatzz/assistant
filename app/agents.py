@@ -1,8 +1,8 @@
 import controlflow as cf
 
-from app.processors.email import send_email
-from app.processors.github import create_github_issue
 from app.settings import settings
+from app.sources.email import send_email
+from app.sources.github import create_github_issue
 
 email_agent = cf.Agent(
     name='EmailAgent',
@@ -16,6 +16,7 @@ email_agent = cf.Agent(
             instructions='Track patterns in email communications and events.',
         ),
     ],
+    tools=[settings.hl.instance.human_as_tool(), send_email],
 )
 
 github_agent = cf.Agent(
@@ -30,7 +31,7 @@ github_agent = cf.Agent(
             instructions='Track patterns in GitHub issues and PRs.',
         ),
     ],
-    tools=[create_github_issue],
+    tools=[settings.hl.instance.human_as_tool(), create_github_issue],
 )
 
 slack_agent = cf.Agent(
@@ -39,6 +40,7 @@ slack_agent = cf.Agent(
     You are responsible for processing Slack messages and creating summaries.
     Ensure all write actions are approved by the human.
     """,
+    tools=[settings.hl.instance.human_as_tool()],
     memories=[
         cf.Memory(
             key='slack_patterns',
@@ -52,7 +54,7 @@ secretary = cf.Agent(
     instructions=f"""
     you are a personal assistant who helps organize information.
 
-    your human's identities are:
+    your human's identity is:
     {settings.user_identity}
 
     when creating summaries, especially for the pinboard:
@@ -76,5 +78,7 @@ secretary = cf.Agent(
             instructions='remember ongoing important situations and their states.',
         ),
     ],
-    tools=[settings.hl.instance.human_as_tool(), send_email],
+    tools=[settings.hl.instance.human_as_tool()],
 )
+
+ALL_AGENTS = [email_agent, github_agent, slack_agent, secretary]

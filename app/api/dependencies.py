@@ -1,10 +1,10 @@
 from datetime import datetime, timedelta
 from typing import TypeAlias
 
-from app.processors.email import settings as email_settings
-from app.processors.github import settings as github_settings
-from app.processors.slack import settings as slack_settings
 from app.settings import settings
+from app.sources.email import email_settings
+from app.sources.github import github_settings
+from app.sources.slack import slack_settings
 from app.storage import DiskStorage
 from app.types import CompactedSummary, ObservationSummary
 from assistant.utilities.loggers import get_logger
@@ -16,7 +16,7 @@ ProcessorSummaries: TypeAlias = tuple[list[ObservationSummary], list[CompactedSu
 
 def get_storage() -> DiskStorage:
     """Get storage instance"""
-    return DiskStorage()  # No args needed
+    return DiskStorage()
 
 
 def load_summaries(hours: int = 24) -> tuple[list[ObservationSummary], list[CompactedSummary]]:
@@ -52,8 +52,8 @@ def load_summaries(hours: int = 24) -> tuple[list[ObservationSummary], list[Comp
     return recent_summaries, compact_summaries
 
 
-def get_enabled_processors() -> list[str]:
-    """Get list of enabled processors"""
+def get_enabled_sources() -> list[str]:
+    """Get list of enabled sources"""
     enabled = []
     if email_settings.enabled:
         enabled.append('email')

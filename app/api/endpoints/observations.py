@@ -1,12 +1,9 @@
-import controlflow as cf
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from app.agents import secretary
-from app.api.dependencies import load_summaries
-from app.processors.email import settings as email_settings
-from app.processors.github import settings as github_settings
-from app.processors.slack import settings as slack_settings
+from app.api.dependencies import get_enabled_sources, load_summaries
+from assistant import run_agent_loop
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger()
@@ -19,38 +16,29 @@ async def get_recent_observations(hours: int = 24) -> JSONResponse:
     logger.info(f'Loading observations for past {hours} hours')
     recent_summaries, compact_summaries = load_summaries(hours)
 
-    # Get enabled source types for context
-    enabled_sources = []
-    if email_settings.enabled:
-        enabled_sources.append('email')
-    if github_settings.enabled:
-        enabled_sources.append('github')
-    if slack_settings.enabled:
-        enabled_sources.append('slack')
-
     if not recent_summaries and not compact_summaries:
         logger.info(f'Successfully searched past {hours} hours - no observations found')
         return JSONResponse(content={'message': 'No observations found'}, status_code=200)
 
     recent_aggregate = None
     if recent_summaries:
-        recent_aggregate = cf.run(
+        recent_aggregate = run_agent_loop(
             'Summarize recent activity',
-            agent=secretary,
+            agents=[secretary],
             instructions="""
             Create a clear summary of recent activity.
             Focus on what's happening now and immediate implications.
             Use markdown for formatting if needed.
             """,
-            context={'summaries': [s.model_dump() for s in recent_summaries], 'enabled_sources': enabled_sources},
+            context={'summaries': [s.model_dump() for s in recent_summaries], 'enabled_sources': get_enabled_sources()},
             result_type=str,
         )
 
     historical_aggregate = None
     if compact_summaries:
-        historical_aggregate = cf.run(
+        historical_aggregate = run_agent_loop(
             'Distill historical significance',
-            agent=secretary,
+            agents=[secretary],
             instructions="""
             Create an extremely condensed historical record.
             Include only the most significant developments and enduring patterns.

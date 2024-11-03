@@ -1,0 +1,12 @@
+{
+  "id": "pr-15875",
+  "type": "topic",
+  "source": "github",
+  "name": "Add support for defining settings via `pyproject.toml`",
+  "description": "A pull request for adding support for defining settings via `pyproject.toml` in the Prefect repository. Requires review.",
+  "first_seen": "2024-11-03T05:57:04.892932-06:00",
+  "last_seen": "2024-11-03T05:57:04.892932-06:00",
+  "last_updated": "2024-11-03T05:57:04.892932-06:00",
+  "importance": 0.7,
+  "recent_mentions": []
+}
