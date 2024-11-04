@@ -1,10 +1,14 @@
+"""Core protocol for observing sources of information"""
+
 import json
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from hashlib import sha256
-from typing import Any, Generic, Self, TypeVar
+from typing import Any, Generic, TypeVar
+
+from typing_extensions import Self
 
 
 @dataclass
@@ -13,7 +17,7 @@ class BaseEvent:
 
     id: str
     source_type: str
-    timestamp: datetime = field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = field(default_factory=lambda: datetime.now(tz=timezone.utc))
     raw_source: str | None = None
     content: dict[str, Any] = field(default_factory=dict)
     hash: str | None = field(default=None, init=False)
