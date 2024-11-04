@@ -1,7 +1,9 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
+
+from assistant.settings import settings
 
 
 class Entity(BaseModel):
@@ -32,12 +34,13 @@ class Entity(BaseModel):
 class ObservationSummary(BaseModel):
     """Raw observation from information streams"""
 
-    timestamp: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    timestamp: datetime = Field(default_factory=lambda: datetime.now(tz=settings.tz))
     summary: str = Field(description='Human-readable summary of the observation')
     events: list[dict[str, Any]] = Field(description='Raw event data with source links')
     source_types: list[str] = Field(description='Types of sources (github, slack, etc)')
     day_id: str = Field(
-        default_factory=lambda: datetime.now(UTC).strftime('%Y-%m-%d'), description='YYYY-MM-DD grouping key'
+        default_factory=lambda: datetime.now(tz=settings.tz).strftime('%Y-%m-%d'),
+        description='YYYY-MM-DD grouping key',
     )
 
     # Track entity mentions

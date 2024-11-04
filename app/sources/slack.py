@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from pathlib import Path
 
 import controlflow as cf
@@ -95,7 +95,7 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 
         # Store raw events first
         raw_summary = ObservationSummary(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(tz=root_settings.tz),
             summary='',
             events=events,
             source_types=['slack'],
@@ -104,7 +104,7 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 
         # Create processed summary with AI analysis
         summary = ObservationSummary(
-            timestamp=datetime.now(UTC),
+            timestamp=datetime.now(tz=root_settings.tz),
             summary=run_agent_loop(
                 'Create summary of Slack messages',
                 agents=agents,
