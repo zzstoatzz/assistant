@@ -8,7 +8,7 @@ from app.storage import DiskStorage
 from assistant.utilities.loggers import get_logger
 
 router = APIRouter()
-storage = DiskStorage()  # We already have storage instance
+storage = DiskStorage()
 logger = get_logger('app.api.home')
 
 
@@ -19,11 +19,24 @@ async def get_random_duck() -> dict:
         return response.json()
 
 
-@router.get('/', response_class=HTMLResponse)
-async def home(request: Request, hours: int = 24):
+@router.get('/')
+async def home(request: Request, hours: int = 24) -> HTMLResponse:
     """Render home page with recent observations and summaries"""
     try:
         recent_summaries, compact_summaries = load_summaries(hours=hours)
+
+        # Get all entities for lookup
+        all_entities = {e.id: e for e in storage.get_entities()}
+
+        # Add referenced entities to each summary
+        for summary in recent_summaries:
+            summary.referenced_entities = [
+                all_entities[entity_id] for entity_id in (summary.entity_mentions or []) if entity_id in all_entities
+            ]
+
+        # Sort summaries by timestamp in descending order
+        recent_summaries.sort(key=lambda x: x.timestamp, reverse=True)
+        compact_summaries.sort(key=lambda x: x.end_time, reverse=True)
 
         # Group summaries by day for the template
         daily_summaries = {}
