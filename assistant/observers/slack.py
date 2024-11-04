@@ -1,6 +1,6 @@
 from collections.abc import Iterator
 from dataclasses import dataclass, field
-from datetime import UTC, datetime, timedelta
+from datetime import datetime, timedelta
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict
@@ -8,6 +8,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 from assistant.observer import BaseEvent, Observer
+from assistant.settings import settings
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger('assistant.slack')
@@ -74,7 +75,7 @@ class SlackObserver(BaseModel, Observer[dict[str, Any], SlackEvent]):
         if not self.client:
             raise RuntimeError('Observer not connected')
 
-        oldest = datetime.now(UTC) - timedelta(hours=self.lookback_hours)
+        oldest = datetime.now(tz=settings.tz) - timedelta(hours=self.lookback_hours)
         oldest_ts = oldest.timestamp()
 
         try:
