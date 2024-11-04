@@ -4,11 +4,12 @@ import logging
 from collections.abc import Callable
 from datetime import datetime
 from functools import lru_cache, partial
-from typing import NotRequired, TypeAlias, TypedDict
+from typing import TypeAlias, TypedDict
 
 from rich.logging import RichHandler
 from rich.markup import escape
 from rich.text import Text
+from typing_extensions import NotRequired
 
 import assistant
 
