@@ -2,10 +2,10 @@ from functools import partial
 
 import controlflow as cf
 from prefect import flow, task
-from prefect.cache_policies import NONE
 from prefect.runtime.flow_run import get_parameters
 
 from app.agents import ALL_AGENTS
+from app.caching import INPUTS_MINUS_AGENTS
 from app.settings import settings
 from app.storage import DiskStorage
 from app.types import CompactedSummary, Entity, ObservationSummary
@@ -19,7 +19,7 @@ def _make_task_run_name(parameters: dict, verb: str) -> str:
     return f'{verb} using {" | ".join([a.name for a in parameters["agents"]])}'
 
 
-@task(task_run_name=partial(_make_task_run_name, verb='process raw summaries'))
+@task(task_run_name=partial(_make_task_run_name, verb='process raw summaries'), cache_policy=INPUTS_MINUS_AGENTS)
 def process_raw_summaries(storage: DiskStorage, agents: list[cf.Agent]) -> list[ObservationSummary]:
     """Process raw summaries and detect entities"""
     processed = []
@@ -68,7 +68,7 @@ def process_raw_summaries(storage: DiskStorage, agents: list[cf.Agent]) -> list[
     return processed
 
 
-@task(task_run_name=partial(_make_task_run_name, verb='update historical pins'))
+@task(task_run_name=partial(_make_task_run_name, verb='update historical pins'), cache_policy=INPUTS_MINUS_AGENTS)
 def update_historical_pins(
     storage: DiskStorage,
     agents: list[cf.Agent],
@@ -115,7 +115,7 @@ def update_historical_pins(
         logger.info('No significant events to pin')
 
 
-@task(cache_policy=NONE)
+@task
 def check_for_humanworthy_events(
     recent_summaries: list[ObservationSummary],
     entities: list[Entity],

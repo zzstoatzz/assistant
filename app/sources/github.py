@@ -6,10 +6,10 @@ import controlflow as cf
 import httpx
 from jinja2 import Template
 from prefect import flow, task
-from prefect.cache_policies import NONE
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.caching import INPUTS_MINUS_AGENTS
 from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
@@ -63,7 +63,7 @@ def _get_agent_names(parameters: dict[str, Any]) -> str:
     return 'processing GitHub notifications with agent(s): ' + ', '.join(a.name for a in parameters['agents'])
 
 
-@task(task_run_name=_get_agent_names, cache_policy=NONE)
+@task(task_run_name=_get_agent_names, cache_policy=INPUTS_MINUS_AGENTS)
 def process_github_observations(
     storage: DiskStorage,
     agents: list[cf.Agent],

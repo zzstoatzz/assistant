@@ -1,12 +1,22 @@
 """Module for logging utilities."""
 
 import logging
+from collections.abc import Callable
+from datetime import datetime
 from functools import lru_cache, partial
+from typing import NotRequired, TypeAlias, TypedDict
 
 from rich.logging import RichHandler
 from rich.markup import escape
+from rich.text import Text
 
 import assistant
+
+FormatTimeCallable: TypeAlias = Callable[[datetime], Text]
+
+
+class RichHandlerKwargs(TypedDict):
+    log_time_format: NotRequired[str | FormatTimeCallable]
 
 
 class AssistantLogger(logging.Logger):
@@ -117,7 +127,7 @@ def get_logger(
     return logger  # type: ignore
 
 
-def setup_logging(level: str | None = None, log_time_format: str = '%x %X') -> None:
+def setup_logging(level: str | None = None, log_time_format: str | FormatTimeCallable | None = None) -> None:
     logger: AssistantLogger = get_logger()
 
     if level is not None:
@@ -127,15 +137,21 @@ def setup_logging(level: str | None = None, log_time_format: str = '%x %X') -> N
 
     logger.handlers.clear()
 
+    show_time = log_time_format is not None
+
+    handler_kwargs: RichHandlerKwargs = {}
+    if show_time and log_time_format is not None:
+        handler_kwargs['log_time_format'] = log_time_format
+
     handler = RichHandler(
         rich_tracebacks=True,
         markup=True,
         show_path=False,
-        show_time=True,
         show_level=True,
+        show_time=show_time,
         enable_link_path=True,
         omit_repeated_times=True,
-        log_time_format=log_time_format,
+        **handler_kwargs,
     )
 
     formatter = logging.Formatter('%(name)s: %(message)s')

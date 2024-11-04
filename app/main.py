@@ -1,6 +1,5 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from functools import partial
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,6 +7,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.background import BackgroundTask
 
 from app.agents import email_agent, github_agent, secretary, slack_agent
 from app.api.dependencies import get_enabled_sources
@@ -18,7 +18,7 @@ from app.sources.email import check_email, email_settings
 from app.sources.github import check_github, github_settings
 from app.sources.slack import check_slack, slack_settings
 from app.storage import DiskStorage
-from assistant.background.task_manager import BackgroundTaskManager, TaskDef
+from assistant.background.task_manager import PeriodicTaskManager, TaskDef
 from assistant.utilities.loggers import get_logger
 
 logger = get_logger('main')
@@ -33,17 +33,20 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     if email_settings.enabled:
         background_tasks.append(
-            (partial(check_email, storage=storage, agents=[email_agent]), email_settings.check_interval_seconds)
+            (BackgroundTask(check_email, storage=storage, agents=[email_agent]), email_settings.check_interval_seconds)
         )
 
     if github_settings.enabled:
         background_tasks.append(
-            (partial(check_github, storage=storage, agents=[github_agent]), github_settings.check_interval_seconds)
+            (
+                BackgroundTask(check_github, storage=storage, agents=[github_agent]),
+                github_settings.check_interval_seconds,
+            )
         )
 
     if slack_settings.enabled:
         background_tasks.append(
-            (partial(check_slack, storage=storage, agents=[slack_agent]), slack_settings.check_interval_seconds)
+            (BackgroundTask(check_slack, storage=storage, agents=[slack_agent]), slack_settings.check_interval_seconds)
         )
 
     if not background_tasks:
@@ -51,7 +54,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     background_tasks.append(
         (
-            partial(compress_observations, storage=storage, agents=[secretary]),
+            BackgroundTask(compress_observations, storage=storage, agents=[secretary]),
             settings.observation_check_interval_seconds,
             settings.observation_initial_delay_seconds,
         )
@@ -66,7 +69,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         f'(after {settings.observation_initial_delay_seconds}s initial delay)'
     )
 
-    task_manager = BackgroundTaskManager(background_tasks)
+    task_manager = PeriodicTaskManager(background_tasks)
     await task_manager.start_all()
 
     try:

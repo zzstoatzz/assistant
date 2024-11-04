@@ -37,3 +37,29 @@ def run(
         result_type=result_type,
         **kwargs,
     )
+
+
+async def run_async(
+    objective: str,
+    *,
+    agents: list[cf.Agent] | cf.Agent,
+    instructions: str,
+    context: dict[str, Any],
+    result_type: type[T] | None = None,
+    **kwargs: Any,
+) -> T:
+    """Execute an AI task with given agents and context.
+
+    Args:
+        See `run`
+    Returns:
+        The agent's response parsed into the specified type
+    """
+    return await cf.run_async(
+        objective=objective,
+        agents=agents,
+        instructions=instructions,
+        context=context,
+        result_type=result_type,
+        **kwargs,
+    )

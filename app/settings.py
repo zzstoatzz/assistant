@@ -11,9 +11,9 @@ from pydantic import BeforeValidator, Field, IPvAnyAddress, computed_field, mode
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
-def get_default_contact_channel() -> ContactChannel | None:
+def get_default_contact_channel() -> ContactChannel:
     if not (testing_user := os.getenv('TESTING_USER')):
-        return None
+        return ContactChannel()
 
     return ContactChannel(
         slack=SlackContactChannel(
@@ -27,15 +27,16 @@ def get_default_contact_channel() -> ContactChannel | None:
 class HumanLayerSettings(BaseSettings):
     """Settings for the HumanLayer"""
 
-    model_config = SettingsConfigDict(env_file='.env', env_file_encoding='utf-8', extra='ignore')
+    model_config = SettingsConfigDict(env_file='.env', extra='ignore', env_prefix='HUMANLAYER_')
 
+    api_key: str | None = Field(default=None, description='HumanLayer API key')
     slack: ContactChannel | None = Field(default_factory=get_default_contact_channel)
 
     @computed_field
     @property
     def instance(self) -> HumanLayer:
         """HumanLayer instance"""
-        return HumanLayer(contact_channel=self.slack)
+        return HumanLayer(api_key=self.api_key, contact_channel=self.slack)
 
 
 SetOfStrings = Annotated[
@@ -126,6 +127,9 @@ class AppPaths:
         self.storage.create_all()
 
 
+Activation = Annotated[float, Field(ge=0.0, le=1.0)]
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file='.env', extra='ignore', env_prefix='ASSISTANT_')
 
@@ -138,7 +142,7 @@ class Settings(BaseSettings):
     app_dir: Path = Field(default=Path(__file__).parent)
 
     log_level: LogLevel = Field(default='info', examples=['info', 'INFO'])
-    log_time_format: str = Field(default='', examples=['%x %X', '%X'])
+    log_time_format: str | None = Field(default=None, examples=['%x %X', '%X'])
 
     # Observation settings
     observation_check_interval_seconds: int = Field(default=300, ge=10, examples=[30, 120, 600])
@@ -190,24 +194,18 @@ class Settings(BaseSettings):
     )
 
     # Importance thresholds
-    entity_importance_threshold: float = Field(
+    entity_importance_threshold: Activation = Field(
         default=0.5,
-        ge=0.0,
-        le=1.0,
         description='Minimum importance score to keep an entity',
         examples=[0.3, 0.5, 0.7],
     )
-    historical_pin_threshold: float = Field(
+    historical_pin_threshold: Activation = Field(
         default=0.7,
-        ge=0.0,
-        le=1.0,
         description='Minimum importance score to create historical pin',
         examples=[0.5, 0.7, 0.9],
     )
-    context_entity_threshold: float = Field(
+    context_entity_threshold: Activation = Field(
         default=0.7,
-        ge=0.0,
-        le=1.0,
         description='Minimum importance score for entities used in historical context',
         examples=[0.5, 0.7, 0.9],
     )

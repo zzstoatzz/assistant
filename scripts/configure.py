@@ -65,8 +65,8 @@ def check_env():
             '\n  • SLACK_ENABLED=true'
         )
 
-    print('\n[bold green]→[/bold green] Run [bold]make dev[/bold] for local development')
-    print('[bold green]→[/bold green] Run [bold]make[/bold] for containerized deployment')
+    print('\n[bold green]→[/bold green] Run [bold]just dev[/bold] for local development')
+    print('[bold green]→[/bold green] Run [bold]just -l[/bold] to see all available commands')
 
 
 if __name__ == '__main__':
