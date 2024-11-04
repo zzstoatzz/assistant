@@ -4,6 +4,9 @@
 
 See `app/README.md` for detailed setup, or run:
 
+> [!NOTE]
+> `just` is _"just"_ (🙂) like `make`, but in Rust (trying it out for fun). [install](https://github.com/casey/just?tab=readme-ov-file#packages)
+
 ```bash
 just setup  # Setup environment
 just dev    # Development with hot reload
@@ -48,8 +51,11 @@ CompactedSummary(
 
 ## Project Structure
 
+> [!WARNING]
+> The project is under active development and the structure is subject to change.
+
 - `app/`: The main application (work in progress)
-- `assistant/`: Core library with stable abstractions
+- `assistant/`: Core library with more stable abstractions
 - See `app/README.md` for detailed setup instructions
 
 ## Features
