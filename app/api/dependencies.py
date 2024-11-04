@@ -53,12 +53,14 @@ def load_summaries(hours: int = 24) -> tuple[list[ObservationSummary], list[Comp
 
 
 def get_enabled_sources() -> list[str]:
-    """Get list of enabled sources"""
+    """Get list of enabled source processors"""
     enabled = []
+
     if email_settings.enabled:
         enabled.append('email')
     if github_settings.enabled:
         enabled.append('github')
     if slack_settings.enabled:
         enabled.append('slack')
+
     return enabled

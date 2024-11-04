@@ -5,10 +5,16 @@
 See `app/README.md` for detailed setup, or run:
 
 ```bash
-make setup  # Setup environment
-make dev    # Development with hot reload
-make        # Build and run in container
-make clean  # Cleanup
+just setup  # Setup environment
+just dev    # Development with hot reload
+just run    # Build and run in container
+just clean  # Cleanup
+```
+
+To see all available commands:
+
+```bash
+just -l
 ```
 
 ---

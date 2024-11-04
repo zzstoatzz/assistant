@@ -6,6 +6,7 @@ Implementation of the Assistant service with web UI and API endpoints.
 
 - Python 3.10+
 - `uv` package manager ([install guide](https://github.com/astral-sh/uv))
+- `just` command runner ([install guide](https://github.com/casey/just#installation))
 - API credentials:
   - OpenAI API key
   - Gmail OAuth2 (`gmail_credentials.json` and `gmail_token.json`)
@@ -22,7 +23,7 @@ Implementation of the Assistant service with web UI and API endpoints.
 pip install -U uv
 uv venv --python 3.12
 source .venv/bin/activate
-UV_SYSTEM_PYTHON=1 uv pip install --editable ".[dev]"
+just dev-setup
 ```
 
 2. **Configure Environment**
@@ -49,7 +50,7 @@ SLACK_ENABLED=true
 EMAIL_CHECK_INTERVAL_SECONDS=300
 GITHUB_CHECK_INTERVAL_SECONDS=300
 SLACK_CHECK_INTERVAL_SECONDS=300
-OBSERVATION_CHECK_INTERVAL_SECONDS=300
+ASSISTANT_OBSERVATION_CHECK_INTERVAL_SECONDS=300
 
 # Port for web UI
 ASSISTANT_PORT=8000
@@ -77,9 +78,15 @@ rm -rf app/summaries/{compact,processed}
 ## Running
 
 ```bash
-make dev    # Development with hot reload
+just dev    # Development with hot reload
 # or
-make        # Production in container
+just run    # Production in container
+```
+
+To see all available commands:
+
+```bash
+just -l
 ```
 
 Access:
@@ -139,6 +146,6 @@ rm app/secrets/gmail_token.json
 
 ## Development
 
-- Use `make dev` for hot reload during development
-- Run `make check-env` to verify configuration
+- Use `just dev` for hot reload during development
+- Run `just check-env` to verify configuration
 - See `scripts/configure.py` for environment validation

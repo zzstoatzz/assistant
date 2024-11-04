@@ -7,6 +7,7 @@ from prefect import flow, task
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from app.caching import INPUTS_MINUS_AGENTS
 from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
@@ -58,7 +59,7 @@ def send_email(recipient: str, subject: str, body: str) -> str | None:
         raise
 
 
-@task
+@task(cache_policy=INPUTS_MINUS_AGENTS)
 def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
     """Process Gmail observations and create a summary"""
 
