@@ -2,13 +2,14 @@ import os
 from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
-from typing import Annotated, Self
+from typing import Annotated
 from zoneinfo import ZoneInfo
 
 from humanlayer import ContactChannel, HumanLayer, SlackContactChannel
 from prefect.types import LogLevel, validate_set_T_from_delim_string
 from pydantic import BeforeValidator, Field, IPvAnyAddress, computed_field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from typing_extensions import Self
 
 
 def get_default_contact_channel() -> ContactChannel:
