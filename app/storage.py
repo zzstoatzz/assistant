@@ -1,10 +1,12 @@
 from collections.abc import Iterator
 from datetime import datetime
 from pathlib import Path
+from typing import Literal, Optional, Union
 
 from pydantic import BaseModel
 
 from app.settings import settings
+from app.storage_sqlite import SQLiteStorage
 from app.types import CompactedSummary, Entity, ObservationSummary
 from assistant.utilities.loggers import get_logger
 
@@ -24,10 +26,10 @@ def _safe_write(path: Path, data: BaseModel) -> Path:
 
 
 class DiskStorage:
-    """Storage for observations, summaries, and entities"""
+    """Storage for observations, summaries, and entities using JSON files on disk."""
 
     def __init__(self) -> None:
-        """Initialize storage using paths from settings"""
+        """Initialize storage using paths from settings."""
         self.raw_dir = settings.paths.storage.raw
         self.processed_dir = settings.paths.storage.processed
         self.compact_dir = settings.paths.storage.compact
@@ -35,42 +37,42 @@ class DiskStorage:
 
     # Raw observations
     def store_raw(self, data: ObservationSummary) -> Path:
-        """Store raw observation data"""
+        """Store raw observation data."""
         path = _get_timestamped_path(self.raw_dir, 'raw')
         return _safe_write(path, data)
 
     def get_unprocessed(self) -> Iterator[Path]:
-        """Get paths of unprocessed observations"""
+        """Get paths of unprocessed observations."""
         return self.raw_dir.glob('raw_*.json')
 
     # Processed summaries
     def store_processed(self, data: ObservationSummary) -> Path:
-        """Store processed summary data"""
+        """Store processed summary data."""
         path = _get_timestamped_path(self.processed_dir, 'summary')
         return _safe_write(path, data)
 
     def get_processed(self) -> Iterator[Path]:
-        """Get paths of processed summaries"""
+        """Get paths of processed summaries."""
         return self.processed_dir.glob('summary_*.json')
 
     # Compact summaries
     def store_compact(self, data: CompactedSummary) -> Path:
-        """Store compacted summary data"""
+        """Store compacted summary data."""
         path = _get_timestamped_path(self.compact_dir, 'compact')
         return _safe_write(path, data)
 
     def get_compact(self) -> Iterator[Path]:
-        """Get paths of compact summaries"""
+        """Get paths of compact summaries."""
         return self.compact_dir.glob('compact_*.json')
 
     # Entity operations
     def store_entity(self, entity: Entity) -> Path:
-        """Store an entity"""
+        """Store an entity."""
         path = self.entities_dir / f'{entity.id}.json'
         return _safe_write(path, entity)
 
-    def get_entity(self, entity_id: str) -> Entity | None:
-        """Get entity by ID"""
+    def get_entity(self, entity_id: str) -> Optional[Entity]:
+        """Get entity by ID."""
         path = self.entities_dir / f'{entity_id}.json'
         if not path.exists():
             return None
@@ -81,7 +83,7 @@ class DiskStorage:
             return None
 
     def get_entities(self) -> list[Entity]:
-        """Get all entities"""
+        """Get all entities."""
         entities = []
         for path in self.entities_dir.glob('*.json'):
             try:
@@ -91,9 +93,29 @@ class DiskStorage:
         return entities
 
     def delete_entity(self, entity_id: str) -> bool:
-        """Delete entity by ID"""
+        """Delete entity by ID."""
         path = self.entities_dir / f'{entity_id}.json'
         if path.exists():
             path.unlink()
             return True
         return False
+
+
+# Type alias for storage implementations
+StorageImpl = Union[DiskStorage, SQLiteStorage]
+
+
+def get_storage(impl: Literal["disk", "sqlite"] = "sqlite") -> StorageImpl:
+    """Get a storage implementation.
+    
+    Args:
+        impl: The storage implementation to use. Defaults to "sqlite".
+            - "disk": Use JSON files on disk
+            - "sqlite": Use SQLite database (recommended)
+    
+    Returns:
+        A storage implementation instance.
+    """
+    if impl == "disk":
+        return DiskStorage()
+    return SQLiteStorage()
