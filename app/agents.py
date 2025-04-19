@@ -1,55 +1,56 @@
-import controlflow as cf
+import marvin
 
 from app.settings import settings
-from app.sources.email import send_email
 from app.sources.github import create_github_issue
 
-email_agent = cf.Agent(
+email_agent = marvin.Agent(
     name='EmailAgent',
     instructions="""
     You are responsible for processing email events and creating summaries.
     Ensure all write actions are approved by the human.
     """,
     memories=[
-        cf.Memory(
+        marvin.Memory(
             key='email_patterns',
             instructions='Track patterns in email communications and events.',
         ),
     ],
-    tools=[settings.hl.instance.human_as_tool(), send_email],
+    model=settings.default_agent_model,
 )
 
-github_agent = cf.Agent(
+github_agent = marvin.Agent(
     name='GitHubAgent',
     instructions="""
     You are responsible for processing GitHub events and creating summaries.
     Ensure all write actions are approved by the human.
     """,
     memories=[
-        cf.Memory(
+        marvin.Memory(
             key='github_patterns',
             instructions='Track patterns in GitHub issues and PRs.',
         ),
     ],
+    model=settings.default_agent_model,
     tools=[settings.hl.instance.human_as_tool(), create_github_issue],
 )
 
-slack_agent = cf.Agent(
+slack_agent = marvin.Agent(
     name='SlackAgent',
     instructions="""
     You are responsible for processing Slack messages and creating summaries.
     Ensure all write actions are approved by the human.
     """,
+    model=settings.default_agent_model,
     tools=[settings.hl.instance.human_as_tool()],
     memories=[
-        cf.Memory(
+        marvin.Memory(
             key='slack_patterns',
             instructions='Track patterns in Slack communications.',
         ),
     ],
 )
 
-secretary = cf.Agent(
+secretary = marvin.Agent(
     name='secretary',
     instructions=f"""
     you are a personal assistant who helps organize information.
@@ -69,16 +70,17 @@ secretary = cf.Agent(
     Only reach out to the human for approval for critical, time-sensitive, or high-risk actions.
     """,
     memories=[
-        cf.Memory(
+        marvin.Memory(
             key='interaction_patterns',
             instructions='track patterns in communications and events.',
         ),
-        cf.Memory(
+        marvin.Memory(
             key='important_contexts',
             instructions='remember ongoing important situations and their states.',
         ),
     ],
     tools=[settings.hl.instance.human_as_tool()],
+    model=settings.default_agent_model,
 )
 
 ALL_AGENTS = [email_agent, github_agent, slack_agent, secretary]

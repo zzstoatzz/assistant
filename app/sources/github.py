@@ -1,15 +1,15 @@
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 
-import controlflow as cf
 import httpx
+import marvin
+import prefect.runtime.task_run
 from jinja2 import Template
 from prefect import flow, task
+from prefect.cache_policies import NO_CACHE
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.caching import INPUTS_MINUS_AGENTS
 from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
@@ -59,14 +59,15 @@ class GitHubSettings(BaseSettings):
 github_settings = GitHubSettings()  # type: ignore
 
 
-def _get_agent_names(parameters: dict[str, Any]) -> str:
+def _get_agent_names() -> str:
+    parameters = prefect.runtime.task_run.parameters
     return 'processing GitHub notifications with agent(s): ' + ', '.join(a.name for a in parameters['agents'])
 
 
-@task(task_run_name=_get_agent_names, cache_policy=INPUTS_MINUS_AGENTS)
+@task(task_run_name=_get_agent_names, cache_policy=NO_CACHE)
 def process_github_observations(
     storage: DiskStorage,
-    agents: list[cf.Agent],
+    agents: list[marvin.Agent],
     event_filters: list[GitHubEventFilter],
 ) -> ObservationSummary | None:
     """Process GitHub notifications and create a summary"""
@@ -121,7 +122,7 @@ def process_github_observations(
 @flow
 def check_github(
     storage: DiskStorage,
-    agents: list[cf.Agent],
+    agents: list[marvin.Agent],
 ) -> None:
     """Process GitHub notifications and store using storage abstraction"""
 
@@ -134,7 +135,7 @@ def check_github(
         logger.info_style('Checking GitHub for 🛎️')
         for github_filter in event_filters:
             filter_desc = filter_template.render(
-                repo=f"Repository: {', '.join(github_filter.repositories)}",
+                repo=f'Repository: {", ".join(github_filter.repositories)}',
                 event_types=github_filter.event_types,
                 reasons=github_filter.reasons,
                 branch=github_filter.branch,

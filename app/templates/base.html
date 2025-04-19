@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +16,7 @@
             --border-color: #dfe6e9;
             --accent-color: #0066cc;
             --meta-color: #636e72;
-            --shadow-color: rgba(0,0,0,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.1);
             --bg-primary-rgb: 30, 32, 35;
             --bg-secondary-rgb: 45, 47, 50;
             --border-color-rgb: 60, 63, 68;
@@ -30,7 +31,7 @@
             --border-color: #4a4f57;
             --accent-color: #00b7ff;
             --meta-color: #b2bec3;
-            --shadow-color: rgba(0,0,0,0.3);
+            --shadow-color: rgba(0, 0, 0, 0.3);
             --link-color: #66d9ff;
         }
 
@@ -90,12 +91,15 @@
         }
     </style>
 </head>
+
 <body>
     <div class="theme-toggle">
         <button onclick="toggleTheme()" aria-label="Toggle theme">🌓</button>
     </div>
 
     {% block content %}{% endblock %}
+
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
     <script>
         function toggleTheme() {
@@ -110,4 +114,5 @@
         }
     </script>
 </body>
+
 </html>

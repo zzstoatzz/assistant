@@ -15,6 +15,7 @@ set dotenv-load
 # Default values
 dev-port := env_var_or_default("DEV_PORT", "8001")
 host := env_var_or_default("HOST", "localhost")
+mcp-port := env_var_or_default("MCP_PORT", "8002")
 docker-image := "assistant"
 dockerfile := "app/Dockerfile.main"
 assistant-port := env_var_or_default("ASSISTANT_PORT", "8000")
@@ -33,7 +34,17 @@ check-env: check-uv
 
 # Run development server with hot reload
 dev: check-uv
-    uv run fastapi dev app/main.py --host {{host}} --port {{dev-port}}
+    uv run --all-extras fastapi dev app/main.py --host {{host}} --port {{dev-port}}
+
+# Run MCP server in development mode
+mcp-dev: check-uv
+    @echo "Starting MCP server in development mode..."
+    uv run fastmcp dev mcp/server.py
+
+# Run both development servers
+dev-all: check-uv
+    @echo "Starting all development servers..."
+    just dev & just mcp-dev
 
 # Build and run in production mode
 run: check-uv check-env
@@ -66,3 +77,8 @@ test-cov: check-uv
 
 # Run all setup and deployment steps
 all: setup run
+
+# Install MCP dependencies
+mcp-setup: check-uv
+    @echo "Installing MCP dependencies..."
+    cd mcp && uv pip install -r requirements.txt

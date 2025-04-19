@@ -1,6 +1,6 @@
 from typing import Any, TypeVar
 
-import controlflow as cf
+import marvin
 
 T = TypeVar('T')
 
@@ -8,7 +8,7 @@ T = TypeVar('T')
 def run(
     objective: str,
     *,
-    agents: list[cf.Agent] | cf.Agent,
+    agents: list[marvin.Agent] | marvin.Agent,
     instructions: str,
     context: dict[str, Any],
     result_type: type[T] | None = None,
@@ -17,7 +17,7 @@ def run(
     """Execute an AI task with given agents and context.
 
     Args:
-        task: Name/description of the task being performed
+        objective: Name/description of the task being performed
         agents: One or more agents to execute the task
         instructions: Detailed instructions for the agents
         context: Relevant context data for the task
@@ -26,14 +26,13 @@ def run(
     Returns:
         The agent's response parsed into the specified type
     """
-    if isinstance(agents, cf.Agent):
+    if isinstance(agents, marvin.Agent):
         agents = [agents]
 
-    return cf.run(
-        objective=objective,
+    return marvin.run(
+        objective,
         agents=agents,
-        instructions=instructions,
-        context=context,
+        context=context | {'instructions': instructions},
         result_type=result_type,
         **kwargs,
     )
@@ -42,7 +41,7 @@ def run(
 async def run_async(
     objective: str,
     *,
-    agents: list[cf.Agent] | cf.Agent,
+    agents: list[marvin.Agent] | marvin.Agent,
     instructions: str,
     context: dict[str, Any],
     result_type: type[T] | None = None,
@@ -55,11 +54,10 @@ async def run_async(
     Returns:
         The agent's response parsed into the specified type
     """
-    return await cf.run_async(
-        objective=objective,
+    return await marvin.run_async(
+        objective,
         agents=agents,
-        instructions=instructions,
-        context=context,
+        context=context | {'instructions': instructions},
         result_type=result_type,
         **kwargs,
     )

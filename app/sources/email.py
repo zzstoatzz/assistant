@@ -2,12 +2,12 @@ import base64
 from datetime import datetime
 from pathlib import Path
 
-import controlflow as cf
+import marvin
 from prefect import flow, task
+from prefect.cache_policies import NO_CACHE
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from app.caching import INPUTS_MINUS_AGENTS
 from app.settings import settings as root_settings
 from app.storage import DiskStorage
 from app.types import ObservationSummary
@@ -59,8 +59,8 @@ def send_email(recipient: str, subject: str, body: str) -> str | None:
         raise
 
 
-@task(cache_policy=INPUTS_MINUS_AGENTS)
-def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
+@task(cache_policy=NO_CACHE)
+def process_gmail_observations(storage: DiskStorage, agents: list[marvin.Agent]) -> ObservationSummary | None:
     """Process Gmail observations and create a summary"""
 
     events = []
@@ -113,7 +113,7 @@ def process_gmail_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 
 
 @flow
-def check_email(storage: DiskStorage, agents: list[cf.Agent]) -> None:
+def check_email(storage: DiskStorage, agents: list[marvin.Agent]) -> None:
     """Process observations and store using storage abstraction"""
     logger.info_style('Checking Gmail for 📧')
     logger.debug(f'Processing emails with instructions: {email_settings.instructions}')

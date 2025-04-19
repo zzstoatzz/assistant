@@ -1,13 +1,15 @@
 import os
 from dataclasses import dataclass
 from functools import partial
+from ipaddress import IPv4Address
 from pathlib import Path
 from typing import Annotated
 from zoneinfo import ZoneInfo
 
 from humanlayer import ContactChannel, HumanLayer, SlackContactChannel
 from prefect.types import LogLevel, validate_set_T_from_delim_string
-from pydantic import BeforeValidator, Field, IPvAnyAddress, computed_field, model_validator
+from pydantic import BeforeValidator, Field, computed_field, model_validator
+from pydantic_ai.models import KnownModelName
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing_extensions import Self
 
@@ -138,12 +140,14 @@ class Settings(BaseSettings):
     user_identity: UserIdentity = Field(default_factory=UserIdentity)
     timezone: str = Field(default='America/Chicago')
 
-    host: IPvAnyAddress = Field(default='0.0.0.0')
+    host: IPv4Address = Field(default=IPv4Address('0.0.0.0'))
     port: int = Field(default=8000, ge=1024, le=65535)
     app_dir: Path = Field(default=Path(__file__).parent)
 
-    log_level: LogLevel = Field(default='info', examples=['info', 'INFO'])
+    log_level: LogLevel = Field(default='INFO', examples=['DEBUG', 'INFO'])
     log_time_format: str | None = Field(default=None, examples=['%x %X', '%X'])
+
+    default_agent_model: KnownModelName = Field(default='openai:gpt-4o')
 
     # Observation settings
     observation_check_interval_seconds: int = Field(default=300, ge=10, examples=[30, 120, 600])

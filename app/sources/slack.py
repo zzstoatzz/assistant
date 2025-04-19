@@ -1,7 +1,7 @@
 from datetime import datetime
 from pathlib import Path
 
-import controlflow as cf
+import marvin
 from prefect import flow, task
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -43,7 +43,7 @@ slack_settings = SlackSettings()
 
 
 @task(cache_policy=INPUTS_MINUS_AGENTS)
-def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> ObservationSummary | None:
+def process_slack_observations(storage: DiskStorage, agents: list[marvin.Agent]) -> ObservationSummary | None:
     """Process Slack messages and create a summary"""
     if not (token := slack_settings.bot_token):
         logger.error('Slack bot token is not set')
@@ -128,7 +128,7 @@ def process_slack_observations(storage: DiskStorage, agents: list[cf.Agent]) -> 
 
 
 @flow
-def check_slack(storage: DiskStorage, agents: list[cf.Agent]) -> None:
+def check_slack(storage: DiskStorage, agents: list[marvin.Agent]) -> None:
     """Process Slack messages and store using storage abstraction"""
     logger.info_style('Checking Slack for 💬')
     logger.debug(f'Processing Slack messages with instructions: {slack_settings.instructions}')

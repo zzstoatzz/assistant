@@ -1,11 +1,12 @@
 from functools import partial
 
-import controlflow as cf
+import marvin
+import prefect.runtime.flow_run
+import prefect.runtime.task_run
 from prefect import flow, task
-from prefect.runtime.flow_run import get_parameters
+from prefect.cache_policies import NO_CACHE
 
 from app.agents import ALL_AGENTS
-from app.caching import INPUTS_MINUS_AGENTS
 from app.settings import settings
 from app.storage import DiskStorage
 from app.types import CompactedSummary, Entity, ObservationSummary
@@ -15,12 +16,16 @@ from assistant.utilities.loggers import get_logger
 logger = get_logger('assistant.background')
 
 
-def _make_task_run_name(parameters: dict, verb: str) -> str:
+def _make_task_run_name(verb: str) -> str:
+    parameters = prefect.runtime.task_run.parameters
     return f'{verb} using {" | ".join([a.name for a in parameters["agents"]])}'
 
 
-@task(task_run_name=partial(_make_task_run_name, verb='process raw summaries'), cache_policy=INPUTS_MINUS_AGENTS)
-def process_raw_summaries(storage: DiskStorage, agents: list[cf.Agent]) -> list[ObservationSummary]:
+@task(
+    task_run_name=partial(_make_task_run_name, verb='process raw summaries'),
+    cache_policy=NO_CACHE,
+)
+def process_raw_summaries(storage: DiskStorage, agents: list[marvin.Agent]) -> list[ObservationSummary]:
     """Process raw summaries and detect entities"""
     processed = []
 
@@ -68,10 +73,13 @@ def process_raw_summaries(storage: DiskStorage, agents: list[cf.Agent]) -> list[
     return processed
 
 
-@task(task_run_name=partial(_make_task_run_name, verb='update historical pins'), cache_policy=INPUTS_MINUS_AGENTS)
+@task(
+    task_run_name=partial(_make_task_run_name, verb='update historical pins'),
+    cache_policy=NO_CACHE,
+)
 def update_historical_pins(
     storage: DiskStorage,
-    agents: list[cf.Agent],
+    agents: list[marvin.Agent],
     recent_summaries: list[ObservationSummary],
 ) -> None:
     """Update historical pins based on recent activity and entities"""
@@ -100,9 +108,9 @@ def update_historical_pins(
         Return CompactedSummary with empty=True if nothing warrants preservation.
         """,
         context={
-            'recent_summaries': [s.model_dump() for s in recent_summaries],
-            'active_entities': [e.model_dump() for e in entities],
-            'existing_pins': [p.model_dump() for p in existing_pins],
+            'recent_summaries': recent_summaries,
+            'active_entities': entities,
+            'existing_pins': existing_pins,
             'user_identity': settings.user_identity,
         },
         result_type=CompactedSummary,
@@ -138,20 +146,20 @@ def check_for_humanworthy_events(
         If you need to alert the human, use your tools to do so.
         """,
         context={
-            'recent_summaries': [s.model_dump() for s in recent_summaries],
-            'active_entities': [e.model_dump() for e in entities],
+            'recent_summaries': recent_summaries,
+            'active_entities': entities,
             'user_identity': settings.user_identity,
         },
     )
 
 
 def _make_flow_run_name_from_agents() -> str:
-    agents = get_parameters()['agents']
-    return f'Employing {", ".join([a.name for a in agents])!r} to compress observations'
+    parameters = prefect.runtime.flow_run.parameters
+    return f'Employing {", ".join([a.name for a in parameters["agents"]])!r} to compress observations'
 
 
 @flow(flow_run_name=_make_flow_run_name_from_agents)
-def compress_observations(storage: DiskStorage, agents: list[cf.Agent]) -> None:
+def compress_observations(storage: DiskStorage, agents: list[marvin.Agent]) -> None:
     """Process observations and maintain historical context"""
     logger.info('🔄 Starting observation compression')
 
