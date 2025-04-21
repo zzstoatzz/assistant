@@ -2,6 +2,7 @@ import marvin
 
 from app.settings import settings
 from app.sources.github import create_github_issue
+from app.utilities.atproto import send_dm_via_atproto
 
 email_agent = marvin.Agent(
     name='EmailAgent',
@@ -50,6 +51,11 @@ slack_agent = marvin.Agent(
     ],
 )
 
+
+def send_message_to_human(message: str):
+    send_dm_via_atproto(message, settings.atproto.recipient_did)
+
+
 secretary = marvin.Agent(
     name='secretary',
     instructions=f"""
@@ -79,7 +85,7 @@ secretary = marvin.Agent(
             instructions='remember ongoing important situations and their states.',
         ),
     ],
-    tools=[settings.hl.instance.human_as_tool()],
+    tools=[send_message_to_human],
     model=settings.default_agent_model,
 )
 

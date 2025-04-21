@@ -53,12 +53,12 @@ class SlackObserver(BaseModel, Observer[dict[str, Any], SlackEvent]):
         try:
             # Try public channel
             response = self.client.conversations_info(channel=channel_id)  # type: ignore
-            return f"#{response['channel']['name']}"
+            return f'#{(response or {}).get("channel", {}).get("name", channel_id)}'
         except SlackApiError:
             try:
                 # Try private channel/DM
                 response = self.client.conversations_info(channel=channel_id)  # type: ignore
-                return f"@{response['channel']['name']}"
+                return f'@{response.get("channel", {}).get("name", channel_id)}'
             except SlackApiError:
                 return channel_id
 
@@ -66,7 +66,7 @@ class SlackObserver(BaseModel, Observer[dict[str, Any], SlackEvent]):
         """Get username from ID"""
         try:
             response = self.client.users_info(user=user_id)  # type: ignore
-            return response['user']['name']
+            return response.get('user', {}).get('name', user_id)
         except SlackApiError:
             return user_id
 
@@ -89,7 +89,7 @@ class SlackObserver(BaseModel, Observer[dict[str, Any], SlackEvent]):
 
             channels = [
                 channel
-                for channel in response['channels']
+                for channel in response.get('channels', [])
                 if channel.get('is_member', False)  # Only process channels the bot is a member of
             ]
 
@@ -105,7 +105,7 @@ class SlackObserver(BaseModel, Observer[dict[str, Any], SlackEvent]):
                         oldest=str(oldest_ts),
                     )
 
-                    for message in history['messages']:
+                    for message in history.get('messages', []):
                         # Skip bot messages and system messages
                         if message.get('subtype') or not message.get('user'):
                             continue

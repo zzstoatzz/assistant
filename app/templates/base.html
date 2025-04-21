@@ -112,6 +112,12 @@
             (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.body.classList.add('dark-theme');
         }
+
+        // Make all links in markdown content open in a new tab
+        document.querySelectorAll('.event-content a, .pin-content a').forEach(link => {
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
+        });
     </script>
 </body>
 

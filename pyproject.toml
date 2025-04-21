@@ -34,8 +34,11 @@ classifiers = [
     "Topic :: Internet",
 ]
 requires-python = ">=3.10"
-dependencies = ["marvin", "fastapi[standard]", "raggy[chroma]"]
+dependencies = ["marvin", "fastapi[standard]", "raggy[chroma]", "atproto"]
 dynamic = ["version"]
+
+[dependency-groups]
+dev = ["ruff", "ipython", "pre-commit"]
 
 [project.optional-dependencies]
 gmail = [
@@ -43,12 +46,9 @@ gmail = [
     "google-auth-oauthlib",
     "google-auth-httplib2",
 ]
-humanlayer = [
-    "humanlayer@git+https://github.com/zzstoatzz/humanlayer.git@pydantic-usage",
-]
+humanlayer = ["humanlayer@git+https://github.com/zzstoatzz/humanlayer.git"]
 slack = ["slack-sdk"]
 
-dev = ["controlflow[dev]"]
 
 [project.urls]
 Homepage = "https://github.com/zzstoatzz/assistant"

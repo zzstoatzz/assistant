@@ -17,7 +17,8 @@ For example, this is a good summary:
 ## Updates for `prefecthq/prefect`
 [PRIORITY] Everything broke for a user in [this issue](https://github.com/PrefectHQ/prefect/issues/{issue_number}) after upgrading to Prefect 3.11
 
-## Updates for `prefecthq/prefect-aws
-[NON-PRIORITY] A new release of `prefect-aws` is out, see [this PR](https://github.com/PrefectHQ/prefect/pull/{pr_number})
-[NON-PRIORITY] Someone commented on [this PR](https://github.com/PrefectHQ/prefect/pull/{pr_number})
+## Updates for `prefecthq/prefect-aws`
+[NON-PRIORITY]
+- A new release of `prefect-aws` is out, see [this PR](https://github.com/PrefectHQ/prefect/pull/{pr_number})
+- Someone commented on [this PR](https://github.com/PrefectHQ/prefect/pull/{pr_number})
 ```

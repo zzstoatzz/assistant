@@ -22,6 +22,7 @@ class Entity(BaseModel):
 
     # Configurable importance threshold - entity is pruned when below this
     importance: float = Field(ge=0, le=1, description='Current importance score')
+    deleted: bool = Field(default=False, description='Soft delete flag for this entity')
 
     # List of recent observation summaries that mention this entity
     recent_mentions: list[str] = Field(

@@ -64,33 +64,8 @@
     {% endif %}
 
     {# Entity Sidebar #}
-    <div class="entity-sidebar">
-        <h2>Active Entities</h2>
-        {% if entities %}
-        {% for entity in entities %}
-        <div class="entity-card" data-importance="{{ entity.importance }}">
-            <div class="entity-header">
-                <span class="entity-type">{{ entity.type }}</span>
-                <span class="entity-name">{{ entity.name }}</span>
-            </div>
-            <div class="entity-details">
-                <div class="entity-description">
-                    {{ entity.description }}
-                </div>
-                <div class="entity-meta">
-                    <span class="entity-source">{{ entity.source }}</span>
-                    <span class="entity-age">
-                        First seen: {{ entity.first_seen.strftime('%b %-d') }}
-                    </span>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
-        {% else %}
-        <div class="empty-state">
-            <p>No active entities</p>
-        </div>
-        {% endif %}
+    <div class="entity-sidebar" id="entity-sidebar">
+        {% include "partials/entity_sidebar.html" %}
     </div>
 
     {# Pinboard Container - Always Present #}
@@ -185,6 +160,7 @@
         display: flex;
         align-items: center;
         gap: 8px;
+        position: relative;
     }
 
     .entity-details {
@@ -315,6 +291,22 @@
         to {
             transform: rotate(360deg);
         }
+    }
+
+    .entity-delete-btn {
+        margin-left: auto;
+        background: none;
+        border: none;
+        color: #EF4444;
+        font-size: 1.1em;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s;
+        padding: 0 0.3em;
+    }
+
+    .entity-card:hover .entity-delete-btn {
+        opacity: 1;
     }
 </style>
 {% endblock %}

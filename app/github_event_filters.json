@@ -16,5 +16,15 @@
             "assign",
             "author"
         ]
+    },
+    {
+        "repositories": ["PrefectHQ/marvin"],
+        "event_types": ["PullRequest", "Issue"],
+        "reasons": ["subscribed", "review_requested", "mention"]
+    },
+    {
+        "repositories": ["jlowin/fastmcp"],
+        "event_types": ["PullRequest", "Issue"],
+        "reasons": ["subscribed", "review_requested", "mention"]
     }
 ]

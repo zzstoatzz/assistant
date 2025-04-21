@@ -42,6 +42,16 @@ class HumanLayerSettings(BaseSettings):
         return HumanLayer(api_key=self.api_key, contact_channel=self.slack)
 
 
+class AtprotoSettings(BaseSettings):
+    """Settings for Bluesky/atproto"""
+
+    model_config = SettingsConfigDict(env_file='.env', extra='ignore', env_prefix='ATPROTO_')
+
+    handle: str = Field(default='zzstoatzz.bsky.social', description='Bluesky/atproto handle')
+    password: str = Field(default='mdn7BCQ.fxf-kmk.wax', description='Bluesky/atproto app password')
+    recipient_did: str = Field(default='did:plc:xbtmt2zjwlrfegqvch7fboei', description='Bluesky/atproto recipient DID')
+
+
 SetOfStrings = Annotated[
     str | list[str] | set[str] | None,
     BeforeValidator(partial(validate_set_T_from_delim_string, type_=str)),
@@ -214,6 +224,8 @@ class Settings(BaseSettings):
         description='Minimum importance score for entities used in historical context',
         examples=[0.5, 0.7, 0.9],
     )
+
+    atproto: AtprotoSettings = Field(default_factory=AtprotoSettings)
 
 
 settings = Settings()

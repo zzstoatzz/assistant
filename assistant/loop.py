@@ -31,9 +31,9 @@ def run(
 
     return marvin.run(
         objective,
-        agents=agents,
+        agents=agents,  # type: ignore
         context=context | {'instructions': instructions},
-        result_type=result_type,
+        result_type=result_type,  # type: ignore
         **kwargs,
     )
 
@@ -54,10 +54,13 @@ async def run_async(
     Returns:
         The agent's response parsed into the specified type
     """
-    return await marvin.run_async(
+    assert result_type is not None, 'result_type must be provided'
+    result = await marvin.run_async(
         objective,
-        agents=agents,
+        agents=agents,  # type: ignore
         context=context | {'instructions': instructions},
         result_type=result_type,
         **kwargs,
     )
+    assert isinstance(result, result_type), f'expected {result_type}, got {type(result)}'
+    return result

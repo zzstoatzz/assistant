@@ -28,10 +28,12 @@ async def home(request: Request, hours: int = 24) -> HTMLResponse:
         # Get all entities for lookup
         all_entities = {e.id: e for e in storage.get_entities()}
 
-        # Add referenced entities to each summary
+        # Add referenced entities to each summary, filtering out deleted
         for summary in recent_summaries:
             summary.referenced_entities = [
-                all_entities[entity_id] for entity_id in (summary.entity_mentions or []) if entity_id in all_entities
+                all_entities[entity_id]
+                for entity_id in (summary.entity_mentions or [])
+                if entity_id in all_entities and not getattr(all_entities[entity_id], 'deleted', False)
             ]
 
         # Sort summaries by timestamp in descending order
@@ -61,3 +63,12 @@ async def home(request: Request, hours: int = 24) -> HTMLResponse:
     except Exception as e:
         logger.error(f'Error rendering home page: {e}', exc_info=True)
         raise
+
+
+@router.get('/entity-sidebar')
+async def entity_sidebar(request: Request) -> HTMLResponse:
+    entities = storage.get_entities()
+    return templates.TemplateResponse(
+        'partials/entity_sidebar.html',
+        {'request': request, 'entities': entities},
+    )

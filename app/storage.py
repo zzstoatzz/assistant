@@ -80,12 +80,14 @@ class DiskStorage:
             logger.error(f'Failed to load entity {path}: {e}')
             return None
 
-    def get_entities(self) -> list[Entity]:
+    def get_entities(self, include_deleted: bool = False) -> list[Entity]:
         """Get all entities"""
         entities = []
         for path in self.entities_dir.glob('*.json'):
             try:
-                entities.append(Entity.model_validate_json(path.read_text()))
+                entity = Entity.model_validate_json(path.read_text())
+                if include_deleted or not entity.deleted:
+                    entities.append(entity)
             except Exception as e:
                 logger.error(f'Failed to load entity {path}: {e}')
         return entities

@@ -1,0 +1,29 @@
+<h2>Active Entities</h2>
+{% if entities %}
+{% for entity in entities %}
+<div class="entity-card" data-importance="{{ entity.importance }}" id="entity-{{ entity.id|id_safe }}">
+    <div class="entity-header">
+        <span class="entity-type">{{ entity.type }}</span>
+        <span class="entity-name">{{ entity.name }}</span>
+        <button class="entity-delete-btn" title="Delete entity" hx-delete="/api/entities/{{ entity.id }}"
+            hx-target="#entity-{{ entity.id|id_safe }}" hx-swap="outerHTML"
+            hx-confirm="Are you sure you want to delete this entity?">✕</button>
+    </div>
+    <div class="entity-details">
+        <div class="entity-description">
+            {{ entity.description }}
+        </div>
+        <div class="entity-meta">
+            <span class="entity-source">{{ entity.source }}</span>
+            <span class="entity-age">
+                First seen: {{ entity.first_seen.strftime('%b %-d') }}
+            </span>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="empty-state">
+    <p>No active entities</p>
+</div>
+{% endif %}

@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Request, Response
 from pydantic import BaseModel
 
 from app.settings import settings
@@ -57,11 +57,25 @@ async def update_entity(entity_id: str, update: EntityUpdate) -> Entity:
 
 
 @router.delete('/entities/{entity_id}')
-async def delete_entity(entity_id: str) -> dict[str, str]:
-    """Delete entity"""
-    if storage.delete_entity(entity_id):
-        return {'status': 'deleted'}
-    raise HTTPException(status_code=404, detail='Entity not found')
+async def delete_entity(entity_id: str, request: Request) -> Response:
+    entity = storage.get_entity(entity_id)
+    if entity is None:
+        raise HTTPException(status_code=404, detail='Entity not found')
+
+    if getattr(entity, 'deleted', False):
+        if request.headers.get('hx-request') == 'true':
+            # Already deleted, but HTMX expects 200 OK empty body to remove element
+            return Response(content='', status_code=200)
+        return Response(content='Already deleted', status_code=200)
+
+    entity.deleted = True
+    storage.store_entity(entity)
+
+    if request.headers.get('hx-request') == 'true':
+        # Return 200 OK with empty body for HTMX to remove the element
+        return Response(content='', status_code=200)
+
+    return Response(content='Deleted', status_code=200)
 
 
 # Summary CRUD
